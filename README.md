@@ -2,7 +2,7 @@
 
 The public home of Annie — a Golden Retriever × Border Collie, born 26 June 2026, and the record of her growing up.
 
-**Read it:** `https://annie-and-claude.com/`
+**Read it:** `[live site link — goes here once the domain's live]`
 
 ## What this actually is
 
@@ -37,13 +37,12 @@ The site is built by a small, deliberately simple Markdown-to-HTML generator rat
 ## Running it locally
 
 ```
-# from the repo root
-node generator/build.js
+npm install
+npm run build
 ```
 
-Builds the site into `/dist`. Open `dist/index.html` to preview.
-
-*(Exact command may drift as the generator evolves — check `generator/` if this stops working.)*
+Builds the site into `/dist`. Open `dist/index.html` to preview, or point
+any static file server at the `dist/` folder.
 
 ## A note on what's not here
 

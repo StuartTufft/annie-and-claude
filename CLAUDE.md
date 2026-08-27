@@ -9,73 +9,83 @@ There is no training advice work done in this repo. This repo is the site:
 content, the generator, and deploy. If a request is actually about how to
 train Annie, say so and point back to the private repo.
 
+For the full build plan — architecture, decisions log, the sprint-by-sprint
+roadmap, the AI ideas backlog — see `PLANNING.md`. It's not `@`-imported
+here on purpose, to keep this file cheap to read every session; open it
+directly when starting a new sprint or when a "why" question comes up that
+this file doesn't answer.
+
 ## Hard rules — never do these
 
 - **Never commit a video file.** Video lives on YouTube, unlisted, and gets
-  embedded. If asked to add a video, embed it — don't download and commit it.
+  embedded (`<iframe>`, see `src/journal/README.md` for the pattern). If
+  asked to add a video, embed it — don't download and commit it.
 - **Never commit an unoptimised photo.** Resize to roughly 1600–2000px on
   the long edge and strip EXIF/GPS metadata before it's committed. If a
   photo arrives raw, optimise it first; don't commit it as-is "for now."
 - **Never invent journal content.** Every post's substance — what happened,
   what was said, how it went — comes from the owner. Draft the prose, never
   the events. If a detail is missing, leave it out or ask; don't fill the
-  gap with something plausible.
+  gap with something plausible. This applies to placeholder/demo content
+  too: don't fabricate a fake journal entry to "show what it'd look like" —
+  build and test with throwaway fixtures, then remove them before committing.
 - **Never let identifying detail through**: exact address or postcode, the
   vet's name or location, or anything that maps out when the house is
   reliably empty. If a draft post contains any of this, flag it and hold
   the post rather than publish around it.
 - **No framework.** The site is a small, hand-rolled Markdown → HTML
-  generator that lives in `generator/` and should stay short enough to read
-  end to end. Don't reach for Astro, Next, Hugo, Jekyll, or similar without
-  being explicitly asked to make that switch — it's a deliberate decision,
-  not a default.
+  generator in `generator/build.js` (Node, `marked` + `gray-matter`, no
+  other dependencies). Keep it short enough to read end to end. Don't reach
+  for Astro, Next, Hugo, Jekyll, or similar without being explicitly asked
+  to make that switch — it's a deliberate decision, not a default.
 - **No analytics, view counters, or growth tooling** unless explicitly
   asked. This is a personal project first. Don't add anything that turns
   "did anyone see this" into a thing to check.
 
-## Structure (target)
+## How the site actually works
 
 ```
 src/
-  journal/YYYY-MM-DD.md      one file per published post
-  pages/                      home, about-annie, about-this-project
-  milestones.md
+  pages/*.md            standalone pages. home.md -> / (everything else -> /<name>.html)
+  journal/
+    YYYY-MM-DD.md          text-only entry
+    YYYY-MM-DD/index.md    entry with photos — images sit in the same folder
+  static/                 copied into dist/ verbatim (style.css, favicon, etc.)
 generator/
-  build.js                    reads src/**/*.md, writes /dist
-  template.html                the one shared page template
-.github/workflows/deploy.yml  build + deploy to GitHub Pages on push to main
-CNAME                          added once the domain is ready — not required yet
+  build.js                the whole generator — reads src/, writes dist/
+  template.html           the one shared page template ({{title}}, {{pageTitle}}, {{date}}, {{nav}}, {{content}})
+.github/workflows/deploy.yml   builds and deploys dist/ to GitHub Pages on every push to main
 ```
 
-## Sprint 0 — what "set up Sprint 0" means
+Build locally with `npm install` then `npm run build` — output goes to
+`dist/` (gitignored; the Action rebuilds it fresh every deploy, don't commit
+it). Preview by opening `dist/index.html` or running any static file server
+against `dist/`.
 
-When asked to set up Sprint 0, do all of the following in one pass:
+Frontmatter on every page/post:
+```yaml
+---
+title: A short title
+date: 2026-08-27   # journal entries only
+---
+```
 
-1. Scaffold the folder structure above.
-2. Write `generator/build.js`: reads every `src/**/*.md` file (frontmatter:
-   `title`, `date`), renders it into `generator/template.html`, writes the
-   result to `/dist`. Keep it plain — no build tooling beyond what Node's
-   standard library plus one small Markdown-parsing dependency needs.
-3. One placeholder page at `src/pages/home.md` — a short "hello, I'm Annie"
-   holding page, not real content yet.
-4. `.github/workflows/deploy.yml` — on push to `main`: run the generator,
-   deploy `/dist` to GitHub Pages.
-5. Commit and push. Confirm the Action runs green and the placeholder is
-   live at the `*.github.io` URL.
+The GitHub Action deploys via `actions/upload-pages-artifact` +
+`actions/deploy-pages` — this requires the repo's **Settings → Pages →
+Source** to be set to **GitHub Actions**, not "Deploy from a branch." If a
+previous session set it to deploy from a branch, switch it before the first
+push, or the Action will succeed but nothing will go live.
 
-Stop there. Don't write real journal content or the other pages yet — that's
-a separate, later step, done deliberately rather than as a side effect of
-scaffolding.
-
-## Content model (reference — not built yet)
+## Content model
 
 | Page / type | Source | Cadence |
 |---|---|---|
-| Home / About Annie | Rewritten from the private profile, for a stranger reading it | Set once |
+| Home (`src/pages/home.md`) | Written by hand | Set once |
+| About Annie | Rewritten from the private profile, for a stranger reading it | Set once, revisit rarely |
 | About This Project | Written by hand | Set once |
 | Journal posts | Arrive pre-drafted and pre-approved from the private repo's pipeline | As often as they're given |
-| Weekly rollups | Same — arrive pre-drafted | Weekly, once the private repo's review cadence starts producing them |
-| Milestones | Flagged from journal posts as "first time" moments | Grows on its own |
+| Weekly rollups | Same — arrive pre-drafted | Weekly, once the private repo's review cadence produces them |
+| Milestones (`src/milestones.md`, not built yet) | Flagged from journal posts as "first time" moments | Grows on its own — build this page once there are 2–3 real milestones to show |
 
 ## Writing
 
@@ -89,5 +99,6 @@ scaffolding.
 ## Deploy
 
 GitHub Pages, custom domain via a `CNAME` file once the domain's DNS is
-live. Until then, the `*.github.io` URL is the real, working site — treat
-it as live, not as a draft.
+live (see `PLANNING.md`'s Sprint 4 for the exact DNS records). Until then,
+the `*.github.io` URL is the real, working site — treat it as live, not as
+a draft.

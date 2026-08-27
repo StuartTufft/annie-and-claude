@@ -1,11 +1,14 @@
 {
   "name": "annie-and-claude",
+  "version": "1.0.0",
+  "description": "Annie's public journey — built with a small hand-rolled Markdown to HTML generator.",
   "private": true,
-  "description": "Generator for Annie's site — src/**/*.md to /dist.",
   "scripts": {
     "build": "node generator/build.js"
   },
+  "license": "UNLICENSED",
   "dependencies": {
-    "marked": "^18.0.0"
+    "gray-matter": "^4.0.3",
+    "marked": "^18.0.11"
   }
 }
