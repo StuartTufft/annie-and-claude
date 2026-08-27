@@ -1,2 +1,58 @@
 # annie-and-claude
-Public blog to share my learnings and adventure with my dog, Annie!
+
+The public home of Annie — a Golden Retriever × Border Collie, born 26 June 2026, and the record of her growing up.
+
+**Read it:** `[live site link — goes here once the domain's live]`
+
+## What this actually is
+
+Annie's owner keeps a detailed, day-to-day training log — what she's learning, what's working, what isn't, how she's doing. That log is private; it has vet details, home logistics, and the kind of specifics that don't belong on the internet.
+
+This repo is the public side of it: the story, without the paperwork. Daily life, training wins and setbacks, the odd disaster, told in plain first-person voice — not a trainer's case notes.
+
+It's also a small, ongoing experiment in using Claude (Anthropic's AI) as a genuine collaborator rather than a novelty: voice notes get dictated at the end of the day, turned into a draft post, and reviewed by a human before anything is published. Nothing here was written or approved without someone actually reading it first.
+
+## How a post gets made
+
+1. **Dictate** — a quick voice recap of the day (via [Wispr Flow](https://wisprflow.ai)), saved as a raw note in the private log.
+2. **Draft** — Claude turns that raw note into a post in the established voice, and strips anything that shouldn't be public (exact locations, health specifics, routine details).
+3. **Review** — a human reads it and either approves it or sends it back. Nothing skips this step.
+4. **Publish** — once approved, the post lands here, in `src/journal/`.
+5. **Build & deploy** — a GitHub Action rebuilds the site and pushes it live automatically. This part has no human gate, because by the time content reaches this repo, it's already been through one.
+
+## Structure
+
+```
+src/
+  journal/            daily posts, one file per entry
+  pages/               About Annie, About this project, etc.
+  milestones.md        first-time moments, as they happen
+generator/              the script that turns src/*.md into the built site
+.github/workflows/      the GitHub Action that builds and deploys on every push
+CNAME                   custom domain configuration
+```
+
+The site is built by a small, deliberately simple Markdown-to-HTML generator rather than a full framework — the whole thing is short enough to read end to end if you're curious how it works.
+
+## Running it locally
+
+```
+# from the repo root
+node generator/build.js
+```
+
+Builds the site into `/dist`. Open `dist/index.html` to preview.
+
+*(Exact command may drift as the generator evolves — check `generator/` if this stops working.)*
+
+## A note on what's not here
+
+Nothing that identifies where Annie lives, who her vet is, or when the house is normally empty. Posts are written to be honest about her life without being a map to it. If you spot something that shouldn't be public, an issue or a message would be genuinely appreciated.
+
+## Reuse
+
+The story is Annie's. The generator and the workflow behind it are free to poke around in, borrow from, or fork if you want to run something similar for your own dog (or cat, or whatever you've taken on).
+
+---
+
+Built by her humans, with Annie as chief tester and occasional editor-by-chewing-the-laptop-charger.
