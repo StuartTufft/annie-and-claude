@@ -1,0 +1,11 @@
+{
+  "name": "annie-and-claude",
+  "private": true,
+  "description": "Generator for Annie's site — src/**/*.md to /dist.",
+  "scripts": {
+    "build": "node generator/build.js"
+  },
+  "dependencies": {
+    "marked": "^18.0.0"
+  }
+}

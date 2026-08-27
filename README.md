@@ -2,7 +2,7 @@
 
 The public home of Annie — a Golden Retriever × Border Collie, born 26 June 2026, and the record of her growing up.
 
-**Read it:** `[live site link — goes here once the domain's live]`
+**Read it:** `https://annie-and-claude.com/`
 
 ## What this actually is
 
