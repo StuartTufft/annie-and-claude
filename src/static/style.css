@@ -26,7 +26,6 @@
      "the sky above the hills". Sits in a triad with moss and bow. Atmosphere
      and accents only — like bow, it is never body text or a link colour. */
   --sky: #a8bfe0;
-  --sky-soft: #dde7f6;
   --mist: rgba(255, 254, 246, 0.6);
   --hills-back-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 240' preserveAspectRatio='none'%3E%3Cpath d='M0,240L0,150Q80,90,170,130Q240,160,320,120Q400,78,480,125Q560,165,660,135Q740,110,830,140Q920,168,1010,130Q1090,96,1200,145L1200,240Z' fill='%23d3dab9'/%3E%3C/svg%3E");
   --hills-front-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 160' preserveAspectRatio='none'%3E%3Cpath d='M0,160L0,110Q120,70,260,105Q380,135,520,108Q660,82,800,112Q930,138,1060,110Q1130,96,1200,115L1200,160Z' fill='%23b8c49c'/%3E%3C/svg%3E");
@@ -342,7 +341,9 @@ article iframe {
   bottom: 16px;
   padding: 0 26px;
   text-align: center;
-  color: var(--cover-muted);
+  /* Light-on-scrim: the lightbox is the one dark surface on the site. */
+  color: var(--paper);
+  opacity: 0.82;
   font-size: 0.88rem;
 }
 
@@ -374,94 +375,197 @@ article iframe {
 }
 
 /* ------------------------------------------------------------------ */
-/* Home: the box lid — deep moss cover, perforated like a stamp       */
+/* Home: the scalloped medallion                                       */
+/*                                                                     */
+/* Replaced the deep-moss "box lid" (owner decision, Aug 2026 — it     */
+/* read too dark and too boxy). The page is now light throughout: a    */
+/* scalloped photo medallion floats over a soft, heavily-rounded card. */
+/* The medallion is the page's contrast anchor now that nothing is     */
+/* dark — it earns that by being the only photograph on the page.      */
 /* ------------------------------------------------------------------ */
 
 .page-home main article {
   position: relative;
-  background-color: var(--cover);
-  background-image:
-    radial-gradient(circle at 7px 7px, var(--paper) 4.5px, transparent 5px),
-    radial-gradient(circle at 7px 7px, var(--paper) 4.5px, transparent 5px),
-    radial-gradient(circle at 7px 7px, var(--paper) 4.5px, transparent 5px),
-    radial-gradient(circle at 7px 7px, var(--paper) 4.5px, transparent 5px);
-  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
-  background-position: top left, bottom left, top left, top right;
-  background-size: 14px 14px;
-  color: var(--cover-ink);
+  background: var(--card);
+  color: var(--ink);
   text-align: center;
-  padding: 60px 36px 52px;
-  border-radius: 10px;
-  box-shadow: var(--shadow-soft);
-  max-width: 700px;
-  margin: 12px auto 0;
+  padding: 0 38px 54px;
+  border-radius: 34px;
+  box-shadow: 0 10px 40px rgba(90, 96, 74, 0.10);
+  max-width: 640px;
+  /* Room for the medallion to hang over the top edge. */
+  margin: 104px auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.page-home main article h1 { font-size: 2.4rem; margin-bottom: 6px; }
-.page-home main article p { max-width: 46ch; margin-left: auto; margin-right: auto; }
-.page-home main article a { color: var(--cover-muted); }
+/* The template prints <h1> before {{content}}, so the medallion is pulled
+   ahead of it with flex order rather than by editing template.html. */
+.page-home .cover-hero { order: -1; }
 
-/* The locket: a real photo of Annie, pressed into the cover like a photo
-   tucked in a postmark. Sits above the h1, so it reads first. */
-.cover-locket {
-  display: block;
-  width: 92px;
-  height: 92px;
-  margin: 0 auto 16px;
+.page-home main article h1 {
+  font-size: clamp(2rem, 7vw, 2.55rem);
+  margin: 22px 0 4px;
+}
+
+/* min(…, 100%) matters here: the article is a centred flex column, so any
+   child with an intrinsic width above the container overflows the page
+   rather than being clamped. Applies to the ch-measure and the subtitle. */
+.page-home main article p {
+  max-width: min(44ch, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  text-wrap: pretty;
+}
+
+.page-home main article a { color: var(--moss); }
+
+/* --- The medallion ------------------------------------------------- */
+
+.cover-hero {
+  position: relative;
+  width: clamp(190px, 46vw, 244px);
+  aspect-ratio: 1;
+  margin-top: -92px;
+  display: grid;
+  place-items: center;
+}
+
+/* Soft periwinkle-and-blush halo. Sits behind everything, blurred, and
+   breathes very slowly — the one motion added to the delight budget. */
+.cover-glow {
+  position: absolute;
+  inset: -22%;
   border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid var(--paper);
-  box-shadow: var(--shadow-soft), 0 0 0 2px var(--moss-deep);
+  background:
+    radial-gradient(circle at 30% 26%, var(--sky) 0%, transparent 58%),
+    radial-gradient(circle at 74% 74%, var(--bow) 0%, transparent 56%),
+    radial-gradient(circle at 52% 52%, var(--moss-soft) 0%, transparent 72%);
+  opacity: 0.5;
+  filter: blur(22px);
+  animation: medallion-breathe 7s var(--ease-in-out) infinite alternate;
 }
 
-.cover-subtitle {
+@keyframes medallion-breathe {
+  from { transform: scale(1); opacity: 0.42; }
+  to { transform: scale(1.06); opacity: 0.6; }
+}
+
+.cover-medallion {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* Two stacked scallops: the rim is a touch larger, so a cream scalloped
+   border shows around the photo — a pressed-flower/sticker edge. */
+.medallion-rim,
+.cover-medallion img {
+  -webkit-mask-image: var(--scallop-mask);
+  mask-image: var(--scallop-mask);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.medallion-rim {
+  position: absolute;
+  inset: 0;
+  background: var(--stamp-face);
+}
+
+.cover-medallion img {
+  position: relative;
+  width: 88%;
+  height: 88%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Little pastel companions. Abstract dots, not illustration — they add
+   the soft "sticker sheet" feel without pretending to be drawings. */
+.cover-dot {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cover-dot--a { width: 15px; height: 15px; background: var(--sky); opacity: 0.65; top: 5%; right: 6%; }
+.cover-dot--b { width: 10px; height: 10px; background: var(--bow); opacity: 0.6; bottom: 12%; left: 2%; }
+.cover-dot--c { width: 7px; height: 7px; background: var(--gold); opacity: 0.75; top: 22%; left: 8%; }
+
+/* --- Cover typography ---------------------------------------------- */
+
+/* Scoped through .page-home so it outranks the 44ch prose measure above —
+   at this font-size `ch` is narrow enough to wrap the line mid-phrase. */
+.page-home .cover-subtitle {
   font-family: var(--font-body);
   font-weight: 800;
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--gold);
-  margin: 0 0 18px;
+  color: var(--gold-ink);
+  opacity: 0.75;
+  margin: 0 0 16px;
+  max-width: 100%;
 }
 
 .paw-trail {
   display: block;
-  width: 120px;
-  height: 30px;
-  margin: 0 auto 22px;
+  width: 108px;
+  height: 26px;
+  margin: 0 auto 20px;
 }
-.paw-trail .paw { fill: var(--cover-muted); opacity: 0.6; }
+.paw-trail .paw { fill: var(--moss); opacity: 0.45; }
 
-/* The pup, sitting in the corner as if it led you to the ribbon below.
-   Static — no extra motion budget spent here, see DESIGN.md. */
+/* The pup, sitting in the corner. Static — the medallion's breath is the
+   only motion this page adds. */
 .cover-pup-peek {
   position: absolute;
-  bottom: 14px;
-  right: 18px;
-  width: 76px;
+  bottom: 12px;
+  right: 16px;
+  width: 74px;
   height: auto;
   pointer-events: none;
+  opacity: 0.9;
 }
 
-/* The ribbon: pink is allowed here, on the badge, and on the pup. */
+/* The CTA: a blush pill. Pink stays rare by rule — this, the badge bow,
+   the pup's bow, and favourite marks. */
+/* Block + fit-content so the trailing "— starts slow…" falls onto its own
+   centred line instead of hanging off the pill's right edge. */
 .page-home main article a[href="/journal/"] {
-  display: inline-block;
+  display: block;
+  width: fit-content;
   background: var(--bow);
   color: var(--bow-ink);
   font-weight: 800;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   text-decoration: none;
-  padding: 12px 26px 17px;
-  margin-top: 6px;
-  clip-path: polygon(0 0, 100% 0, 100% 82%, 50% 100%, 0 82%);
-  transition: transform 160ms var(--ease-out);
+  padding: 14px 32px;
+  margin: 6px auto 12px;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(217, 143, 160, 0.4);
+  transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
 }
 
 .page-home main article a[href="/journal/"]:active { transform: scale(0.97); }
 
 @media (hover: hover) and (pointer: fine) {
-  .page-home main article a[href="/journal/"]:hover { transform: translateY(-2px); }
+  .page-home main article a[href="/journal/"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(217, 143, 160, 0.48);
+  }
+  .cover-medallion:hover { transform: rotate(-1.5deg) scale(1.02); }
 }
+
+.cover-medallion { transition: transform 220ms var(--ease-out); }
 
 /* ------------------------------------------------------------------ */
 /* The journey trail: the last few weeks as a winding path            */
@@ -915,13 +1019,21 @@ article iframe {
   .archive-link:active, .page-home main article a[href="/journal/"]:active { transform: none; }
   .stamp:hover, .random-day button:hover, .archive-link:hover,
   .page-home main article a[href="/journal/"]:hover { transform: none; }
+  /* The medallion stops breathing; the halo stays, just still. */
+  .cover-glow { animation: none; opacity: 1; }
+  .cover-medallion:hover { transform: none; }
 }
 
 @keyframes stamp-fade { from { opacity: 0; } to { opacity: 1; } }
 
 @media (max-width: 640px) {
   .page-quiet main article { padding: 24px 20px 32px; }
-  .page-home main article { padding: 44px 22px 40px; }
+  .page-home main article {
+    padding: 0 22px 42px;
+    margin-top: 88px;
+    border-radius: 28px;
+  }
+  .cover-hero { margin-top: -78px; }
   .stamp-grid { grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 14px; }
   .stamp { width: 118px; }
   .pup { width: 68px; left: 10px; }

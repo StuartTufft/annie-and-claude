@@ -113,6 +113,24 @@ function favBowSvg() {
   return `<svg class="fav-bow" viewBox="0 0 44 30" aria-hidden="true"><path d="M22 12 C 7 -2 0 15 19 18 C 13 9 18 7 22 12 Z"/><path d="M22 12 C 37 -2 44 15 25 18 C 31 9 26 7 22 12 Z"/><circle cx="22" cy="14" r="4"/></svg>`;
 }
 
+// The home hero: Annie's photo in a scalloped medallion, over a soft
+// periwinkle-and-blush halo, with a few pastel dots for company. The
+// scallop shape itself is a CSS mask (--scallop-mask in style.css).
+function coverHeroHtml() {
+  const size = jpegSize(path.join(SRC, 'static', 'photos', 'home-locket.jpg'));
+  const dims = size ? ` width="${size.width}" height="${size.height}"` : '';
+  return `<div class="cover-hero">
+    <span class="cover-glow" aria-hidden="true"></span>
+    <span class="cover-dot cover-dot--a" aria-hidden="true"></span>
+    <span class="cover-dot cover-dot--b" aria-hidden="true"></span>
+    <span class="cover-dot cover-dot--c" aria-hidden="true"></span>
+    <div class="cover-medallion">
+      <span class="medallion-rim" aria-hidden="true"></span>
+      <img src="/static/photos/home-locket.jpg" alt="Annie"${dims}>
+    </div>
+  </div>`;
+}
+
 // A small trail of paw prints used as a decorative divider (e.g. on the
 // home cover, between the subtitle and the prose).
 function pawTrailSvg() {
@@ -262,11 +280,11 @@ function buildPages() {
     const outName = file === 'home.md' ? 'index.html' : file.replace(/\.md$/, '.html');
     const activePath = outName === 'index.html' ? '/' : `/${outName}`;
     const isHome = outName === 'index.html';
-    // The cover gets a bit of storybook framing around the owner's words:
-    // a locket photo, a subtitle stamp, a paw-print divider, and the pup
-    // mascot sitting in the corner. The prose itself is untouched.
+    // The cover frames the owner's words without touching them: a scalloped
+    // photo medallion, a subtitle, a paw-print divider, and the pup sitting
+    // in the corner. CSS pulls the medallion above the <h1> (flex order).
     const body = isHome
-      ? `<img class="cover-locket" src="/static/photos/home-locket.jpg" alt="Annie" width="220" height="220">` +
+      ? coverHeroHtml() +
         `<p class="cover-subtitle">Home since ${formatDate(isoOfUtc(HOME_DATE_UTC))} · The Malvern Hills</p>` +
         pawTrailSvg() +
         marked.parse(content) +

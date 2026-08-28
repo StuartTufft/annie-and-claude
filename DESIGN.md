@@ -27,7 +27,12 @@ reintroduce it without being asked. All tokens live at the top of
 | `--moss` | `#4c7a50` | links, buttons, trail path, active tabs |
 | `--moss-deep` | `#3a3b28` | badge, postmarks — earthy, browned green (owner asked for "more brown and earthy" than pure forest green) |
 | `--gold` | `#e8c07d` | waypoint badges — Annie's coat |
-| `--bow` | `#d98fa0` | **rare by rule**: the badge bow, the home ribbon CTA, favourite-spot marks, the pup's bow. Never body text, never a second link colour. It's her collar bow — it stays special |
+| `--bow` | `#d98fa0` | **rare by rule**: the badge bow, the home CTA pill, favourite-spot marks, the pup's bow. Never body text, never a second link colour. It's her collar bow — it stays special |
+| `--sky` | `#a8bfe0` | **third pastel**, added Aug 2026 on the owner's call, for the "cuter, more modern" home cover. Read it as the sky above the hills. Same restriction as `--bow`: atmosphere and small accents only, never body text or a link colour |
+
+The dark cover tokens (`--cover`, `--cover-ink`, `--cover-muted`) were
+**removed** with the box lid — see "Home" below. The lightbox caption, the
+only light-on-dark text left on the site, uses `--paper` at 0.82 opacity.
 
 Hills are inline-SVG data URIs in CSS custom properties
 (`--hills-back-img` / `--hills-front-img`).
@@ -68,7 +73,9 @@ Kowalski bar"). The site is built to pass them:
    below the ~0.2Hz vestibular-trigger band the Apple skill warns about.
    Don't speed it up past ~30s cycles.
 8. Delight budget: the badge bow ties itself once per load; the pup trots
-   only while scrolling. That's the whole budget — resist adding more.
+   only while scrolling; the home medallion's halo breathes on a 7s cycle
+   (background layer, `transform`/`opacity`, stilled under reduced motion).
+   That's the whole budget — resist adding more.
 
 ## The interactive layer
 
@@ -87,9 +94,26 @@ the random-day button are JS-only, and both are decoration).
 
 ## Structure the design hangs off
 
-- Home = "box lid": deep-moss cover with stamp-perforation edges
-  (radial-gradient dot trick — holes are `--paper` coloured), pink ribbon
-  CTA (`clip-path` pennant).
+- Home = **scalloped medallion** (redesigned Aug 2026). Replaced the
+  original deep-moss "box lid" on the owner's call: it read too dark and
+  too boxy. Now a photo of Annie in a 16-scallop medallion, floating over
+  a soft periwinkle-and-blush halo, overhanging a light `--card` panel at
+  34px radius. The CTA is a blush pill, not the old `clip-path` pennant.
+  - The scallop is a **CSS mask**, `--scallop-mask` — a generated path
+    (16 arcs, arc-radius 0.52× the chord) so the fill stays in CSS and
+    the shape scales with the element. Regenerate rather than hand-edit
+    the path; the geometry is a loop over `n` points on a circle.
+  - Two stacked scallops: `.medallion-rim` (cream, slightly larger) sits
+    behind the photo to give the pressed-sticker border.
+  - The medallion is now the page's **only** contrast anchor — nothing on
+    the page is dark any more. It earns that by being the one photograph.
+    If you shrink it or wash it out, the whole page goes flat.
+  - `template.html` prints `<h1>` before `{{content}}`, so the medallion is
+    lifted above the title with flex `order: -1`, not by editing the
+    template.
+  - Design lineage: Headspace/Calm's *structure* (rounded everything, soft
+    colour-matched shadows, slow breathing motion) with Hedgerow's palette
+    — deliberately not Headspace's peach/coral.
 - Trail (`/journal/`) = last 4 weeks (`TRAIL_WEEKS` in build.js), weeks
   counted from homecoming `2026-08-21` (`HOME_DATE_UTC`). Waypoints
   alternate sides; dashed connector SVGs with paw prints between them.
