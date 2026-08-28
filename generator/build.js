@@ -335,15 +335,32 @@ function readMilestones() {
   return { items, markdown: content };
 }
 
+// Reduce a post to plain prose before the "first" rule reads it. Without
+// this, an image's markdown (and its caption, which ends `."` rather than
+// `. `) fuses into the following sentence and the raw `![alt](file.jpg …)`
+// ends up quoted verbatim on the Milestones page.
+function prosify(markdown) {
+  return markdown
+    .replace(/\r/g, '')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')    // images: drop entirely
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')  // links: keep the link text
+    .replace(/<[^>]+>/g, ' ')                 // raw HTML (video iframes)
+    .replace(/[*_`]/g, '')                    // emphasis
+    .replace(/^\s*#+\s*/gm, '')               // headings
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 // Rule (b): pull out any sentence containing "first" from a post's own
-// markdown, skipping the "at first..." transition phrase. Returns the
+// prose, skipping the "at first..." transition phrase. Returns the
 // sentence itself — a quote of already-approved text, not a summary.
 function detectFirstMentions(markdown, iso, slug) {
-  const flat = markdown.replace(/\r/g, '').replace(/\n+/g, ' ');
-  const sentences = flat.split(/(?<=[.!?])\s+/);
+  // Closing quotes/brackets may sit between the full stop and the space,
+  // e.g. `…as good a spot as any.")` — split after those too.
+  const sentences = prosify(markdown).split(/(?<=[.!?]["'’”)\]]*)\s+/);
   const found = [];
   for (const raw of sentences) {
-    const s = raw.replace(/[*_`]/g, '').trim();
+    const s = raw.trim();
     if (!s || /^at first\b/i.test(s)) continue;
     if (/\bfirst\b/i.test(s) && !/\bfirst\s+(of all|off)\b/i.test(s)) {
       found.push({ date: iso, label: s.length > 160 ? s.slice(0, 157) + '…' : s, auto: true, slug });

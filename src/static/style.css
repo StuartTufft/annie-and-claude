@@ -26,6 +26,11 @@
      "the sky above the hills". Sits in a triad with moss and bow. Atmosphere
      and accents only — like bow, it is never body text or a link colour. */
   --sky: #a8bfe0;
+  /* The home panel. Deliberately a few shades down from --paper and tinted
+     sage: --card (#fbfaf1) sits so close to the page ground that the panel
+     read as no panel at all. Keeps ink at ~8.9:1. */
+  --cover-panel: #e7ecda;
+  --cover-panel-line: #d3dcc2;
   --mist: rgba(255, 254, 246, 0.6);
   --hills-back-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 240' preserveAspectRatio='none'%3E%3Cpath d='M0,240L0,150Q80,90,170,130Q240,160,320,120Q400,78,480,125Q560,165,660,135Q740,110,830,140Q920,168,1010,130Q1090,96,1200,145L1200,240Z' fill='%23d3dab9'/%3E%3C/svg%3E");
   --hills-front-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 160' preserveAspectRatio='none'%3E%3Cpath d='M0,160L0,110Q120,70,260,105Q380,135,520,108Q660,82,800,112Q930,138,1060,110Q1130,96,1200,115L1200,160Z' fill='%23b8c49c'/%3E%3C/svg%3E");
@@ -386,13 +391,14 @@ article iframe {
 
 .page-home main article {
   position: relative;
-  background: var(--card);
+  background: var(--cover-panel);
+  border: 1px solid var(--cover-panel-line);
   color: var(--ink);
   text-align: center;
-  padding: 0 38px 54px;
+  padding: 0 54px 58px;
   border-radius: 34px;
-  box-shadow: 0 10px 40px rgba(90, 96, 74, 0.10);
-  max-width: 640px;
+  box-shadow: 0 12px 44px rgba(90, 96, 74, 0.16);
+  max-width: 780px;
   /* Room for the medallion to hang over the top edge. */
   margin: 104px auto 0;
   display: flex;
@@ -413,7 +419,7 @@ article iframe {
    child with an intrinsic width above the container overflows the page
    rather than being clamped. Applies to the ch-measure and the subtitle. */
 .page-home main article p {
-  max-width: min(44ch, 100%);
+  max-width: min(52ch, 100%);
   margin-left: auto;
   margin-right: auto;
   text-wrap: pretty;
@@ -434,22 +440,24 @@ article iframe {
 
 /* Soft periwinkle-and-blush halo. Sits behind everything, blurred, and
    breathes very slowly — the one motion added to the delight budget. */
+/* Kept tight to the medallion on purpose: at a wider spread the blur bled
+   down over the <h1> and subtitle and muddied the first thing you read. */
 .cover-glow {
   position: absolute;
-  inset: -22%;
+  inset: -10%;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 30% 26%, var(--sky) 0%, transparent 58%),
-    radial-gradient(circle at 74% 74%, var(--bow) 0%, transparent 56%),
-    radial-gradient(circle at 52% 52%, var(--moss-soft) 0%, transparent 72%);
-  opacity: 0.5;
-  filter: blur(22px);
+    radial-gradient(circle at 30% 26%, var(--sky) 0%, transparent 55%),
+    radial-gradient(circle at 74% 74%, var(--bow) 0%, transparent 54%),
+    radial-gradient(circle at 52% 52%, var(--moss-soft) 0%, transparent 68%);
+  opacity: 0.45;
+  filter: blur(16px);
   animation: medallion-breathe 7s var(--ease-in-out) infinite alternate;
 }
 
 @keyframes medallion-breathe {
-  from { transform: scale(1); opacity: 0.42; }
-  to { transform: scale(1.06); opacity: 0.6; }
+  from { transform: scale(1); opacity: 0.38; }
+  to { transform: scale(1.06); opacity: 0.54; }
 }
 
 .cover-medallion {
@@ -1033,6 +1041,7 @@ article iframe {
     margin-top: 88px;
     border-radius: 28px;
   }
+  .page-home main article p { max-width: 100%; }
   .cover-hero { margin-top: -78px; }
   .stamp-grid { grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 14px; }
   .stamp { width: 118px; }
