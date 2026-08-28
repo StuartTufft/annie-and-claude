@@ -111,6 +111,7 @@ what's confirmed, and why. Flip anything that no longer holds.
 | Random day | Button on the trail, filterable by month, powered by a build-time `entries.json` manifest | Fun rediscovery of old posts with zero server-side anything | confirmed |
 | Milestones | Built: `/milestones.html` from `src/milestones.md` + signpost markers on trail weeks | Was "build later"; pulled forward as part of the storybook redesign | confirmed |
 | Interactivity | One dependency-free script (`src/static/journey.js`): scroll reveal, pup sprite, parallax, random day. All reduced-motion safe, site fully works with JS off | "Fun and interactive" without breaking the no-framework rule | confirmed |
+| Domain live | `annie-and-claude.com` resolves over HTTPS to the Pages site (verified 28 Aug 2026) | Sprint 4's DNS work is done; `www`/TXT-verification per Sprint 4 notes still worth checking | confirmed |
 
 ## Build plan, in sprints
 

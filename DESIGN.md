@@ -120,6 +120,6 @@ the random-day button are JS-only, and both are decoration).
 - Author section of `about-this-project.md` is a TODO awaiting the
   owner's own words. `src/milestones.md` is an empty scaffold.
 - Not done yet: Sprint 2 (first real post, voice-defining), Sprint 3
-  (`/publish` pipeline skill), Sprint 4 (domain/DNS). See `PLANNING.md`.
-- Deploy reminder: repo Settings → Pages → Source must be "GitHub
-  Actions" before the first push matters.
+  (`/publish` pipeline skill). See `PLANNING.md`.
+- Live at https://annie-and-claude.com (custom domain + HTTPS verified
+  28 Aug 2026; deploys on every push to main).
