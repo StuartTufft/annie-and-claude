@@ -214,8 +214,13 @@ function jpegSize(file) {
 // wraps a lone image in, then groups neighbouring photos into a spread.
 function layOutPhotos(html, assetDir) {
   let out = html.replace(/<img src="([^"]+)"/g, (tag, src) => {
-    if (!assetDir || /^(https?:)?\//.test(src)) return tag;
-    const size = jpegSize(path.join(assetDir, src));
+    // Journal photos sit beside their post; page photos are referenced
+    // absolutely out of src/static. Remote images we leave alone.
+    let file = null;
+    if (/^https?:/.test(src)) file = null;
+    else if (src.startsWith('/static/')) file = path.join(SRC, 'static', src.slice(8));
+    else if (assetDir) file = path.join(assetDir, src);
+    const size = file && jpegSize(file);
     return size ? `${tag} width="${size.width}" height="${size.height}"` : tag;
   });
   // One figure, and strictly one: the tempered `(?!</figure>)` stops the
@@ -266,7 +271,7 @@ function buildPages() {
         pawTrailSvg() +
         marked.parse(content) +
         pupSittingSvg()
-      : marked.parse(content);
+      : layOutPhotos(marked.parse(content), null);
     const html = renderPage({
       title: data.title,
       content: body,

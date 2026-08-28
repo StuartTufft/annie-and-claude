@@ -8,6 +8,10 @@ Annie is a Golden Retriever × Border Collie, born 26 June 2026 and home since 2
 
 She was raised on a farm, living mostly outdoors with access to an indoor barn, alongside her mother and littermates until collection. She grew up around other dogs and livestock, including cows, with regular human handling from the breeder — but not much exposure yet to traffic or town life. That's still being built, gently.
 
+![Puppies piled together in the corner of a barn, on straw](/static/photos/farm-barn.jpg "The first eight weeks: a barn, a heap of littermates, and a great deal of straw.")
+
+![Puppies asleep on straw beside an old green barn door](/static/photos/farm-litter.jpg "The last morning on the farm, before anybody got in a car.")
+
 ## Home
 
 She lives with two humans and no other pets, out towards the Malvern Hills — quiet streets, some traffic, a garden, and easy access to open countryside for the hiking-dog future everyone's working towards.
