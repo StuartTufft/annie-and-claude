@@ -17,9 +17,13 @@ this file doesn't answer.
 
 ## Hard rules — never do these
 
-- **Never commit a video file.** Video lives on YouTube, unlisted, and gets
-  embedded (`<iframe>`, see `src/journal/README.md` for the pattern). If
-  asked to add a video, embed it — don't download and commit it.
+- **Never commit a video file.** Video lives on Google Drive (owner
+  decision, Aug 2026, reversing the earlier YouTube-only rule — sharing
+  is configured for durable "anyone with the link" access) and gets
+  embedded via Drive's `/preview` iframe (see `src/journal/README.md`
+  for the pattern). If asked to add a video, embed it — don't download
+  and commit it. A file must be shared "Anyone with the link" (Viewer)
+  for the embed to actually render for site visitors.
 - **Never commit an unoptimised photo.** Resize to roughly 1600–2000px on
   the long edge and strip EXIF/GPS metadata before it's committed. If a
   photo arrives raw, optimise it first; don't commit it as-is "for now."

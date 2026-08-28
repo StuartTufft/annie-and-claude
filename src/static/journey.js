@@ -7,9 +7,9 @@
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.documentElement.classList.add('js');
 
-  // --- Week stops reveal as they scroll into view -------------------
-  var stops = document.querySelectorAll('.week-stop');
-  if (stops.length && 'IntersectionObserver' in window) {
+  // --- Reveal on scroll: week stops on the trail, photos in a post ---
+  var reveals = document.querySelectorAll('.week-stop, .snap');
+  if (reveals.length && 'IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (records) {
       records.forEach(function (r) {
         if (r.isIntersecting) {
@@ -18,9 +18,9 @@
         }
       });
     }, { rootMargin: '0px 0px -10% 0px' });
-    stops.forEach(function (s) { io.observe(s); });
+    reveals.forEach(function (s) { io.observe(s); });
   } else {
-    stops.forEach(function (s) { s.classList.add('seen'); });
+    reveals.forEach(function (s) { s.classList.add('seen'); });
   }
 
   // --- The pup: trots while you scroll the trail, rests when you stop
@@ -92,5 +92,68 @@
         box.hidden = false;
       })
       .catch(function () { /* manifest unavailable; button stays hidden */ });
+  }
+
+  // --- Photos: click or tap a snap to see it properly ----------------
+  // Built here rather than in the template so it simply doesn't exist
+  // without JS — where the photos are already perfectly readable inline.
+  var photos = document.querySelectorAll('.snap img');
+  if (photos.length) {
+    var lb = document.createElement('div');
+    lb.className = 'lightbox';
+    lb.hidden = true;
+    lb.setAttribute('role', 'dialog');
+    lb.setAttribute('aria-modal', 'true');
+    lb.innerHTML =
+      '<button class="lightbox-close" type="button" aria-label="Close photo">×</button>' +
+      '<img alt=""><p class="lightbox-caption"></p>';
+    document.body.appendChild(lb);
+
+    var lbImg = lb.querySelector('img');
+    var lbCap = lb.querySelector('.lightbox-caption');
+    var lbClose = lb.querySelector('.lightbox-close');
+    var lastFocused = null;
+
+    function openLightbox(img) {
+      lastFocused = img;
+      lbImg.src = img.currentSrc || img.src;
+      lbImg.alt = img.alt;
+      var fig = img.closest('figure');
+      var cap = fig && fig.querySelector('figcaption');
+      lbCap.textContent = cap ? cap.textContent : '';
+      lb.hidden = false;
+      document.body.style.overflow = 'hidden';
+      lbClose.focus();
+    }
+
+    function closeLightbox() {
+      lb.hidden = true;
+      lbImg.removeAttribute('src');
+      document.body.style.overflow = '';
+      if (lastFocused) lastFocused.focus();
+    }
+
+    photos.forEach(function (img) {
+      img.tabIndex = 0;
+      img.setAttribute('role', 'button');
+      img.setAttribute('aria-label', 'View photo larger' + (img.alt ? ': ' + img.alt : ''));
+      img.addEventListener('click', function () { openLightbox(img); });
+      img.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openLightbox(img);
+        }
+      });
+    });
+
+    lb.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !lb.hidden) closeLightbox();
+      // Keep focus inside the dialog while it's open.
+      if (e.key === 'Tab' && !lb.hidden) {
+        e.preventDefault();
+        lbClose.focus();
+      }
+    });
   }
 })();

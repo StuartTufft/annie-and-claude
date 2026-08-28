@@ -242,10 +242,137 @@ article iframe {
 }
 
 /* ------------------------------------------------------------------ */
+/* Photos: printed "snaps" taped into the page. Two or more together  */
+/* become a picture-book spread — tilted slightly, like a real album. */
+/* Tilt lives in --tilt so the scroll reveal can compose with it       */
+/* instead of fighting it.                                            */
+/* ------------------------------------------------------------------ */
+
+.snap {
+  --tilt: 0deg;
+  position: relative;
+  margin: 30px 0;
+  padding: 12px 12px 0;
+  background: var(--stamp-face);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-soft);
+  transform: rotate(var(--tilt));
+}
+
+.snap img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  border-radius: 5px;
+  cursor: zoom-in;
+}
+
+.snap figcaption {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  text-align: center;
+  padding: 11px 6px 13px;
+}
+
+.photo-book {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+  align-items: start;
+  margin: 34px 0;
+}
+
+.photo-book .snap { margin: 0; }
+.photo-book .snap:nth-child(odd) { --tilt: -1.1deg; }
+.photo-book .snap:nth-child(even) { --tilt: 1.3deg; }
+.photo-book .snap:nth-child(3n) { --tilt: 0.5deg; }
+
+/* Reveal: JS-enhanced. Without JS the snaps are simply visible. */
+.js .snap { opacity: 0; transform: rotate(var(--tilt)) translateY(12px); }
+.js .snap.seen {
+  opacity: 1;
+  transform: rotate(var(--tilt));
+  transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .snap { transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out); }
+  .snap:hover {
+    transform: rotate(0deg) translateY(-3px);
+    box-shadow: 0 10px 26px rgba(90, 96, 74, 0.22);
+    z-index: 2;
+  }
+}
+
+/* Tap or click a snap to see it properly. Built by journey.js. */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(38, 42, 31, 0.92);
+  animation: lightbox-fade 200ms var(--ease-out) both;
+}
+
+.lightbox[hidden] { display: none; }
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 86vh;
+  border-radius: 6px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  animation: lightbox-in 220ms var(--ease-out) both;
+}
+
+.lightbox-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  padding: 0 26px;
+  text-align: center;
+  color: var(--cover-muted);
+  font-size: 0.88rem;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lightbox-close:hover { background: rgba(255, 255, 255, 0.28); }
+}
+
+@keyframes lightbox-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lightbox-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ------------------------------------------------------------------ */
 /* Home: the box lid — deep moss cover, perforated like a stamp       */
 /* ------------------------------------------------------------------ */
 
 .page-home main article {
+  position: relative;
   background-color: var(--cover);
   background-image:
     radial-gradient(circle at 7px 7px, var(--paper) 4.5px, transparent 5px),
@@ -264,9 +391,51 @@ article iframe {
   margin: 12px auto 0;
 }
 
-.page-home main article h1 { font-size: 2.4rem; }
+.page-home main article h1 { font-size: 2.4rem; margin-bottom: 6px; }
 .page-home main article p { max-width: 46ch; margin-left: auto; margin-right: auto; }
 .page-home main article a { color: var(--cover-muted); }
+
+/* The locket: a real photo of Annie, pressed into the cover like a photo
+   tucked in a postmark. Sits above the h1, so it reads first. */
+.cover-locket {
+  display: block;
+  width: 92px;
+  height: 92px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--paper);
+  box-shadow: var(--shadow-soft), 0 0 0 2px var(--moss-deep);
+}
+
+.cover-subtitle {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 18px;
+}
+
+.paw-trail {
+  display: block;
+  width: 120px;
+  height: 30px;
+  margin: 0 auto 22px;
+}
+.paw-trail .paw { fill: var(--cover-muted); opacity: 0.6; }
+
+/* The pup, sitting in the corner as if it led you to the ribbon below.
+   Static — no extra motion budget spent here, see DESIGN.md. */
+.cover-pup-peek {
+  position: absolute;
+  bottom: 14px;
+  right: 18px;
+  width: 76px;
+  height: auto;
+  pointer-events: none;
+}
 
 /* The ribbon: pink is allowed here, on the badge, and on the pup. */
 .page-home main article a[href="/journal/"] {
@@ -410,23 +579,70 @@ article iframe {
   padding: 6px 14px;
 }
 
-/* Milestones page: a simple dated list, oldest first — like the trail. */
-.milestone-list {
+/* Milestones page: a mini stamp-timeline, oldest first — a condensed
+   echo of the journey trail. Gold badge = a week-anniversary (calendar
+   rule), pink bow = a "first" quoted from a post (text rule), moss paw
+   = hand-written in milestones.md. */
+.milestone-timeline {
   list-style: none;
-  margin: 18px 0 0;
-  padding: 0;
+  margin: 22px 0 0;
+  padding: 0 0 0 2px;
+  position: relative;
 }
 
-.milestone-list li {
+.milestone-timeline::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 8px;
+  bottom: 8px;
+  border-left: 3px dashed var(--moss);
+  opacity: 0.3;
+}
+
+.milestone-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 0;
+  position: relative;
+}
+
+.milestone-item:first-child { padding-top: 0; }
+.milestone-item:last-child { padding-bottom: 0; }
+
+.milestone-mark {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--gold);
+  border: 3px solid var(--paper);
+  box-shadow: var(--shadow-soft);
+}
+
+.milestone-item--first .milestone-mark { background: var(--bow); }
+.milestone-item--manual .milestone-mark { background: var(--moss); }
+
+.milestone-mark .fav-bow { width: 18px; height: 13px; }
+.milestone-mark .fav-bow path { fill: #fff; }
+.milestone-mark .fav-bow circle { fill: rgba(255, 255, 255, 0.75); }
+.milestone-paw { width: 16px; height: 16px; }
+.milestone-paw .paw { fill: #fff; opacity: 0.9; }
+
+.milestone-body {
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 10px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
+  gap: 4px 10px;
+  padding-top: 7px;
+  min-width: 0;
 }
-
-.milestone-list li:last-child { border-bottom: none; }
 
 .milestone-date {
   flex-shrink: 0;
@@ -436,7 +652,19 @@ article iframe {
   min-width: 9em;
 }
 
-.milestone-list a { font-weight: 700; }
+.milestone-label { font-weight: 700; }
+.milestone-timeline a { font-weight: 700; color: var(--moss); }
+
+.milestone-photo {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 3px solid var(--stamp-face);
+  box-shadow: var(--shadow-soft);
+  transform: rotate(-2deg);
+}
 
 .week-entries {
   display: flex;
@@ -673,6 +901,10 @@ article iframe {
   .js .week-stop { opacity: 1; transform: none; }
   .pup.trotting { animation: none; }
   .pup.trotting .legs-a, .pup.trotting .legs-b { animation: none; }
+  /* Photos: keep the album tilt, drop the travel. */
+  .js .snap { opacity: 1; transform: rotate(var(--tilt)); }
+  .snap:hover { transform: rotate(var(--tilt)); }
+  .lightbox img { animation: lightbox-fade 200ms ease both; }
   .site-nav a:active, .stamp:active, .random-day button:active,
   .archive-link:active, .page-home main article a[href="/journal/"]:active { transform: none; }
   .stamp:hover, .random-day button:hover, .archive-link:hover,
@@ -687,4 +919,8 @@ article iframe {
   .stamp-grid { grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 14px; }
   .stamp { width: 118px; }
   .pup { width: 68px; left: 10px; }
+  .cover-pup-peek { width: 56px; bottom: 10px; right: 12px; }
+  .milestone-photo { width: 44px; height: 44px; }
+  .milestone-timeline::before { left: 17px; }
+  .milestone-mark { width: 34px; height: 34px; }
 }

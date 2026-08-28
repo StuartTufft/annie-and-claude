@@ -184,7 +184,7 @@ The bit people will actually watch for. Different medium, different rules.
 | Type | Where it lives | Why |
 |---|---|---|
 | Photos | Committed in this repo, resized + EXIF-stripped | A properly sized web photo is a few hundred KB — nowhere near GitHub's limits, and it's versioned with the post it belongs to |
-| Video | YouTube, unlisted, embedded in the post | GitHub Pages isn't built to stream video; YouTube compresses and streams it properly, for free, and unlisted keeps it out of search while staying linkable |
+| Video | Google Drive, shared "Anyone with the link", embedded via Drive's `/preview` iframe (revised Aug 2026 — YouTube was the original plan) | GitHub Pages isn't built to stream video; Drive's embed is an officially supported Google feature, and the owner has sharing configured for durable access. Trade-off, known and accepted: Drive doesn't re-compress/adapt bitrate like YouTube, and a personal account has an account-wide bandwidth quota shared across all files — a real ceiling under heavy traffic, not a concern at this site's current scale |
 | Google Photos | Stays the personal archive, full-res backup only | Not built for public embedding — direct-link scraping is unofficial and breaks the moment sharing is toggled off |
 | External links | Normal markdown in the post text | No plumbing needed — `[link text](https://…)` |
 

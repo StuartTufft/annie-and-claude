@@ -129,6 +129,44 @@ never appeared in a journal post at all.
 - Stamps: 5:6 perforated cards, circular MALVERN postmark (rotated -9°),
   hover lift `translateY(-4px) rotate(-1.2deg)`.
 
+## Photos — snaps and picture-book spreads
+
+Journal photos are "snaps": a printed photo with its caption, on a cream
+mount, tilted a degree or so like something taped into an album. **Two or
+more photos with no prose between them become a picture-book spread** —
+a `repeat(auto-fit, minmax(210px, 1fr))` grid, each tilted a different
+way. Adjacency in the markdown is the only lever; separate two photos
+with a paragraph and they stay full-width.
+
+Implementation notes worth knowing before touching it:
+
+- `generator/build.js`: a marked renderer turns every image into
+  `<figure class="snap">`, with markdown's **title slot as the caption**
+  (`![alt](file.jpg "Caption")`) — alt stays a plain description for
+  screen readers. `layOutPhotos()` then injects real width/height
+  (via `jpegSize()`, a small SOF-marker reader — no dependency, and it
+  stops the page jumping as photos load), unwraps the `<p>` marked puts
+  around a lone image, and groups adjacent figures.
+- **The grouping regex is deliberately tempered** —
+  `(?:(?!</figure>)[\s\S])*`. A plain lazy `[\s\S]*?` backtracks across
+  a closing tag and swallows the prose between two far-apart photos into
+  one spread. That bug was hit and fixed; don't "simplify" it back.
+- The tilt lives in a `--tilt` custom property so the scroll reveal
+  composes with it (`rotate(var(--tilt)) translateY(12px)`) instead of
+  overwriting it. Hover straightens to `rotate(0deg)`.
+- Clicking a snap opens a lightbox, built entirely in `journey.js` so it
+  simply doesn't exist without JS — where the photos are already fine
+  inline. Keyboard accessible (the images get `tabindex`/`role=button`,
+  Enter/Space open, Escape closes, focus is trapped on the close button
+  and returned to the photo afterwards).
+
+Before a photo is ever committed it goes through the local tool at
+`~/.claude/tools/photo-tool/` (sharp; deliberately **outside** this repo
+so the site's own dependency list stays at two): `process.js` resizes to
+1800px on the long edge, applies EXIF rotation, then strips all metadata;
+`checkmeta.js` verifies the output has zero EXIF bytes. Always check —
+originals routinely carry GPS.
+
 ## Tools/skills context for future sessions
 
 - Built with: `artifact-design` principles (early mockups), the owner's
