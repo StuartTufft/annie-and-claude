@@ -468,15 +468,27 @@ function milestoneMarkIcon(kind) {
   return `<svg class="milestone-paw" viewBox="-9 -9 18 18" aria-hidden="true">${pawSvg(0, 0, 0)}</svg>`;
 }
 
-// A photo is only shown where the owner has actually dropped one in —
-// src/static/photos/milestone-YYYY-MM-DD.jpg — never invented or
-// substituted, so a milestone with no matching file just gets no thumb.
-function milestonePhoto(iso) {
-  const rel = `photos/milestone-${iso}.jpg`;
-  return fs.existsSync(path.join(SRC, 'static', rel)) ? `/static/${rel}` : null;
+// Photos for the milestones page. Each date gets a pool: that day's
+// journal photos first (already-published, so nothing new leaks), then
+// the owner-dropped src/static/photos/milestone-YYYY-MM-DD.jpg if one
+// exists. Milestones sharing a date draw from the pool round-robin, so
+// four milestones on homecoming day get four different photos instead of
+// the same one repeated. Dates with no photos anywhere get no thumb —
+// never a substitute from another day.
+function milestonePhotoPools(entries) {
+  const pools = new Map();
+  for (const e of entries) {
+    if (!e.images || !e.images.length) continue;
+    if (!pools.has(e.date)) pools.set(e.date, []);
+    const pool = pools.get(e.date);
+    for (const img of e.images) if (!pool.includes(img)) pool.push(img);
+  }
+  return pools;
 }
 
-function buildMilestonesPage(milestones, manualMarkdown) {
+function buildMilestonesPage(milestones, manualMarkdown, entries) {
+  const pools = milestonePhotoPools(entries);
+  const drawn = new Map(); // date -> how many photos already handed out
   const prose = manualMarkdown ? marked.parse(manualMarkdown) : '';
   const intro = milestones.length
     ? '<p class="trail-intro">Every "first" worth remembering, plus a marker for each week home — oldest first.</p>'
@@ -488,8 +500,18 @@ function buildMilestonesPage(milestones, manualMarkdown) {
           const label = m.auto && m.slug
             ? `<a href="/journal/${m.slug}/">${escapeHtml(m.label)}</a>`
             : escapeHtml(m.label);
-          const photo = milestonePhoto(m.date);
-          const thumb = photo ? `<img class="milestone-photo" src="${photo}" alt="" width="72" height="72">` : '';
+          let photo = null;
+          const pool = [...(pools.get(m.date) || [])];
+          const staticFile = `photos/milestone-${m.date}.jpg`;
+          if (fs.existsSync(path.join(SRC, 'static', staticFile)) && !pool.includes(`/static/${staticFile}`)) {
+            pool.push(`/static/${staticFile}`);
+          }
+          if (pool.length) {
+            const n = drawn.get(m.date) || 0;
+            photo = pool[n % pool.length];
+            drawn.set(m.date, n + 1);
+          }
+          const thumb = photo ? `<img class="milestone-photo" src="${photo}" alt="" width="72" height="72" loading="lazy">` : '';
           return `<li class="milestone-item milestone-item--${kind}"><span class="milestone-mark">${milestoneMarkIcon(kind)}</span><div class="milestone-body"><span class="milestone-date">${formatDate(m.date)}</span><span class="milestone-label">${label}</span></div>${thumb}</li>`;
         })
         .join('')}</ul>`
@@ -544,18 +566,20 @@ function buildJournal(manual) {
           fs.copyFileSync(path.join(assetDir, asset), path.join(outDir, asset));
         }
       }
-      // First image in the post becomes the patch thumbnail on the trail.
-      // Posts may reference a photo either as a sibling file (nap.jpg) or by
-      // absolute path (/static/photos/…) — only the former gets the post's
-      // directory prefixed, or the absolute one turns into /journal/x//static/…
-      const firstImage = content.match(/!\[[^\]]*\]\(\s*([^)\s"']+)/);
-      let thumb = null;
-      if (firstImage) {
-        const src = firstImage[1];
-        if (/^(https?:)?\//.test(src)) thumb = src;
-        else if (assetDir) thumb = `/journal/${slug}/${src}`;
+      // Every image in the post, resolved to a site URL. The first one is
+      // the patch thumbnail on the trail; the full list feeds the
+      // milestones page so several milestones on one day each get a
+      // different photo. Posts may reference a photo as a sibling file
+      // (nap.jpg) or by absolute path (/static/photos/…) — only the
+      // former gets the post's directory prefixed, or the absolute one
+      // turns into /journal/x//static/… and 404s.
+      const images = [];
+      for (const m of content.matchAll(/!\[[^\]]*\]\(\s*([^)\s"']+)/g)) {
+        const src = m[1];
+        if (/^(https?:)?\//.test(src)) images.push(src);
+        else if (assetDir) images.push(`/journal/${slug}/${src}`);
       }
-      entries.push({ title, date: isoDate, slug, featured: data.featured === true, thumb });
+      entries.push({ title, date: isoDate, slug, featured: data.featured === true, thumb: images[0] || null, images });
       autoMilestones.push(...detectFirstMentions(content, isoDate, slug));
       console.log(`  post  -> journal/${slug}/`);
     }
@@ -566,7 +590,7 @@ function buildJournal(manual) {
 
   const latestIso = entries.length ? entries[entries.length - 1].date : null;
   const milestones = mergeMilestones(manual.items, autoMilestones, weekAnniversaryMilestones(latestIso));
-  buildMilestonesPage(milestones, manual.markdown);
+  buildMilestonesPage(milestones, manual.markdown, entries);
 
   // Manifest for the random-day button.
   fs.mkdirSync(path.join(DIST, 'static'), { recursive: true });
@@ -602,10 +626,14 @@ function buildTrail(entries, milestones) {
     }
     const inWeek = (w, iso) => weekIndex(iso) === w;
 
+    // Newest first (owner's call, Aug 2026): you land on today and
+    // scrolling down walks you BACK through her puppyhood, so the
+    // "Wander further back" link at the bottom continues the same
+    // direction of travel instead of reversing it.
     const sections = [];
-    for (let w = firstWeek, i = 0; w <= lastWeek; w++, i++) {
+    for (let w = lastWeek, i = 0; w >= firstWeek; w--, i++) {
       const side = i % 2 === 0 ? 'left' : 'right';
-      const weekEntries = byWeek.get(w) || [];
+      const weekEntries = (byWeek.get(w) || []).slice().reverse();
       // The trail is a highlight reel, not the full record — every
       // detected milestone still shows on /milestones.html; here, cap
       // per week and favour the shortest (usually punchiest) labels so
@@ -638,7 +666,7 @@ function buildTrail(entries, milestones) {
       : '';
 
     content = `<div class="trail">
-  <p class="trail-intro">The last few weeks of the journey, oldest first. Older weeks live in the archive.</p>
+  <p class="trail-intro">The journey so far, newest first — keep scrolling to wander back to day one.</p>
   <div class="random-day" data-random hidden>
     <select aria-label="Filter by month" data-random-month><option value="">Any month</option></select>
     <button type="button" data-random-go>Take me to a random day 🎲</button>

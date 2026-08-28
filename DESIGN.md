@@ -118,6 +118,12 @@ the random-day button are JS-only, and both are decoration).
   counted from homecoming `2026-08-21` (`HOME_DATE_UTC`). Waypoints
   alternate sides; dashed connector SVGs with paw prints between them.
   Quiet weeks say so honestly.
+  - **Newest first** (owner decision, Aug 2026): you land on today and
+    scrolling down walks you back through her puppyhood, so "Wander
+    further back →" at the bottom continues the direction of travel
+    instead of reversing it. Weeks descend and days within a week
+    descend. The Milestones page stays oldest-first on purpose — it's a
+    life record read forward, not a feed.
   - **Skipping-stone rule** (learned the hard way, Aug 2026): a week's
     patches are laid ONE PER STEP down a winding path — an 8-step
     `nth-child` meander in `.week-entries`, mirrored on right-side weeks
@@ -158,6 +164,15 @@ week to keep the highlight reel readable. If it gets too noisy, tighten
 manual-confirm step — that was a deliberate reversal.
 `src/milestones.md` still accepts hand-written lines for anything that
 never appeared in a journal post at all.
+
+Milestone photos (Aug 2026): each date builds a pool — that day's
+journal photos first (already published, so nothing new can leak), then
+`src/static/photos/milestone-YYYY-MM-DD.jpg` if the owner dropped one in
+— and milestones sharing a date draw from it round-robin. That's why
+four homecoming milestones show four different photos instead of one
+repeated. A date with no photos anywhere gets no thumb; never borrow
+from another day. Thumbs alternate tilt and mount tint down the
+timeline, echoing the trail's patches.
 - Archive = monthly scrapbook pages with folder tabs.
 
 ### Patches — journal entries as scrapbook cuttings

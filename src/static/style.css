@@ -781,8 +781,14 @@ article iframe {
   object-fit: cover;
   border: 3px solid var(--stamp-face);
   box-shadow: var(--shadow-soft);
-  transform: rotate(-2deg);
+  transform: rotate(-2.5deg);
 }
+
+/* Same mismatched-scrapbook feel as the trail's patches: alternate the
+   tilt and the mount tint down the timeline. */
+.milestone-item:nth-child(even) .milestone-photo { transform: rotate(2.5deg); }
+.milestone-item:nth-child(3n) .milestone-photo { border-color: var(--moss-soft); }
+.milestone-item:nth-child(3n+1) .milestone-photo { border-color: #f7e6ea; }
 
 /* The skipping-stone rule: a week's patches are laid ONE PER STEP down a
    winding path — never a wrapped row or grid. Each patch offsets further
