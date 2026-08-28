@@ -25,7 +25,7 @@ reintroduce it without being asked. All tokens live at the top of
 | `--card` / `--stamp-face` | `#fbfaf1` / `#fffef6` | cards / stamp faces |
 | `--ink` / `--ink-muted` | `#3d4032` / `#767a68` | text (soft, not black) |
 | `--moss` | `#4c7a50` | links, buttons, trail path, active tabs |
-| `--moss-deep` | `#3a3b28` | badge, postmarks — earthy, browned green (owner asked for "more brown and earthy" than pure forest green) |
+| `--moss-deep` | `#3a3b28` | badge, patch date labels — earthy, browned green (owner asked for "more brown and earthy" than pure forest green) |
 | `--gold` | `#e8c07d` | waypoint badges — Annie's coat |
 | `--bow` | `#d98fa0` | **rare by rule**: the badge bow, the home CTA pill, favourite-spot marks, the pup's bow. Never body text, never a second link colour. It's her collar bow — it stays special |
 | `--sky` | `#a8bfe0` | **third pastel**, added Aug 2026 on the owner's call, for the "cuter, more modern" home cover. Read it as the sky above the hills. Same restriction as `--bow`: atmosphere and small accents only, never body text or a link colour |
@@ -149,9 +149,47 @@ week to keep the highlight reel readable. If it gets too noisy, tighten
 manual-confirm step — that was a deliberate reversal.
 `src/milestones.md` still accepts hand-written lines for anything that
 never appeared in a journal post at all.
-- Archive = monthly stamp-album pages with folder tabs.
-- Stamps: 5:6 perforated cards, circular MALVERN postmark (rotated -9°),
-  hover lift `translateY(-4px) rotate(-1.2deg)`.
+- Archive = monthly scrapbook pages with folder tabs.
+
+### Patches — journal entries as scrapbook cuttings
+
+Replaced the uniform "stamps" (Aug 2026, owner's call: the trail read
+flat, and the postmark's date was rendering wrong). One component,
+`patchHtml`, used by the trail, the favourites shelf and the archive.
+
+Each patch carries four mismatched properties plus two optional ones:
+
+| Property | Values |
+|---|---|
+| paper tint | cream / sage / blush / sky / gold |
+| edge | `stamp` (perforated) / `print` (wide photo margin) / `cut` (dashed, pinked) |
+| size | normal or `--big` |
+| tilt | −6° … +6°, on `--rot` |
+| washi tape | on ~40% of patches |
+| date label | tilted −7° … +7°, on `--date-rot` |
+
+**The mismatch is deterministic, not random.** `patchStyle()` derives
+every value from an FNV-1a hash of the slug, so a post looks identical on
+every build. Never swap this for `Math.random()` — the page would
+reshuffle itself on each deploy and no two visitors would see the same
+scrapbook.
+
+Patches show the post's **first image** as their thumbnail. A post may
+reference that image as a sibling file (`nap.jpg`) or by absolute path
+(`/static/photos/…`); only the former gets the post directory prefixed —
+prefixing an absolute path produced `/journal/x//static/…` and a 404.
+A text-only post gets a `--nophoto` "written note" patch (paw motif,
+larger title, shorter) instead of an empty photo frame.
+
+Hover straightens the patch (`rotate(0)`) and lifts it — the tilt itself
+is layout rather than motion, so `prefers-reduced-motion` keeps the tilt
+and only drops the lift.
+
+**The circular MALVERN postmark is gone.** Its text was set at 8 and 6
+units inside a 60-unit viewBox: at the 48px it rendered, the date came
+out ~6px tall and — the actual fault — wider than the r=14 inner ring it
+sat in, so it crossed the ring line and read as a smudge. Dates are now
+a plain legible label (`shortDate()` → "21 AUG") on a paper chip.
 
 ## Photos — snaps and picture-book spreads
 

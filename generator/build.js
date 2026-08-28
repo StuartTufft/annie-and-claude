@@ -100,13 +100,17 @@ function monthLabel(key) {
 
 // --- little SVG pieces ---
 
-// A circular date stamp, like a postmark on an envelope.
-function postmarkSvg(iso) {
+// "21 AUG" — the date as a legible label. This replaced the old circular
+// MALVERN postmark, whose text was set at 8/6 units in a 60-unit viewBox:
+// rendered at 48px that came out ~6px tall and, worse, wider than the
+// r=14 inner ring it sat inside, so it crossed the ring and read as a
+// smudge rather than a date.
+function shortDate(iso) {
   const date = new Date(`${iso}T00:00:00Z`);
-  const bad = Number.isNaN(date.getTime());
-  const day = bad ? '' : date.getUTCDate();
-  const mon = bad ? '' : date.toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' }).toUpperCase();
-  return `<svg class="postmark" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="20"/><circle cx="30" cy="30" r="14"/><text x="30" y="27" font-size="8" text-anchor="middle">${day} ${mon}</text><text x="30" y="37" font-size="6" text-anchor="middle">MALVERN</text><line x1="4" y1="14" x2="12" y2="10"/><line x1="4" y1="46" x2="12" y2="50"/><line x1="56" y1="14" x2="48" y2="10"/><line x1="56" y1="46" x2="48" y2="50"/></svg>`;
+  if (Number.isNaN(date.getTime())) return String(iso);
+  const day = date.getUTCDate();
+  const mon = date.toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' }).toUpperCase();
+  return `${day} ${mon}`;
 }
 
 function favBowSvg() {
@@ -175,9 +179,59 @@ function connectorSvg(side) {
   return `<svg class="trail-connector" viewBox="0 0 700 84" preserveAspectRatio="none" aria-hidden="true"><path d="${d}"/>${paws}</svg>`;
 }
 
-function stampHtml(e, { fav = false } = {}) {
+// --- Patches ---------------------------------------------------------
+//
+// Journal entries render as patches on a scrapbook page: each one gets a
+// paper tint, an edge treatment, a tilt, a size and (sometimes) a strip of
+// washi tape. The variation is deliberately mismatched but NOT random —
+// it is derived from a hash of the slug, so a given post looks the same
+// on every build and the page doesn't reshuffle itself on each deploy.
+
+const PATCH_TINTS = ['cream', 'sage', 'blush', 'sky', 'gold'];
+const PATCH_EDGES = ['stamp', 'print', 'cut'];
+
+function hashOf(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h;
+}
+
+function patchStyle(slug) {
+  const h = hashOf(slug);
+  const pick = (shift, n) => Math.floor(h / Math.pow(2, shift)) % n;
+  return {
+    tint: PATCH_TINTS[pick(0, PATCH_TINTS.length)],
+    edge: PATCH_EDGES[pick(4, PATCH_EDGES.length)],
+    big: pick(8, 3) === 0,
+    tape: pick(11, 5) < 2,
+    rot: (pick(14, 121) / 10 - 6).toFixed(1),   // -6.0deg … +6.0deg
+    dateRot: (pick(21, 15) - 7).toFixed(1),     // -7deg … +7deg
+  };
+}
+
+function patchHtml(e, { fav = false } = {}) {
+  const s = patchStyle(e.slug);
+  const cls = [
+    'patch',
+    `patch--${s.tint}`,
+    `patch--edge-${s.edge}`,
+    s.big ? 'patch--big' : '',
+    fav ? 'patch--fav' : '',
+    e.thumb ? '' : 'patch--nophoto',
+  ].filter(Boolean).join(' ');
+  const tape = s.tape ? '<span class="patch-tape" aria-hidden="true"></span>' : '';
+  // A text-only post gets a written-note patch rather than an empty frame.
+  const photo = e.thumb
+    ? `<span class="patch-photo"><img src="${escapeHtml(e.thumb)}" alt="" loading="lazy" decoding="async"></span>`
+    : `<span class="patch-note" aria-hidden="true"><svg viewBox="-9 -9 18 18">${pawSvg(0, 0, -12)}</svg></span>`;
   const mark = fav ? favBowSvg() : '';
-  return `<a class="stamp" href="/journal/${e.slug}/">${postmarkSvg(e.date)}${mark}<span class="stamp-title">${escapeHtml(e.title)}</span></a>`;
+  return `<a class="${cls}" href="/journal/${e.slug}/" style="--rot:${s.rot}deg;--date-rot:${s.dateRot}deg">`
+    + `${tape}${photo}${mark}`
+    + `<span class="patch-date">${shortDate(e.date)}</span>`
+    + `<span class="patch-title">${escapeHtml(e.title)}</span></a>`;
 }
 
 // --- Photos ----------------------------------------------------------
@@ -490,7 +544,18 @@ function buildJournal(manual) {
           fs.copyFileSync(path.join(assetDir, asset), path.join(outDir, asset));
         }
       }
-      entries.push({ title, date: isoDate, slug, featured: data.featured === true });
+      // First image in the post becomes the patch thumbnail on the trail.
+      // Posts may reference a photo either as a sibling file (nap.jpg) or by
+      // absolute path (/static/photos/…) — only the former gets the post's
+      // directory prefixed, or the absolute one turns into /journal/x//static/…
+      const firstImage = content.match(/!\[[^\]]*\]\(\s*([^)\s"']+)/);
+      let thumb = null;
+      if (firstImage) {
+        const src = firstImage[1];
+        if (/^(https?:)?\//.test(src)) thumb = src;
+        else if (assetDir) thumb = `/journal/${slug}/${src}`;
+      }
+      entries.push({ title, date: isoDate, slug, featured: data.featured === true, thumb });
       autoMilestones.push(...detectFirstMentions(content, isoDate, slug));
       console.log(`  post  -> journal/${slug}/`);
     }
@@ -551,7 +616,7 @@ function buildTrail(entries, milestones) {
         .slice(0, 2);
       const signposts = weekMilestones.map((m) => `<span class="signpost">🪧 ${escapeHtml(m.label)}</span>`).join(' ');
       const body = weekEntries.length
-        ? `<div class="week-entries">${weekEntries.map((e) => stampHtml(e, { fav: e.featured })).join('')}</div>`
+        ? `<div class="week-entries">${weekEntries.map((e) => patchHtml(e, { fav: e.featured })).join('')}</div>`
         : '<p class="quiet-week">A quiet week on the trail — no posts.</p>';
       const connector = i === 0 ? '' : connectorSvg(side);
       sections.push(`${connector}<section class="week-stop side-${side}">
@@ -568,7 +633,7 @@ function buildTrail(entries, milestones) {
       ? `<div class="fav-shelf">
     <h2>${favBowSvg()} Favourite spots</h2>
     <p class="fav-note">Hand-picked by Annie's owner.</p>
-    <ul class="stamp-grid">${featured.map((e) => `<li>${stampHtml(e, { fav: true })}</li>`).join('')}</ul>
+    <ul class="patch-grid">${featured.map((e) => `<li>${patchHtml(e, { fav: true })}</li>`).join('')}</ul>
   </div>`
       : '';
 
@@ -611,13 +676,13 @@ function buildArchive(entries) {
     const tabs = monthKeys
       .map((k) => `<a class="month-tab${k === key ? ' active' : ''}" href="${monthHref(k)}">${monthLabel(k)}</a>`)
       .join('\n    ');
-    const stamps = months.get(key).map((e) => `<li>${stampHtml(e, { fav: e.featured })}</li>`).join('\n      ');
+    const stamps = months.get(key).map((e) => `<li>${patchHtml(e, { fav: e.featured })}</li>`).join('\n      ');
     const content = `<p><a href="/journal/">← Back to the trail</a></p>
   <nav class="month-tabs" aria-label="Archive months">
     ${tabs}
   </nav>
   <div class="album-page">
-    <ul class="stamp-grid">
+    <ul class="patch-grid">
       ${stamps}
     </ul>
   </div>`;

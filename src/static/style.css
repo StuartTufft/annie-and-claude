@@ -784,15 +784,21 @@ article iframe {
   transform: rotate(-2deg);
 }
 
+/* Column-gap is generous because patches are tilted up to 6deg — at the
+   old 18px their corners collided. */
 .week-entries {
   display: flex;
   flex-wrap: wrap;
-  gap: 18px;
-  padding: 18px 0 6px;
+  gap: 30px 26px;
+  padding: 26px 0 10px;
 }
 
-.week-stop.side-right .waypoint,
-.week-stop.side-right .week-entries { justify-content: flex-end; }
+.week-stop.side-right .waypoint { justify-content: flex-end; }
+
+/* A week with one or two posts left a large hole when pushed hard right;
+   nudging rather than pinning keeps the trail's rhythm without the void. */
+.week-stop.side-right .week-entries { justify-content: center; padding-left: 8%; }
+.week-stop.side-left .week-entries { padding-right: 8%; }
 .week-stop.side-right .waypoint { flex-direction: row-reverse; text-align: right; }
 
 .quiet-week {
@@ -847,46 +853,74 @@ article iframe {
 .fav-bow circle { fill: var(--bow-knot); }
 
 /* ------------------------------------------------------------------ */
-/* Stamps (used on the trail, favourites shelf, and archive)          */
+/* Patches — journal entries as scrapbook cuttings                     */
+/* (trail, favourites shelf, archive)                                  */
+/*                                                                     */
+/* Every patch carries a paper tint, an edge treatment, a tilt and a    */
+/* size, mixed deliberately so no two neighbours match. build.js picks  */
+/* those from a hash of the slug, so the mismatch is stable across      */
+/* builds rather than reshuffling on every deploy.                      */
 /* ------------------------------------------------------------------ */
 
-.stamp-grid {
+.patch-grid {
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(152px, 1fr));
+  gap: 26px 20px;
   margin: 0;
-  padding: 24px 0 0;
+  padding: 26px 0 0;
 }
 
-.stamp-grid li { opacity: 0; animation: stamp-in 300ms var(--ease-out) forwards; }
-.stamp-grid li:nth-child(1) { animation-delay: 0ms; }
-.stamp-grid li:nth-child(2) { animation-delay: 50ms; }
-.stamp-grid li:nth-child(3) { animation-delay: 100ms; }
-.stamp-grid li:nth-child(4) { animation-delay: 150ms; }
-.stamp-grid li:nth-child(5) { animation-delay: 200ms; }
-.stamp-grid li:nth-child(6) { animation-delay: 250ms; }
-.stamp-grid li:nth-child(7) { animation-delay: 300ms; }
-.stamp-grid li:nth-child(n+8) { animation-delay: 350ms; }
+.patch-grid li { opacity: 0; animation: patch-in 320ms var(--ease-out) forwards; }
+.patch-grid li:nth-child(1) { animation-delay: 0ms; }
+.patch-grid li:nth-child(2) { animation-delay: 50ms; }
+.patch-grid li:nth-child(3) { animation-delay: 100ms; }
+.patch-grid li:nth-child(4) { animation-delay: 150ms; }
+.patch-grid li:nth-child(5) { animation-delay: 200ms; }
+.patch-grid li:nth-child(6) { animation-delay: 250ms; }
+.patch-grid li:nth-child(7) { animation-delay: 300ms; }
+.patch-grid li:nth-child(n+8) { animation-delay: 350ms; }
 
-@keyframes stamp-in {
-  from { opacity: 0; transform: translateY(8px); }
+@keyframes patch-in {
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: none; }
 }
 
-.stamp {
+.patch {
+  --patch-face: var(--stamp-face);
+  --patch-edge: var(--line);
   position: relative;
-  width: 138px;
-  aspect-ratio: 5 / 6;
+  width: 150px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 18px 10px 12px;
+  gap: 8px;
+  padding: 11px 11px 14px;
   text-decoration: none;
   color: var(--ink);
+  background-color: var(--patch-face);
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(90, 96, 74, 0.13);
+  /* The tilt is the patchwork. Kept on a custom property so hover can
+     compose with it instead of overwriting it. */
+  transform: rotate(var(--rot, 0deg));
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+
+.patch--big { width: 186px; }
+.patch-grid .patch { width: auto; }
+
+/* --- paper tints --------------------------------------------------- */
+.patch--cream { --patch-face: #fffef6; --patch-edge: #e6e4d2; }
+.patch--sage  { --patch-face: #e7edda; --patch-edge: #cfdabd; }
+.patch--blush { --patch-face: #f7e6ea; --patch-edge: #e8cdd4; }
+.patch--sky   { --patch-face: #e4ecf7; --patch-edge: #c9d8ec; }
+.patch--gold  { --patch-face: #faedd5; --patch-edge: #ecd6ab; }
+
+/* --- edge treatments ------------------------------------------------ */
+/* stamp: perforated, the classic. Holes are page-coloured. */
+.patch--edge-stamp {
   border-radius: 8px;
-  background-color: var(--stamp-face);
   background-image:
     radial-gradient(circle at 6px 6px, var(--paper) 4px, transparent 4.6px),
     radial-gradient(circle at 6px 6px, var(--paper) 4px, transparent 4.6px),
@@ -895,43 +929,115 @@ article iframe {
   background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
   background-position: top left, bottom left, top left, top right;
   background-size: 12px 12px;
-  box-shadow: 0 2px 8px rgba(90, 96, 74, 0.1);
-  transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
 }
 
-/* Inside a grid the stamp fills its cell; on the trail it's fixed-size. */
-.stamp-grid .stamp { width: auto; }
-
-.stamp:active { transform: scale(0.97); }
-
-@media (hover: hover) and (pointer: fine) {
-  .stamp:hover {
-    transform: translateY(-4px) rotate(-1.2deg);
-    box-shadow: 0 8px 20px rgba(90, 96, 74, 0.2);
-  }
+/* print: a photo print with a wide paper margin. */
+.patch--edge-print {
+  border-radius: 4px;
+  padding: 13px 13px 16px;
+  box-shadow: 0 4px 14px rgba(90, 96, 74, 0.18);
 }
 
-.stamp .fav-bow { position: absolute; top: 7px; right: 9px; width: 18px; height: 13px; }
+/* cut: snipped out with pinking shears — a dashed outline. */
+.patch--edge-cut {
+  border-radius: 16px;
+  outline: 2px dashed var(--patch-edge);
+  outline-offset: -6px;
+}
 
-.postmark {
-  width: 48px;
-  height: 48px;
+/* --- washi tape ----------------------------------------------------- */
+.patch-tape {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 54px;
+  height: 19px;
+  transform: translateX(-50%) rotate(-4deg);
+  background: rgba(168, 191, 224, 0.55);
+  border-left: 2px dotted rgba(255, 255, 255, 0.6);
+  border-right: 2px dotted rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+.patch--blush .patch-tape { background: rgba(217, 143, 160, 0.45); }
+.patch--sage .patch-tape,
+.patch--gold .patch-tape { background: rgba(232, 192, 125, 0.55); }
+
+/* --- photo ---------------------------------------------------------- */
+.patch-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--moss-soft);
+}
+
+.patch-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* A text-only post: a written note rather than an empty photo frame. It
+   sits shorter than a photo patch, which suits the patchwork. */
+.patch--nophoto { justify-content: center; padding-top: 18px; }
+.patch--nophoto .patch-title { font-size: 0.92rem; line-height: 1.25; }
+
+.patch-note {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--paper);
+  opacity: 0.75;
+}
+.patch-note svg { width: 17px; height: 17px; }
+.patch-note .paw { fill: var(--moss); opacity: 0.8; }
+
+/* --- date label ----------------------------------------------------- */
+.patch-date {
+  align-self: flex-start;
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
   color: var(--moss-deep);
-  opacity: 0.8;
-  transform: rotate(-9deg);
+  background: var(--paper);
+  border-radius: 4px;
+  padding: 2px 7px;
+  margin-top: -2px;
+  transform: rotate(var(--date-rot, 0deg));
+  box-shadow: 0 1px 3px rgba(90, 96, 74, 0.16);
 }
 
-.postmark circle { fill: none; stroke: currentColor; stroke-width: 1.4; }
-.postmark line { stroke: currentColor; stroke-width: 1.4; }
-.postmark text { fill: currentColor; font-family: var(--font-body); }
-
-.stamp-title {
-  font-size: 0.76rem;
+.patch-title {
+  font-size: 0.78rem;
   font-weight: 700;
-  line-height: 1.35;
+  line-height: 1.3;
   text-align: center;
   overflow-wrap: break-word;
   max-width: 100%;
+}
+
+.patch .fav-bow {
+  position: absolute;
+  top: -7px;
+  right: -6px;
+  width: 24px;
+  height: 17px;
+  filter: drop-shadow(0 1px 2px rgba(90, 96, 74, 0.3));
+}
+
+.patch:active { transform: rotate(var(--rot, 0deg)) scale(0.97); }
+
+@media (hover: hover) and (pointer: fine) {
+  .patch:hover {
+    transform: rotate(0deg) translateY(-5px) scale(1.03);
+    box-shadow: 0 12px 26px rgba(90, 96, 74, 0.24);
+    z-index: 2;
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -1015,7 +1121,7 @@ article iframe {
   .mist-a, .mist-b { animation: none; }
   .bow { animation: none; opacity: 1; }
   main article { animation: none; opacity: 1; }
-  .stamp-grid li { animation: stamp-fade 200ms ease forwards; }
+  .patch-grid li { animation: patch-fade 200ms ease forwards; }
   .js .week-stop { opacity: 1; transform: none; }
   .pup.trotting { animation: none; }
   .pup.trotting .legs-a, .pup.trotting .legs-b { animation: none; }
@@ -1023,16 +1129,19 @@ article iframe {
   .js .snap { opacity: 1; transform: rotate(var(--tilt)); }
   .snap:hover { transform: rotate(var(--tilt)); }
   .lightbox img { animation: lightbox-fade 200ms ease both; }
-  .site-nav a:active, .stamp:active, .random-day button:active,
+  /* Patches keep their tilt — that's layout, not motion — but stop
+     moving on press and hover. */
+  .patch:active, .patch:hover { transform: rotate(var(--rot, 0deg)); }
+  .site-nav a:active, .random-day button:active,
   .archive-link:active, .page-home main article a[href="/journal/"]:active { transform: none; }
-  .stamp:hover, .random-day button:hover, .archive-link:hover,
+  .random-day button:hover, .archive-link:hover,
   .page-home main article a[href="/journal/"]:hover { transform: none; }
   /* The medallion stops breathing; the halo stays, just still. */
   .cover-glow { animation: none; opacity: 1; }
   .cover-medallion:hover { transform: none; }
 }
 
-@keyframes stamp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes patch-fade { from { opacity: 0; } to { opacity: 1; } }
 
 @media (max-width: 640px) {
   .page-quiet main article { padding: 24px 20px 32px; }
@@ -1043,8 +1152,9 @@ article iframe {
   }
   .page-home main article p { max-width: 100%; }
   .cover-hero { margin-top: -78px; }
-  .stamp-grid { grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 14px; }
-  .stamp { width: 118px; }
+  .patch-grid { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 20px 14px; }
+  .patch, .patch--big { width: 132px; }
+  .patch-tape { width: 44px; height: 16px; }
   .pup { width: 68px; left: 10px; }
   .cover-pup-peek { width: 56px; bottom: 10px; right: 12px; }
   .milestone-photo { width: 44px; height: 44px; }
