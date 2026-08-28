@@ -9,4 +9,6 @@ We also rethought how we handle sofa-biting. Telling her off and physically movi
 
 She also broke out of her makeshift cushion playpen at one point — a proper little ninja about it — so a real playpen has now been ordered, somewhere safe for her to be when she's overstimulated, alongside the crate.
 
+![Annie dozing off on the floor with her nose near a slider](doze.jpg "Nodding off mid-afternoon, nose to the nearest available shoe.")
+
 New things today: rain, a hosepipe, more vacuum cleaner exposure, and the blender, all taken completely in her stride. The one exception — she's a bit unsure when the vacuum comes straight at her, though not distressed, just cautious.

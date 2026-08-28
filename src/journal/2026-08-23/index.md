@@ -6,3 +6,7 @@ date: 2026-08-23
 Kept everything small today, on purpose. A few recall attempts using distances that came up naturally rather than setting up formal tests. Some proper crate time, just getting comfortable with it. And separation practice measured in seconds, not minutes — leaving the room for a moment, that sort of thing.
 
 Some of the best "training" wasn't training at all: she slept through parts of it, explored on her own while we moved around the house. That counts too. A bit of gentle handling, a little lead and harness time, and one or two small new things to be curious about rather than worried by.
+
+![Annie asleep on the floor beside the sofa, half on a cream blanket](sofa-sprawl.jpg "Out cold beside the sofa, having got about half of herself onto the blanket.")
+
+![Close-up of Annie's front paw pads](paws.jpg "Paw pads still entirely brand new.")

@@ -22,9 +22,11 @@
   --bow: #d98fa0;
   --bow-knot: #c17a8e;
   --bow-ink: #4a2530;
-  --cover: #47503a;
-  --cover-ink: #fbfaf1;
-  --cover-muted: #d5dcc3;
+  /* Third pastel, added Aug 2026 (owner decision): a soft periwinkle read as
+     "the sky above the hills". Sits in a triad with moss and bow. Atmosphere
+     and accents only — like bow, it is never body text or a link colour. */
+  --sky: #a8bfe0;
+  --sky-soft: #dde7f6;
   --mist: rgba(255, 254, 246, 0.6);
   --hills-back-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 240' preserveAspectRatio='none'%3E%3Cpath d='M0,240L0,150Q80,90,170,130Q240,160,320,120Q400,78,480,125Q560,165,660,135Q740,110,830,140Q920,168,1010,130Q1090,96,1200,145L1200,240Z' fill='%23d3dab9'/%3E%3C/svg%3E");
   --hills-front-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 160' preserveAspectRatio='none'%3E%3Cpath d='M0,160L0,110Q120,70,260,105Q380,135,520,108Q660,82,800,112Q930,138,1060,110Q1130,96,1200,115L1200,160Z' fill='%23b8c49c'/%3E%3C/svg%3E");
@@ -34,6 +36,10 @@
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --shadow-soft: 0 4px 16px rgba(90, 96, 74, 0.12);
   --radius-card: 16px;
+  /* Home medallion: a circle with 16 near-semicircular scallops, generated
+     rather than hand-drawn (see DESIGN.md). Used as a CSS mask so the fill
+     stays in CSS and the shape scales with the element. */
+  --scallop-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M100 14A17.45 17.45 0 0 1 132.91 20.55A17.45 17.45 0 0 1 160.81 39.19A17.45 17.45 0 0 1 179.45 67.09A17.45 17.45 0 0 1 186 100A17.45 17.45 0 0 1 179.45 132.91A17.45 17.45 0 0 1 160.81 160.81A17.45 17.45 0 0 1 132.91 179.45A17.45 17.45 0 0 1 100 186A17.45 17.45 0 0 1 67.09 179.45A17.45 17.45 0 0 1 39.19 160.81A17.45 17.45 0 0 1 20.55 132.91A17.45 17.45 0 0 1 14 100A17.45 17.45 0 0 1 20.55 67.09A17.45 17.45 0 0 1 39.19 39.19A17.45 17.45 0 0 1 67.09 20.55A17.45 17.45 0 0 1 100 14Z' fill='%23000'/%3E%3C/svg%3E");
 }
 
 * { box-sizing: border-box; }
