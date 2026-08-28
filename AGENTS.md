@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 Public site for Annie's journey — puppy to adult, in her owner's voice. This
 is the **public** half of a two-repo setup: the private day-to-day training

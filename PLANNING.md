@@ -105,6 +105,12 @@ what's confirmed, and why. Flip anything that no longer holds.
 | Hosting | GitHub Pages, custom domain via CNAME + DNS | Free, matches "domain points at the repo," zero server to maintain | confirmed |
 | Domain | Brand new dedicated domain (apex, e.g. `example.com`), not a subdomain | Fully independent from anything else run elsewhere; costs a small yearly fee | confirmed |
 | Public repo name | `annie-and-claude` | — | confirmed |
+| Site builder (revisited Aug 2026) | Hand-rolled generator reaffirmed after consult; Eleventy stays the fallback | Everything the storybook design needs is achievable without a framework | confirmed |
+| Theme | Light theme only — dark mode removed entirely | Two dark-mode attempts both read "too dark"; one soft daytime look is easier to keep on-brand | confirmed |
+| Journal shape | "Journey trail": last 4 weeks as waypoints on a winding path + owner-picked "favourite spots" (`featured: true`) + monthly archive at `/journal/archive/` | Storybook feel without an endlessly growing page; owner curates, Claude never judges which posts are best | confirmed |
+| Random day | Button on the trail, filterable by month, powered by a build-time `entries.json` manifest | Fun rediscovery of old posts with zero server-side anything | confirmed |
+| Milestones | Built: `/milestones.html` from `src/milestones.md` + signpost markers on trail weeks | Was "build later"; pulled forward as part of the storybook redesign | confirmed |
+| Interactivity | One dependency-free script (`src/static/journey.js`): scroll reveal, pup sprite, parallax, random day. All reduced-motion safe, site fully works with JS off | "Fun and interactive" without breaking the no-framework rule | confirmed |
 
 ## Build plan, in sprints
 

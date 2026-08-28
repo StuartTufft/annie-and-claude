@@ -18,4 +18,15 @@ Nothing on this site was written or approved without a person actually reading i
 
 The training approach behind it is positive-reinforcement based, welfare-first, and deliberately unfussy — built for someone who works full-time and wants a dog with a strong, trusting relationship, not a checklist of tricks.
 
+## About the author
+
+<!-- TODO(owner): a few lines about you, in your own words. Suggested
+     shape, entirely optional: who you are, why a dog, why write it up
+     in public, and anything you want to say about working with Claude
+     on it. Dictate it and Claude will tidy the prose — but the facts
+     have to come from you; this section stays out of the built page's
+     flow being empty prose until then is fine. -->
+
+*(This bit's still being written — by the human, not the AI.)*
+
 [← Back home](/) · [Meet Annie](/about-annie.html)

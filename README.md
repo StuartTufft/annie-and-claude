@@ -27,12 +27,15 @@ src/
   journal/            daily posts, one file per entry
   pages/               About Annie, About this project, etc.
   milestones.md        first-time moments, as they happen
+  static/              stylesheet, the one script, favicon
 generator/              the script that turns src/*.md into the built site
 .github/workflows/      the GitHub Action that builds and deploys on every push
 CNAME                   custom domain configuration
 ```
 
 The site is built by a small, deliberately simple Markdown-to-HTML generator rather than a full framework — the whole thing is short enough to read end to end if you're curious how it works.
+
+The journal reads as a **journey**: the last few weeks of posts appear as waypoints on a winding trail through the hills (Annie lives near the Malverns), with a hand-picked "favourite spots" shelf and a random-day button. The complete record lives in a month-by-month archive. A small pup trots along as you scroll — all of it plain CSS and one dependency-free script, and all of it respects `prefers-reduced-motion`. The visual system is documented in `DESIGN.md`.
 
 ## Running it locally
 
