@@ -784,21 +784,45 @@ article iframe {
   transform: rotate(-2deg);
 }
 
-/* Column-gap is generous because patches are tilted up to 6deg — at the
-   old 18px their corners collided. */
+/* The skipping-stone rule: a week's patches are laid ONE PER STEP down a
+   winding path — never a wrapped row or grid. Each patch offsets further
+   across the trail then wanders back, and overlaps the previous one a
+   little vertically, so a week reads as stones skipped across a stream.
+   If you ever see the trail as neat rows of pictures, this is what
+   regressed. */
 .week-entries {
   display: flex;
-  flex-wrap: wrap;
-  gap: 30px 26px;
+  flex-direction: column;
+  align-items: flex-start;
   padding: 26px 0 10px;
 }
 
-.week-stop.side-right .waypoint { justify-content: flex-end; }
+.week-entries .patch { margin-top: -30px; }
+.week-entries .patch:first-child { margin-top: 0; }
 
-/* A week with one or two posts left a large hole when pushed hard right;
-   nudging rather than pinning keeps the trail's rhythm without the void. */
-.week-stop.side-right .week-entries { justify-content: center; padding-left: 8%; }
-.week-stop.side-left .week-entries { padding-right: 8%; }
+/* An 8-step meander: out to the far bank and back. Cycle repeats for
+   longer weeks. Offsets fit 700px trail minus the widest patch. */
+.week-entries .patch:nth-child(8n+1) { margin-left: 0; }
+.week-entries .patch:nth-child(8n+2) { margin-left: 165px; }
+.week-entries .patch:nth-child(8n+3) { margin-left: 330px; }
+.week-entries .patch:nth-child(8n+4) { margin-left: 480px; }
+.week-entries .patch:nth-child(8n+5) { margin-left: 340px; }
+.week-entries .patch:nth-child(8n+6) { margin-left: 175px; }
+.week-entries .patch:nth-child(8n+7) { margin-left: 20px; }
+.week-entries .patch:nth-child(8n)   { margin-left: 210px; }
+
+/* Right-side weeks skip the same path mirrored, so the meander picks up
+   where the connector hands it over. */
+.week-stop.side-right .week-entries .patch:nth-child(8n+1) { margin-left: 480px; }
+.week-stop.side-right .week-entries .patch:nth-child(8n+2) { margin-left: 315px; }
+.week-stop.side-right .week-entries .patch:nth-child(8n+3) { margin-left: 150px; }
+.week-stop.side-right .week-entries .patch:nth-child(8n+4) { margin-left: 0; }
+.week-stop.side-right .week-entries .patch:nth-child(8n+5) { margin-left: 140px; }
+.week-stop.side-right .week-entries .patch:nth-child(8n+6) { margin-left: 305px; }
+.week-stop.side-right .week-entries .patch:nth-child(8n+7) { margin-left: 460px; }
+.week-stop.side-right .week-entries .patch:nth-child(8n)   { margin-left: 270px; }
+
+.week-stop.side-right .waypoint { justify-content: flex-end; }
 .week-stop.side-right .waypoint { flex-direction: row-reverse; text-align: right; }
 
 .quiet-week {
@@ -890,7 +914,7 @@ article iframe {
   --patch-face: var(--stamp-face);
   --patch-edge: var(--line);
   position: relative;
-  width: 150px;
+  width: 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -907,8 +931,11 @@ article iframe {
   transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
 }
 
-.patch--big { width: 186px; }
+.patch--big { width: 168px; }
 .patch-grid .patch { width: auto; }
+/* In grids (archive, favourites) the stagger is the grid's job, not the
+   patch's — margins would fight the cells. */
+.patch-grid .patch { margin-top: 0 !important; }
 
 /* --- paper tints --------------------------------------------------- */
 .patch--cream { --patch-face: #fffef6; --patch-edge: #e6e4d2; }
@@ -1155,6 +1182,28 @@ article iframe {
   .patch-grid { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 20px 14px; }
   .patch, .patch--big { width: 132px; }
   .patch-tape { width: 44px; height: 16px; }
+  /* Narrow stream, same skipping stones: the meander compresses to
+     percentage offsets so no step leaves the viewport. No vertical
+     overlap here — the compressed steps aren't wide enough to clear the
+     previous patch, so overlap would sit on its title. */
+  .week-entries .patch { margin-top: 10px; }
+  .week-entries .patch:first-child { margin-top: 0; }
+  .week-entries .patch:nth-child(8n+1) { margin-left: 0; }
+  .week-entries .patch:nth-child(8n+2) { margin-left: 22%; }
+  .week-entries .patch:nth-child(8n+3) { margin-left: 44%; }
+  .week-entries .patch:nth-child(8n+4) { margin-left: 56%; }
+  .week-entries .patch:nth-child(8n+5) { margin-left: 40%; }
+  .week-entries .patch:nth-child(8n+6) { margin-left: 20%; }
+  .week-entries .patch:nth-child(8n+7) { margin-left: 2%; }
+  .week-entries .patch:nth-child(8n)   { margin-left: 28%; }
+  .week-stop.side-right .week-entries .patch:nth-child(8n+1) { margin-left: 56%; }
+  .week-stop.side-right .week-entries .patch:nth-child(8n+2) { margin-left: 36%; }
+  .week-stop.side-right .week-entries .patch:nth-child(8n+3) { margin-left: 16%; }
+  .week-stop.side-right .week-entries .patch:nth-child(8n+4) { margin-left: 0; }
+  .week-stop.side-right .week-entries .patch:nth-child(8n+5) { margin-left: 18%; }
+  .week-stop.side-right .week-entries .patch:nth-child(8n+6) { margin-left: 38%; }
+  .week-stop.side-right .week-entries .patch:nth-child(8n+7) { margin-left: 54%; }
+  .week-stop.side-right .week-entries .patch:nth-child(8n)   { margin-left: 30%; }
   .pup { width: 68px; left: 10px; }
   .cover-pup-peek { width: 56px; bottom: 10px; right: 12px; }
   .milestone-photo { width: 44px; height: 44px; }

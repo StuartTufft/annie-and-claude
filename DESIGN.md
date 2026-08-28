@@ -117,7 +117,16 @@ the random-day button are JS-only, and both are decoration).
 - Trail (`/journal/`) = last 4 weeks (`TRAIL_WEEKS` in build.js), weeks
   counted from homecoming `2026-08-21` (`HOME_DATE_UTC`). Waypoints
   alternate sides; dashed connector SVGs with paw prints between them.
-  Quiet weeks say so honestly. Milestone signposts (🪧 pills) attach to
+  Quiet weeks say so honestly.
+  - **Skipping-stone rule** (learned the hard way, Aug 2026): a week's
+    patches are laid ONE PER STEP down a winding path — an 8-step
+    `nth-child` meander in `.week-entries`, mirrored on right-side weeks
+    so the connector hands the path over. They must never wrap into
+    rows or a cluster: the first patchwork pass did exactly that and the
+    owner rejected it flat ("just pictures on a long page"). The zigzag
+    of steps IS the journey; if the trail ever reads as a grid, this has
+    regressed. Desktop steps overlap −30px vertically; mobile steps
+    don't overlap at all (compressed offsets would cover the titles). Milestone signposts (🪧 pills) attach to
   their week — capped at 2 per week, shortest labels first, so one wordy
   week can't wall-of-text the trail (the full list still lives on
   `/milestones.html`).
