@@ -102,7 +102,7 @@ push, or the Action will succeed but nothing will go live.
 | About This Project | Written by hand | Set once |
 | Journal posts | Arrive pre-drafted and pre-approved from the private repo's pipeline | As often as they're given |
 | Weekly rollups | Same — arrive pre-drafted | Weekly, once the private repo's review cadence produces them |
-| Milestones (`src/milestones.md`) | Flagged from journal posts as "first time" moments, confirmed by the owner | Page + trail signposts are built and render an empty state until real milestones exist |
+| Milestones (`src/milestones.md`) | Auto-detected by rule from already-approved journal posts (homecoming/weekly anniversaries from the calendar; any sentence containing "first", quoted verbatim, linked to its post) — see `DESIGN.md`. Owner can also add hand-written entries to `src/milestones.md` for anything that never appeared in a post | Live; runs on every build, no per-post action needed |
 
 ## Writing
 

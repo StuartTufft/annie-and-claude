@@ -171,8 +171,28 @@ function buildPages() {
   }
 }
 
-// --- Milestones: src/milestones.md -> /milestones.html, plus dated items
-//     parsed for trail signposts. Lines like: - 2026-09-01 — First …
+// --- Milestones ---
+//
+// Two sources, merged:
+//
+// 1. Hand-written, in src/milestones.md — lines like
+//    "- 2026-09-01 — First trip to the vet for a check-up". For anything
+//    that never appeared in a journal post (a weigh-in, a vet note).
+//
+// 2. Auto-detected, by rule, from journal posts that have ALREADY been
+//    through the human review gate before reaching this repo. Two rules,
+//    both deterministic and both only ever surface what's already
+//    written — never invented:
+//      a) Calendar rule: homecoming + every 7-day anniversary since.
+//      b) Text rule: any sentence in a post containing the word "first"
+//         (skipping "at first", a transition phrase, not a milestone).
+//         The milestone IS that sentence, verbatim, linked to its post —
+//         a quote, not a paraphrase, so there's nothing to get wrong.
+//
+// This is a rule the generator applies at build time, not a judgment
+// call Claude makes per post — see DESIGN.md for why that distinction
+// matters here.
+
 function readMilestones() {
   const file = path.join(SRC, 'milestones.md');
   if (!fs.existsSync(file)) return { items: [], markdown: '' };
@@ -180,29 +200,85 @@ function readMilestones() {
   const items = [];
   for (const line of content.split(/\r?\n/)) {
     const m = line.match(/^-\s*(\d{4}-\d{2}-\d{2})\s*[—–-]+\s*(.+)$/);
-    if (m) items.push({ date: m[1], label: m[2].trim() });
+    if (m) items.push({ date: m[1], label: m[2].trim(), auto: false });
   }
   return { items, markdown: content };
 }
 
-function buildMilestones(milestones) {
-  const body = milestones.items.length
-    ? marked.parse(milestones.markdown)
+// Rule (b): pull out any sentence containing "first" from a post's own
+// markdown, skipping the "at first..." transition phrase. Returns the
+// sentence itself — a quote of already-approved text, not a summary.
+function detectFirstMentions(markdown, iso, slug) {
+  const flat = markdown.replace(/\r/g, '').replace(/\n+/g, ' ');
+  const sentences = flat.split(/(?<=[.!?])\s+/);
+  const found = [];
+  for (const raw of sentences) {
+    const s = raw.replace(/[*_`]/g, '').trim();
+    if (!s || /^at first\b/i.test(s)) continue;
+    if (/\bfirst\b/i.test(s) && !/\bfirst\s+(of all|off)\b/i.test(s)) {
+      found.push({ date: iso, label: s.length > 160 ? s.slice(0, 157) + '…' : s, auto: true, slug });
+    }
+  }
+  return found;
+}
+
+// Rule (a): homecoming plus every completed week since, purely from the
+// calendar — no text-reading, so nothing to misread.
+function weekAnniversaryMilestones(latestIso) {
+  const items = [{ date: isoOfUtc(HOME_DATE_UTC), label: 'Came home for the first time', auto: true }];
+  if (!latestIso) return items;
+  const weeksElapsed = Math.floor((utcOf(latestIso) - HOME_DATE_UTC) / WEEK_MS);
+  for (let n = 1; n <= weeksElapsed; n++) {
+    items.push({ date: isoOfUtc(HOME_DATE_UTC + n * WEEK_MS), label: `${n} week${n > 1 ? 's' : ''} home`, auto: true });
+  }
+  return items;
+}
+
+function isoOfUtc(ms) {
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
+function mergeMilestones(...lists) {
+  const seen = new Set();
+  const merged = [];
+  for (const list of lists) {
+    for (const item of list) {
+      const key = `${item.date}|${item.label}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(item);
+    }
+  }
+  return merged.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+}
+
+function buildMilestonesPage(milestones, manualMarkdown) {
+  const prose = manualMarkdown ? marked.parse(manualMarkdown) : '';
+  const list = milestones.length
+    ? `<ul class="milestone-list">${milestones
+        .map((m) => {
+          const label = m.auto && m.slug
+            ? `<a href="/journal/${m.slug}/">${escapeHtml(m.label)}</a>`
+            : escapeHtml(m.label);
+          return `<li><span class="milestone-date">${formatDate(m.date)}</span>${label}</li>`;
+        })
+        .join('')}</ul>`
     : '<p>No milestones yet — the first "first time she…" moments will be collected here as they happen. She\'s only just getting started.</p>';
   const html = renderPage({
     title: 'Milestones',
-    content: body,
+    content: prose + list,
     activePath: '/milestones.html',
     bodyClass: 'page-quiet',
   });
   fs.writeFileSync(path.join(DIST, 'milestones.html'), html);
-  console.log(`  page  -> milestones.html (${milestones.items.length} milestones)`);
+  console.log(`  page  -> milestones.html (${milestones.length} milestones)`);
 }
 
 // --- Journal: posts, the journey trail, the archive, entries.json ---
-function buildJournal(milestones) {
+function buildJournal(manual) {
   const dir = path.join(SRC, 'journal');
   const entries = [];
+  const autoMilestones = [];
   if (fs.existsSync(dir)) {
     for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
       let mdPath, assetDir, slug;
@@ -239,12 +315,17 @@ function buildJournal(milestones) {
         }
       }
       entries.push({ title, date: isoDate, slug, featured: data.featured === true });
+      autoMilestones.push(...detectFirstMentions(content, isoDate, slug));
       console.log(`  post  -> journal/${slug}/`);
     }
   }
 
   entries.sort((a, b) => (a.date < b.date ? -1 : 1));
   fs.mkdirSync(path.join(DIST, 'journal'), { recursive: true });
+
+  const latestIso = entries.length ? entries[entries.length - 1].date : null;
+  const milestones = mergeMilestones(manual.items, autoMilestones, weekAnniversaryMilestones(latestIso));
+  buildMilestonesPage(milestones, manual.markdown);
 
   // Manifest for the random-day button.
   fs.mkdirSync(path.join(DIST, 'static'), { recursive: true });
@@ -284,8 +365,15 @@ function buildTrail(entries, milestones) {
     for (let w = firstWeek, i = 0; w <= lastWeek; w++, i++) {
       const side = i % 2 === 0 ? 'left' : 'right';
       const weekEntries = byWeek.get(w) || [];
-      const posts = milestones.items.filter((m) => inWeek(w, m.date));
-      const signposts = posts.map((m) => `<span class="signpost">🪧 ${escapeHtml(m.label)}</span>`).join(' ');
+      // The trail is a highlight reel, not the full record — every
+      // detected milestone still shows on /milestones.html; here, cap
+      // per week and favour the shortest (usually punchiest) labels so
+      // one wordy week can't stack up a wall of signposts.
+      const weekMilestones = milestones
+        .filter((m) => inWeek(w, m.date))
+        .sort((a, b) => a.label.length - b.label.length)
+        .slice(0, 2);
+      const signposts = weekMilestones.map((m) => `<span class="signpost">🪧 ${escapeHtml(m.label)}</span>`).join(' ');
       const body = weekEntries.length
         ? `<div class="week-entries">${weekEntries.map((e) => stampHtml(e, { fav: e.featured })).join('')}</div>`
         : '<p class="quiet-week">A quiet week on the trail — no posts.</p>';
@@ -384,9 +472,8 @@ function copyStatic() {
 
 console.log('Building annie-and-claude...');
 clean(DIST);
-const milestones = readMilestones();
+const manualMilestones = readMilestones();
 buildPages();
-buildMilestones(milestones);
-buildJournal(milestones);
+buildJournal(manualMilestones); // also builds milestones.html (needs entries first)
 copyStatic();
 console.log('Done -> /dist');

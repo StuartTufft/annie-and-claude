@@ -94,7 +94,37 @@ the random-day button are JS-only, and both are decoration).
   counted from homecoming `2026-08-21` (`HOME_DATE_UTC`). Waypoints
   alternate sides; dashed connector SVGs with paw prints between them.
   Quiet weeks say so honestly. Milestone signposts (🪧 pills) attach to
-  their week.
+  their week — capped at 2 per week, shortest labels first, so one wordy
+  week can't wall-of-text the trail (the full list still lives on
+  `/milestones.html`).
+
+### Milestones — auto-detected by rule, not by asking Claude each time
+
+Owner decision (Aug 2026, reversing the earlier "owner confirms each one"
+design): milestones are generated automatically at build time, by two
+deterministic rules in `generator/build.js` — never by Claude judging a
+post's content on the fly. The distinction matters because it keeps the
+"never invent content" hard rule intact: both rules only ever surface
+things a human has *already* approved into a journal post (or the public
+homecoming date), and the text-rule quotes verbatim rather than
+paraphrasing, so there's nothing new to get wrong.
+
+1. **Calendar rule** (`weekAnniversaryMilestones`): homecoming
+   (`HOME_DATE_UTC`) plus every completed 7-day anniversary since —
+   pure date arithmetic, no text involved.
+2. **Text rule** (`detectFirstMentions`): every sentence in a post
+   containing "first" (skipping the "at first..." transition phrase)
+   becomes a milestone, quoted exactly, linked back to its post.
+
+Known trade-off, by design not oversight: the text rule is a blunt
+keyword match, so it sometimes catches flavour text ("the first night")
+alongside real milestones ("first taste of peanut butter"). The
+Milestones page shows everything the rule finds; the trail caps to 2 per
+week to keep the highlight reel readable. If it gets too noisy, tighten
+`detectFirstMentions`'s exclusion list rather than reintroducing a
+manual-confirm step — that was a deliberate reversal.
+`src/milestones.md` still accepts hand-written lines for anything that
+never appeared in a journal post at all.
 - Archive = monthly stamp-album pages with folder tabs.
 - Stamps: 5:6 perforated cards, circular MALVERN postmark (rotated -9°),
   hover lift `translateY(-4px) rotate(-1.2deg)`.
