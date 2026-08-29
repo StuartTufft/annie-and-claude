@@ -94,11 +94,23 @@ the random-day button are JS-only, and both are decoration).
 
 ## Structure the design hangs off
 
-- Home = **scalloped medallion** (redesigned Aug 2026). Replaced the
+- Home = **the journal** (owner decision, 29 Aug 2026, "streamline"): the
+  cover card (`.home-cover` — medallion, title, subtitle, a few lines
+  from `home.md`) with the journey trail rendering directly beneath it on
+  the same page. `/journal/` is a meta-refresh redirect to `/`; posts and
+  the archive keep their `/journal/...` URLs; there is no Journal nav
+  item. The old blush CTA pill is gone (nothing to link to), which hands
+  its pink budget back. build.js emits the cover's own `<h1>` inside
+  `.home-cover` and blanks the template's slot (`hideTitle`), so no
+  flex-order trick is needed any more.
+- The **scalloped medallion** (redesigned Aug 2026) replaced the
   original deep-moss "box lid" on the owner's call: it read too dark and
-  too boxy. Now a photo of Annie in a 16-scallop medallion, floating over
+  too boxy. A photo of Annie in a 16-scallop medallion, floating over
   a soft periwinkle-and-blush halo, overhanging a light `--card` panel at
-  34px radius. The CTA is a blush pill, not the old `clip-path` pennant.
+  34px radius. Any quiet page can open with the same medallion via
+  `hero:` / `heroAlt:` frontmatter (About Annie does — owner request,
+  same border and colours as home, deliberately); on quiet pages it sits
+  inside the card under the title rather than overhanging.
   - The scallop is a **CSS mask**, `--scallop-mask` — a generated path
     (16 arcs, arc-radius 0.52× the chord) so the fill stays in CSS and
     the shape scales with the element. Regenerate rather than hand-edit
@@ -114,7 +126,7 @@ the random-day button are JS-only, and both are decoration).
   - Design lineage: Headspace/Calm's *structure* (rounded everything, soft
     colour-matched shadows, slow breathing motion) with Hedgerow's palette
     — deliberately not Headspace's peach/coral.
-- Trail (`/journal/`) = last 4 weeks (`TRAIL_WEEKS` in build.js), weeks
+- Trail (on `/`) = last 4 weeks (`TRAIL_WEEKS` in build.js), weeks
   counted from homecoming `2026-08-21` (`HOME_DATE_UTC`). Waypoints
   alternate sides; dashed connector SVGs with paw prints between them.
   Quiet weeks say so honestly.
@@ -137,6 +149,36 @@ the random-day button are JS-only, and both are decoration).
   week can't wall-of-text the trail (the full list still lives on
   `/milestones.html`).
 
+### "How Claude helps" — the experiment's own page
+
+Owner request (29 Aug 2026): About This Project is a declaration of the
+experiment, and every Claude integration is catalogued on
+`/how-claude-helps.html` as long clickable bars (`.claude-bar`): native
+`<details>`, an emoji icon in a moss-soft circle, a bold label, a small
+one-liner, and the longer story inside. Works with JS off. About This
+Project links to it through `.claude-door`, the same bar shape as a
+link. The pattern is meant to extrapolate: every new AI feature gets a
+new bar. Bodies are raw HTML inside the markdown (marked doesn't parse
+markdown inside block-level HTML). Writing rules from CLAUDE.md apply
+hard here: no em dashes, human voice, and this is the ONLY page (plus
+nowhere else) that talks about Claude/AI.
+
+### Lessons — the owner's half of the experiment
+
+Built 29 Aug 2026, deliberately NOT merged into How Claude Helps: the
+bars there catalogue how the site works; lessons are dated owner
+content about raising Annie, so they live at `/lessons.html` as a
+visual sibling (the same `.claude-bar` component, 💡 default icon,
+per-lesson `icon:` override, anchored `#lesson-<slug>`). Source files
+in `src/lessons/` (format in its README). A lesson's `related:` entry
+list makes each of those journal posts render a `.lesson-signpost`
+pill linking back — cross-linking is frontmatter-driven, zero per-post
+work. About This Project has two doors (🐾 Claude, 💡 Lessons) with a
+connecting paragraph between the two halves. journey.js opens a
+`<details>` bar when it's the URL target; with JS off the anchor still
+scrolls to the closed bar. Neither page is in the nav on purpose: both
+are reached through About This Project, keeping the top level lean.
+
 ### Milestones — auto-detected by rule, not by asking Claude each time
 
 Owner decision (Aug 2026, reversing the earlier "owner confirms each one"
@@ -148,31 +190,40 @@ things a human has *already* approved into a journal post (or the public
 homecoming date), and the text-rule quotes verbatim rather than
 paraphrasing, so there's nothing new to get wrong.
 
-1. **Calendar rule** (`weekAnniversaryMilestones`): homecoming
-   (`HOME_DATE_UTC`) plus every completed 7-day anniversary since —
-   pure date arithmetic, no text involved.
-2. **Text rule** (`detectFirstMentions`): every sentence in a post
-   containing "first" (skipping the "at first..." transition phrase)
-   becomes a milestone, quoted exactly, linked back to its post.
+1. **Decaying calendar rule** (`calendarMilestones`, redesigned 29 Aug
+   2026): homecoming, then weekly anniversaries up to week 12, then
+   monthly (homecoming's day-of-month) through the first year, then
+   yearly — pure date arithmetic, no text involved. The decay is the
+   point: weekly markers would wallpaper the page by year two.
+2. **Text rule** (`detectFirstMentions`, tightened 29 Aug 2026): a
+   sentence needs "first <thing>" from the `FIRST_THING` pattern
+   (optionally one word between, so "first real look" counts) or to
+   open with "First" — a bare "first" anywhere caught flavour text like
+   "the first night". Capped at **2 per post, shortest sentences
+   first** (the same trick the trail's signposts use). Still
+   deterministic, still verbatim quotes linked to their posts.
 
-Known trade-off, by design not oversight: the text rule is a blunt
-keyword match, so it sometimes catches flavour text ("the first night")
-alongside real milestones ("first taste of peanut butter"). The
-Milestones page shows everything the rule finds; the trail caps to 2 per
-week to keep the highlight reel readable. If it gets too noisy, tighten
-`detectFirstMentions`'s exclusion list rather than reintroducing a
-manual-confirm step — that was a deliberate reversal.
-`src/milestones.md` still accepts hand-written lines for anything that
-never appeared in a journal post at all.
+If the text rule still gets noisy, adjust `FIRST_THING`'s word list
+rather than reintroducing a manual-confirm step — that was a deliberate
+reversal.
 
-Milestone photos (Aug 2026): each date builds a pool — that day's
-journal photos first (already published, so nothing new can leak), then
-`src/static/photos/milestone-YYYY-MM-DD.jpg` if the owner dropped one in
-— and milestones sharing a date draw from it round-robin. That's why
-four homecoming milestones show four different photos instead of one
-repeated. A date with no photos anywhere gets no thumb; never borrow
-from another day. Thumbs alternate tilt and mount tint down the
-timeline, echoing the trail's patches.
+**Two tiers + chapters** (owner request, 29 Aug 2026). The page groups
+rows under month headings — one `<details class="milestone-chapter">`
+per month, newest open, older months folded, so collapsing works with
+JS off. Within the page everything stays **oldest first** on purpose:
+it's a life record read forward, not a feed. Owner-written lines in
+`src/milestones.md` are the **landmark** tier (large display-face rows;
+a label starting with ★ also renders a gold star); auto-detected firsts
+and calendar anniversaries are the **compact** tier, single-line
+texture under each chapter.
+
+Milestone photos: **landmarks only** (29 Aug 2026 — the pool used to
+serve every row; restricting it keeps the page light as it grows). Each
+date builds a pool — that day's journal photos first (already
+published, so nothing new can leak), then
+`src/static/photos/milestone-YYYY-MM-DD.jpg` if the owner dropped one
+in — and landmarks sharing a date draw from it round-robin. A date with
+no photos anywhere gets no thumb; never borrow from another day.
 - Archive = monthly scrapbook pages with folder tabs.
 
 ### Patches — journal entries as scrapbook cuttings
@@ -266,14 +317,22 @@ originals routinely carry GPS.
   local builds. New shells may need a PATH refresh
   (`$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')`).
 
-## Where things stood when this file was written (28 Aug 2026)
+## Where things stood when this file was last updated (29 Aug 2026)
 
-- Full storybook redesign implemented, uncommitted, on `main`'s working
-  tree. No real journal entries exist yet (she's ~1 week home). Fixtures
-  used for testing are deleted before commit — never commit fixture posts.
-- Author section of `about-this-project.md` is a TODO awaiting the
-  owner's own words. `src/milestones.md` is an empty scaffold.
+- Live at https://annie-and-claude.com (custom domain + HTTPS verified
+  28 Aug 2026; deploys on every push to main). Eight real journal
+  entries exist (21–28 Aug).
+- 29 Aug 2026 restructure (this session): home = cover + trail;
+  `/journal/` redirects; About Annie opens with a `hero:` medallion;
+  `/how-claude-helps.html` catalogues the experiment as clickable bars;
+  milestones got the decaying calendar, chapters, two tiers and
+  landmark-only photos; the no-em-dash / human-written / AI-refs-in-one-
+  place writing rules landed in CLAUDE.md + AGENTS.md.
+- Author section of `about-this-project.md` is still a TODO awaiting the
+  owner's own words. `src/milestones.md` has no real landmarks yet.
+- Lessons shipped 29 Aug 2026 (own page, `.claude-bar` reuse, signpost
+  cross-links — see "Lessons" above). `src/lessons/` has no real
+  lessons yet, only the README scaffold; the page shows its empty
+  state until the owner dictates one.
 - Not done yet: Sprint 2 (first real post, voice-defining), Sprint 3
   (`/publish` pipeline skill). See `PLANNING.md`.
-- Live at https://annie-and-claude.com (custom domain + HTTPS verified
-  28 Aug 2026; deploys on every push to main).

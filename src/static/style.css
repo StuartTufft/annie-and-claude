@@ -389,43 +389,44 @@ article iframe {
 /* dark — it earns that by being the only photograph on the page.      */
 /* ------------------------------------------------------------------ */
 
-.page-home main article {
+/* The cover card sits above the trail on the same page: build.js emits
+   its own <h1> inside .home-cover (the template's h1 slot renders empty
+   on home), so no flex-order trick is needed any more. */
+.home-cover {
   position: relative;
   background: var(--cover-panel);
   border: 1px solid var(--cover-panel-line);
   color: var(--ink);
   text-align: center;
-  padding: 0 54px 58px;
+  padding: 0 54px 50px;
   border-radius: 34px;
   box-shadow: 0 12px 44px rgba(90, 96, 74, 0.16);
   max-width: 780px;
   /* Room for the medallion to hang over the top edge. */
-  margin: 104px auto 0;
+  margin: 104px auto 54px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* The template prints <h1> before {{content}}, so the medallion is pulled
-   ahead of it with flex order rather than by editing template.html. */
-.page-home .cover-hero { order: -1; }
+main article > h1:empty { display: none; }
 
-.page-home main article h1 {
+.home-cover h1 {
   font-size: clamp(2rem, 7vw, 2.55rem);
   margin: 22px 0 4px;
 }
 
-/* min(…, 100%) matters here: the article is a centred flex column, so any
+/* min(…, 100%) matters here: the cover is a centred flex column, so any
    child with an intrinsic width above the container overflows the page
    rather than being clamped. Applies to the ch-measure and the subtitle. */
-.page-home main article p {
+.home-cover p {
   max-width: min(52ch, 100%);
   margin-left: auto;
   margin-right: auto;
   text-wrap: pretty;
 }
 
-.page-home main article a { color: var(--moss); }
+.home-cover a { color: var(--moss); }
 
 /* --- The medallion ------------------------------------------------- */
 
@@ -510,9 +511,9 @@ article iframe {
 
 /* --- Cover typography ---------------------------------------------- */
 
-/* Scoped through .page-home so it outranks the 44ch prose measure above —
+/* Scoped through .home-cover so it outranks the 44ch prose measure above —
    at this font-size `ch` is narrow enough to wrap the line mid-phrase. */
-.page-home .cover-subtitle {
+.home-cover .cover-subtitle {
   font-family: var(--font-body);
   font-weight: 800;
   font-size: 0.7rem;
@@ -544,36 +545,19 @@ article iframe {
   opacity: 0.9;
 }
 
-/* The CTA: a blush pill. Pink stays rare by rule — this, the badge bow,
-   the pup's bow, and favourite marks. */
-/* Block + fit-content so the trailing "— starts slow…" falls onto its own
-   centred line instead of hanging off the pill's right edge. */
-.page-home main article a[href="/journal/"] {
-  display: block;
-  width: fit-content;
-  background: var(--bow);
-  color: var(--bow-ink);
-  font-weight: 800;
-  font-size: 0.95rem;
-  text-decoration: none;
-  padding: 14px 32px;
-  margin: 6px auto 12px;
-  border-radius: 999px;
-  box-shadow: 0 6px 18px rgba(217, 143, 160, 0.4);
-  transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
-}
-
-.page-home main article a[href="/journal/"]:active { transform: scale(0.97); }
-
+/* (The blush CTA pill is gone: the journal starts right under the cover
+   now, so there's nothing to link to. Pink stays rare — the badge bow,
+   the pup's bow, and favourite marks.) */
 @media (hover: hover) and (pointer: fine) {
-  .page-home main article a[href="/journal/"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(217, 143, 160, 0.48);
-  }
   .cover-medallion:hover { transform: rotate(-1.5deg) scale(1.02); }
 }
 
 .cover-medallion { transition: transform 220ms var(--ease-out); }
+
+/* The medallion on a quiet page (About Annie's hello photo): same
+   scallop, rim and halo as home, just sitting inside the card under the
+   title instead of overhanging it. */
+.page-quiet .cover-hero { margin: 10px auto 30px; }
 
 /* ------------------------------------------------------------------ */
 /* The journey trail: the last few weeks as a winding path            */
@@ -697,13 +681,146 @@ article iframe {
   padding: 6px 14px;
 }
 
+/* ------------------------------------------------------------------ */
+/* "How Claude helps": long clickable bars, one per integration.       */
+/* Native <details>, so they open and close with JS off. The door on   */
+/* About This Project reuses the same bar shape as a link.             */
+/* ------------------------------------------------------------------ */
+
+.claude-bar {
+  margin: 14px 0;
+  background: var(--stamp-face);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.claude-bar summary,
+.claude-door {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  list-style: none;
+  border-radius: 16px;
+}
+
+.claude-bar summary::-webkit-details-marker { display: none; }
+
+.bar-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  background: var(--moss-soft);
+}
+
+.bar-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bar-label strong { font-family: var(--font-display); font-size: 1.02rem; }
+.bar-label small { color: var(--ink-muted); font-size: 0.85rem; }
+
+.claude-bar summary::after {
+  content: '▾';
+  margin-left: auto;
+  color: var(--moss);
+  font-size: 1.1rem;
+  transition: transform 200ms var(--ease-out);
+}
+.claude-bar[open] summary::after { transform: rotate(180deg); }
+
+.claude-bar .bar-body { padding: 0 20px 16px 76px; }
+.claude-bar .bar-body p, .claude-bar .bar-body ol { margin: 8px 0; }
+
+/* The door: same bar, but a link (lives inside a <p>, so it must stay
+   an inline element made flex). */
+.claude-door {
+  margin: 6px 0;
+  background: var(--stamp-face);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+.claude-door::after {
+  content: '→';
+  margin-left: auto;
+  color: var(--moss);
+  font-weight: 800;
+}
+.claude-door:active { transform: scale(0.98); }
+
+@media (hover: hover) and (pointer: fine) {
+  .claude-bar summary:hover { background: var(--moss-soft); }
+  .claude-door:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(90, 96, 74, 0.2);
+  }
+}
+
+/* Lessons: a post that produced a lesson signposts it at the bottom;
+   the lesson links back to its days. */
+.lesson-signpost {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: var(--moss-soft);
+  color: var(--moss-deep);
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-top: 26px;
+}
+.lesson-signpost a { color: var(--moss); }
+
+.lesson-from {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+.lesson-from a { color: var(--moss); font-weight: 700; }
+
 /* Milestones page: a mini stamp-timeline, oldest first — a condensed
    echo of the journey trail. Gold badge = a week-anniversary (calendar
    rule), pink bow = a "first" quoted from a post (text rule), moss paw
    = hand-written in milestones.md. */
+/* Chapters: one <details> per month, newest open, older ones folded.
+   Native disclosure — collapsing works with JS off. */
+.milestone-chapter { margin: 20px 0; }
+
+.milestone-chapter summary {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  padding: 4px 2px;
+}
+.milestone-chapter summary::-webkit-details-marker { display: none; }
+.milestone-chapter summary::after {
+  content: '▾';
+  margin-left: auto;
+  color: var(--moss);
+  font-size: 1rem;
+  transition: transform 200ms var(--ease-out);
+}
+.milestone-chapter[open] summary::after { transform: rotate(180deg); }
+
 .milestone-timeline {
   list-style: none;
-  margin: 22px 0 0;
+  margin: 14px 0 0;
   padding: 0 0 0 2px;
   position: relative;
 }
@@ -772,6 +889,22 @@ article iframe {
 
 .milestone-label { font-weight: 700; }
 .milestone-timeline a { font-weight: 700; color: var(--moss); }
+
+/* Two tiers: landmarks (owner-written) large, everything else compact
+   texture. Compact marks shrink but stay centred on the dashed line. */
+.milestone-item--compact { padding: 8px 0; }
+.milestone-item--compact .milestone-mark { width: 26px; height: 26px; margin-left: 7px; }
+.milestone-item--compact .milestone-mark .fav-bow { width: 14px; height: 10px; }
+.milestone-item--compact .milestone-paw { width: 12px; height: 12px; }
+.milestone-item--compact .milestone-body { padding-top: 2px; font-size: 0.9rem; }
+.milestone-item--compact .milestone-label { font-weight: 600; }
+.milestone-item--compact .milestone-date { min-width: 8em; }
+
+.milestone-item--landmark .milestone-label {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+}
+.milestone-star { color: var(--gold-ink); }
 
 .milestone-photo {
   flex-shrink: 0;
@@ -1166,9 +1299,8 @@ article iframe {
      moving on press and hover. */
   .patch:active, .patch:hover { transform: rotate(var(--rot, 0deg)); }
   .site-nav a:active, .random-day button:active,
-  .archive-link:active, .page-home main article a[href="/journal/"]:active { transform: none; }
-  .random-day button:hover, .archive-link:hover,
-  .page-home main article a[href="/journal/"]:hover { transform: none; }
+  .archive-link:active { transform: none; }
+  .random-day button:hover, .archive-link:hover { transform: none; }
   /* The medallion stops breathing; the halo stays, just still. */
   .cover-glow { animation: none; opacity: 1; }
   .cover-medallion:hover { transform: none; }
@@ -1178,12 +1310,14 @@ article iframe {
 
 @media (max-width: 640px) {
   .page-quiet main article { padding: 24px 20px 32px; }
-  .page-home main article {
-    padding: 0 22px 42px;
+  .home-cover {
+    padding: 0 22px 38px;
     margin-top: 88px;
+    margin-bottom: 40px;
     border-radius: 28px;
   }
-  .page-home main article p { max-width: 100%; }
+  .home-cover p { max-width: 100%; }
+  .claude-bar .bar-body { padding-left: 20px; }
   .cover-hero { margin-top: -78px; }
   .patch-grid { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 20px 14px; }
   .patch, .patch--big { width: 132px; }

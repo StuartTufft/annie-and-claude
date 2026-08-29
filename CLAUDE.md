@@ -50,19 +50,30 @@ this file doesn't answer.
 
 ```
 src/
-  pages/*.md            standalone pages. home.md -> / (everything else -> /<name>.html)
+  pages/*.md            standalone pages -> /<name>.html. home.md is the short
+                        intro on / (the cover above the trail). A page with
+                        hero:/heroAlt: frontmatter opens with the scalloped
+                        photo medallion (About Annie uses this).
   journal/
     YYYY-MM-DD.md          text-only entry
     YYYY-MM-DD/index.md    entry with photos — images sit in the same folder
-  milestones.md            dated list ("- YYYY-MM-DD — label"); renders
+  lessons/<slug>.md        tiny owner-dictated "what I learned" notes ->
+                           bars on /lessons.html; a lesson's related: list
+                           makes those journal posts signpost back to it
+                           (see src/lessons/README.md)
+  milestones.md            dated list ("- YYYY-MM-DD - label"); renders
                            /milestones.html AND becomes signposts on the trail
   static/                 copied into dist/static/ (style.css, journey.js, favicon.svg)
 generator/
   build.js                the whole generator — reads src/, writes dist/.
-                          /journal/ is the "journey trail": the last 4 weeks of
-                          entries as waypoints on a winding path (weeks count
-                          from homecoming, 2026-08-21), plus a "favourite
-                          spots" shelf of posts flagged featured: true. The
+                          THE HOME PAGE IS THE JOURNAL (owner decision, Aug
+                          2026): / is the cover (medallion + a few lines from
+                          home.md) with the "journey trail" straight under it —
+                          the last 4 weeks of entries as waypoints on a winding
+                          path (weeks count from homecoming, 2026-08-21), plus
+                          the "favourite spots" shelf of posts flagged
+                          featured: true. /journal/ is just a redirect to /;
+                          posts keep their /journal/<slug>/ URLs and the
                           complete record is the monthly archive at
                           /journal/archive/. Also emits /static/entries.json,
                           the manifest behind the random-day button.
@@ -101,11 +112,12 @@ push, or the Action will succeed but nothing will go live.
 
 | Page / type | Source | Cadence |
 |---|---|---|
-| Home (`src/pages/home.md`) | Written by hand | Set once |
+| Home (`src/pages/home.md`) | A few hand-written intro lines; the journal trail renders underneath automatically | Set once |
 | About Annie | Rewritten from the private profile, for a stranger reading it | Set once, revisit rarely |
 | About This Project | Written by hand | Set once |
 | Journal posts | Arrive pre-drafted and pre-approved from the private repo's pipeline | As often as they're given |
 | Weekly rollups | Same — arrive pre-drafted | Weekly, once the private repo's review cadence produces them |
+| Lessons (`src/lessons/*.md`) | Owner-dictated insight, Claude tidies the prose only — the substance is never invented | As they're learned |
 | Milestones (`src/milestones.md`) | Auto-detected by rule from already-approved journal posts (homecoming/weekly anniversaries from the calendar; any sentence containing "first", quoted verbatim, linked to its post) — see `DESIGN.md`. Owner can also add hand-written entries to `src/milestones.md` for anything that never appeared in a post | Live; runs on every build, no per-post action needed |
 
 ## Writing
@@ -113,6 +125,21 @@ push, or the Action will succeed but nothing will go live.
 - British English.
 - First person, as the owner — not a trainer's case notes. Plain, warm,
   specific. Cut anything that reads like it's performing for an audience.
+- **No em dashes, ever, in anything a visitor reads** (owner rule, Aug
+  2026): page copy, journal prose, photo captions, UI strings the
+  generator emits, the footer, all of it. Use a comma, a full stop, a
+  colon, or brackets instead. En dashes inside date/number ranges
+  (21–27 Aug, 20–28kg) are fine. This rule is part of the larger one:
+- **It must read as human-written.** The owner's stated goal is showing
+  how personal Claude can be — so nothing should pattern-match to AI
+  output: no em-dash asides, no "X. Not Y, but Z." constructions
+  stacked up, no glossy summary sentences, no bold-label list items
+  ("**Draft** — ..."). When drafting or editing, read it back as if a
+  person typed it on their phone.
+- **AI references live in one place.** The site says the owner is using
+  Claude to experiment, on About This Project, and nowhere else — no
+  "Anthropic's AI", no model talk, no AI framing on other pages or in
+  the footer. The site name "Annie & Claude" itself stays.
 - A journal post reaching this repo has already been through human review.
   Don't re-interpret, embellish, or "improve" its factual content — layout,
   typos, and formatting are fair game; what happened is not.

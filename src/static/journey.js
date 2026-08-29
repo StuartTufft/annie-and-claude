@@ -23,6 +23,16 @@
     reveals.forEach(function (s) { s.classList.add('seen'); });
   }
 
+  // --- Deep links into a <details> bar (e.g. /lessons.html#lesson-x):
+  // the browser scrolls to it either way; this just opens it too.
+  function openTargetDetails() {
+    if (!location.hash) return;
+    var t = document.getElementById(location.hash.slice(1));
+    if (t && t.tagName === 'DETAILS') t.open = true;
+  }
+  openTargetDetails();
+  window.addEventListener('hashchange', openTargetDetails);
+
   // --- The pup: trots while you scroll the trail, rests when you stop
   var pup = document.querySelector('.pup');
   var onTrail = !!document.querySelector('.trail');

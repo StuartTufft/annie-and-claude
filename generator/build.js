@@ -25,9 +25,12 @@ const HOME_DATE_UTC = Date.UTC(2026, 7, 21);
 const TRAIL_WEEKS = 4; // how many recent weeks the trail shows
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
+// The journal IS the home page (owner decision, Aug 2026): visitors land
+// on the trail, so there's no separate Journal nav item. /journal/ still
+// exists as a redirect for old links; posts and the archive keep their
+// /journal/... URLs.
 const NAV = [
   ['Home', '/'],
-  ['Journal', '/journal/'],
   ['Milestones', '/milestones.html'],
   ['About Annie', '/about-annie.html'],
   ['About This Project', '/about-this-project.html'],
@@ -42,13 +45,16 @@ function renderNav(activePath) {
   }).join('\n      ');
 }
 
-function renderPage({ title, date, content, activePath, bodyClass = 'page-quiet' }) {
+// hideTitle: the page's <h1> lives inside {{content}} (the home cover
+// prints its own, under the medallion), so the template's slot renders
+// empty and CSS hides it.
+function renderPage({ title, date, content, activePath, bodyClass = 'page-quiet', hideTitle = false }) {
   const h1 = title || SITE_NAME;
   const pageTitle = h1 === SITE_NAME ? SITE_NAME : `${h1} · ${SITE_NAME}`;
   return TEMPLATE
     .replaceAll('{{pageTitle}}', escapeHtml(pageTitle))
     .replaceAll('{{bodyClass}}', bodyClass)
-    .replaceAll('{{title}}', escapeHtml(h1))
+    .replaceAll('{{title}}', hideTitle ? '' : escapeHtml(h1))
     .replaceAll('{{date}}', date ? formatDate(date) : '')
     .replaceAll('{{nav}}', renderNav(activePath))
     .replace('{{content}}', content);
@@ -117,11 +123,13 @@ function favBowSvg() {
   return `<svg class="fav-bow" viewBox="0 0 44 30" aria-hidden="true"><path d="M22 12 C 7 -2 0 15 19 18 C 13 9 18 7 22 12 Z"/><path d="M22 12 C 37 -2 44 15 25 18 C 31 9 26 7 22 12 Z"/><circle cx="22" cy="14" r="4"/></svg>`;
 }
 
-// The home hero: Annie's photo in a scalloped medallion, over a soft
-// periwinkle-and-blush halo, with a few pastel dots for company. The
-// scallop shape itself is a CSS mask (--scallop-mask in style.css).
-function coverHeroHtml() {
-  const size = jpegSize(path.join(SRC, 'static', 'photos', 'home-locket.jpg'));
+// A photo in a scalloped medallion, over a soft periwinkle-and-blush
+// halo, with a few pastel dots for company. Used on the home cover and
+// on any page with `hero:` frontmatter (e.g. About Annie). The scallop
+// shape itself is a CSS mask (--scallop-mask in style.css).
+function coverHeroHtml(src = '/static/photos/home-locket.jpg', alt = 'Annie') {
+  const file = src.startsWith('/static/') ? path.join(SRC, 'static', src.slice(8)) : null;
+  const size = file && jpegSize(file);
   const dims = size ? ` width="${size.width}" height="${size.height}"` : '';
   return `<div class="cover-hero">
     <span class="cover-glow" aria-hidden="true"></span>
@@ -130,7 +138,7 @@ function coverHeroHtml() {
     <span class="cover-dot cover-dot--c" aria-hidden="true"></span>
     <div class="cover-medallion">
       <span class="medallion-rim" aria-hidden="true"></span>
-      <img src="/static/photos/home-locket.jpg" alt="Annie"${dims}>
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}"${dims}>
     </div>
   </div>`;
 }
@@ -323,36 +331,111 @@ function walk(dir) {
   return results;
 }
 
-// --- Standalone pages: src/pages/*.md -> /*.html (home.md -> index.html) ---
+// --- Standalone pages: src/pages/*.md -> /<name>.html ---
+// home.md is NOT built here: the home page is the journal trail plus the
+// cover, assembled in buildHome() once the journal entries are known.
+// A page with `hero:` frontmatter (a /static/... photo path, with
+// `heroAlt:` as its description) opens with the same scalloped medallion
+// as the home cover.
 function buildPages() {
   const dir = path.join(SRC, 'pages');
   if (!fs.existsSync(dir)) return;
   for (const file of fs.readdirSync(dir)) {
-    if (!file.endsWith('.md')) continue;
+    if (!file.endsWith('.md') || file === 'home.md') continue;
     const raw = fs.readFileSync(path.join(dir, file), 'utf8');
     const { data, content } = matter(raw);
-    const outName = file === 'home.md' ? 'index.html' : file.replace(/\.md$/, '.html');
-    const activePath = outName === 'index.html' ? '/' : `/${outName}`;
-    const isHome = outName === 'index.html';
-    // The cover frames the owner's words without touching them: a scalloped
-    // photo medallion, a subtitle, a paw-print divider, and the pup sitting
-    // in the corner. CSS pulls the medallion above the <h1> (flex order).
-    const body = isHome
-      ? coverHeroHtml() +
-        `<p class="cover-subtitle">Home since ${formatDate(isoOfUtc(HOME_DATE_UTC))} · The Malvern Hills</p>` +
-        pawTrailSvg() +
-        marked.parse(content) +
-        pupSittingSvg()
-      : layOutPhotos(marked.parse(content), null);
+    const outName = file.replace(/\.md$/, '.html');
+    const hero = data.hero ? coverHeroHtml(data.hero, data.heroAlt || 'Annie') : '';
     const html = renderPage({
       title: data.title,
-      content: body,
-      activePath,
-      bodyClass: isHome ? 'page-home' : 'page-quiet',
+      content: hero + layOutPhotos(marked.parse(content), null),
+      activePath: `/${outName}`,
+      bodyClass: 'page-quiet',
     });
     fs.writeFileSync(path.join(DIST, outName), html);
     console.log(`  page  -> ${outName}`);
   }
+}
+
+// --- Home: the cover (medallion, title, a few lines from home.md) with
+// the journey trail straight underneath. One page, no detour.
+function buildHome(trailContent) {
+  const file = path.join(SRC, 'pages', 'home.md');
+  const { data, content } = fs.existsSync(file)
+    ? matter(fs.readFileSync(file, 'utf8'))
+    : { data: {}, content: '' };
+  const cover = `<div class="home-cover">
+  ${coverHeroHtml()}
+  <h1>${escapeHtml(data.title || SITE_NAME)}</h1>
+  <p class="cover-subtitle">Home since ${formatDate(isoOfUtc(HOME_DATE_UTC))} · The Malvern Hills</p>
+  ${pawTrailSvg()}
+  ${marked.parse(content)}
+  ${pupSittingSvg()}
+</div>`;
+  const html = renderPage({
+    title: data.title || SITE_NAME,
+    content: cover + trailContent,
+    activePath: '/',
+    bodyClass: 'page-home',
+    hideTitle: true,
+  });
+  fs.writeFileSync(path.join(DIST, 'index.html'), html);
+  console.log('  home  -> index.html (cover + trail)');
+}
+
+// --- Lessons: tiny owner-written notes on what raising Annie is
+// teaching the humans. A deliberate sibling of the "How Claude helps"
+// bars: same component, its own page, because lessons are the owner's
+// content and the bars are the experiment's catalogue. Each lesson can
+// name the journal entries it came from (`related:`), and those posts
+// grow a signpost back to it — the cross-link costs nothing per post.
+// Files live in src/lessons/<slug>.md; see the README there for the
+// format. Lesson substance is owner-dictated, always — never invented.
+
+function readLessons() {
+  const dir = path.join(SRC, 'lessons');
+  const lessons = [];
+  if (!fs.existsSync(dir)) return lessons;
+  for (const file of fs.readdirSync(dir)) {
+    if (!file.endsWith('.md') || file.toLowerCase() === 'readme.md') continue;
+    const { data, content } = matter(fs.readFileSync(path.join(dir, file), 'utf8'));
+    const slug = file.replace(/\.md$/, '');
+    const related = (Array.isArray(data.related) ? data.related : data.related ? [data.related] : []).map(toIsoDate);
+    lessons.push({
+      slug,
+      title: data.title || slug,
+      date: data.date ? toIsoDate(data.date) : null,
+      icon: data.icon || '💡',
+      related,
+      html: marked.parse(content),
+    });
+  }
+  lessons.sort((a, b) => ((a.date || '') < (b.date || '') ? -1 : 1));
+  return lessons;
+}
+
+function buildLessonsPage(lessons) {
+  const intro = '<p>Little things learned while raising Annie, written down as they click. Click a bar for the story; each one links back to the days it came from.</p>';
+  const body = lessons.length
+    ? lessons.map((l) => {
+        const from = l.related
+          .map((r) => `<a href="/journal/${escapeHtml(r)}/">${formatDate(r)}</a>`)
+          .join(', ');
+        const fromLine = from ? `<p class="lesson-from">From ${from}</p>` : '';
+        return `<details class="claude-bar" id="lesson-${escapeHtml(l.slug)}">
+  <summary><span class="bar-icon" aria-hidden="true">${l.icon}</span><span class="bar-label"><strong>${escapeHtml(l.title)}</strong><small>${l.date ? formatDate(l.date) : ''}</small></span></summary>
+  <div class="bar-body">${l.html}${fromLine}</div>
+</details>`;
+      }).join('\n')
+    : '<p>Nothing written down yet. Lessons land here as they get learned, and she has only just started teaching us.</p>';
+  const html = renderPage({
+    title: 'Lessons',
+    content: intro + body,
+    activePath: '/lessons.html',
+    bodyClass: 'page-quiet',
+  });
+  fs.writeFileSync(path.join(DIST, 'lessons.html'), html);
+  console.log(`  page  -> lessons.html (${lessons.length} lessons)`);
 }
 
 // --- Milestones ---
@@ -377,6 +460,9 @@ function buildPages() {
 // call Claude makes per post — see DESIGN.md for why that distinction
 // matters here.
 
+// Owner-written lines are the "landmark" tier: they render large on the
+// milestones page and are the only tier that gets photos. A label may
+// start with ★ to flag an extra-big one (the star renders next to it).
 function readMilestones() {
   const file = path.join(SRC, 'milestones.md');
   if (!fs.existsSync(file)) return { items: [], markdown: '' };
@@ -384,7 +470,12 @@ function readMilestones() {
   const items = [];
   for (const line of content.split(/\r?\n/)) {
     const m = line.match(/^-\s*(\d{4}-\d{2}-\d{2})\s*[—–-]+\s*(.+)$/);
-    if (m) items.push({ date: m[1], label: m[2].trim(), auto: false });
+    if (m) {
+      let label = m[2].trim();
+      const star = label.startsWith('★');
+      if (star) label = label.replace(/^★\s*/, '');
+      items.push({ date: m[1], label, auto: false, star });
+    }
   }
   return { items, markdown: content };
 }
@@ -405,9 +496,15 @@ function prosify(markdown) {
     .trim();
 }
 
-// Rule (b): pull out any sentence containing "first" from a post's own
-// prose, skipping the "at first..." transition phrase. Returns the
-// sentence itself — a quote of already-approved text, not a summary.
+// Rule (b): quote sentences about a genuine "first" from a post's own
+// prose. Tightened (owner request, Aug 2026): a bare "first" caught too
+// much flavour text ("the first night"), so a sentence now needs
+// "first <thing>" — optionally one word in between, so "first real look"
+// still counts — or to open with "First". Capped at 2 per post, shortest
+// sentences first (the same trick the trail uses for signposts). Still
+// deterministic, still verbatim quotes of already-approved text.
+const FIRST_THING = /\bfirst(?:\s+\w+)?\s+(time|taste|walk|trip|look|visit|vaccination|jab|bath|groom|meal|outing|swim|ride|go|try|attempt)\b/i;
+
 function detectFirstMentions(markdown, iso, slug) {
   // Closing quotes/brackets may sit between the full stop and the space,
   // e.g. `…as good a spot as any.")` — split after those too.
@@ -416,23 +513,41 @@ function detectFirstMentions(markdown, iso, slug) {
   for (const raw of sentences) {
     const s = raw.trim();
     if (!s || /^at first\b/i.test(s)) continue;
-    if (/\bfirst\b/i.test(s) && !/\bfirst\s+(of all|off)\b/i.test(s)) {
+    if (/\bfirst\s+(of all|off)\b/i.test(s)) continue;
+    if (FIRST_THING.test(s) || /^first\b/i.test(s)) {
       found.push({ date: iso, label: s.length > 160 ? s.slice(0, 157) + '…' : s, auto: true, slug });
     }
   }
-  return found;
+  found.sort((a, b) => a.label.length - b.label.length);
+  return found.slice(0, 2);
 }
 
-// Rule (a): homecoming plus every completed week since, purely from the
-// calendar — no text-reading, so nothing to misread.
-function weekAnniversaryMilestones(latestIso) {
+// Rule (a): the decaying calendar rule (owner request, Aug 2026) —
+// homecoming, then weekly anniversaries up to week 12, then monthly
+// (same day-of-month as homecoming) through the first year, then yearly.
+// Purely from the calendar — no text-reading, so nothing to misread.
+function calendarMilestones(latestIso) {
   const items = [{ date: isoOfUtc(HOME_DATE_UTC), label: 'Came home for the first time', auto: true }];
   if (!latestIso) return items;
-  const weeksElapsed = Math.floor((utcOf(latestIso) - HOME_DATE_UTC) / WEEK_MS);
-  for (let n = 1; n <= weeksElapsed; n++) {
-    items.push({ date: isoOfUtc(HOME_DATE_UTC + n * WEEK_MS), label: `${n} week${n > 1 ? 's' : ''} home`, auto: true });
+  const latest = utcOf(latestIso);
+  const home = new Date(HOME_DATE_UTC);
+  for (let n = 1; n <= 12; n++) {
+    const ms = HOME_DATE_UTC + n * WEEK_MS;
+    if (ms > latest) return items;
+    items.push({ date: isoOfUtc(ms), label: `${n} week${n > 1 ? 's' : ''} home`, auto: true });
   }
-  return items;
+  // Months 3–11: week 12 lands just short of three months, so monthly
+  // markers pick up from there and hand over to yearly at one year home.
+  for (let m = 3; m <= 11; m++) {
+    const ms = Date.UTC(home.getUTCFullYear(), home.getUTCMonth() + m, home.getUTCDate());
+    if (ms > latest) return items;
+    items.push({ date: isoOfUtc(ms), label: `${m} months home`, auto: true });
+  }
+  for (let y = 1; ; y++) {
+    const ms = Date.UTC(home.getUTCFullYear() + y, home.getUTCMonth(), home.getUTCDate());
+    if (ms > latest) return items;
+    items.push({ date: isoOfUtc(ms), label: `${y} year${y > 1 ? 's' : ''} home`, auto: true });
+  }
 }
 
 function isoOfUtc(ms) {
@@ -486,39 +601,64 @@ function milestonePhotoPools(entries) {
   return pools;
 }
 
+// One row on the milestones page. Two tiers (owner request, Aug 2026):
+// owner-written lines from milestones.md are large "landmark" rows and
+// the ONLY tier that draws from the photo pool (so the page stays light
+// as it grows); auto-detected firsts and calendar anniversaries render
+// as compact single-line texture.
+function milestoneRowHtml(m, pools, drawn) {
+  const kind = milestoneKind(m);
+  const landmark = kind === 'manual';
+  const label = m.auto && m.slug
+    ? `<a href="/journal/${m.slug}/">${escapeHtml(m.label)}</a>`
+    : escapeHtml(m.label);
+  let thumb = '';
+  if (landmark) {
+    const pool = [...(pools.get(m.date) || [])];
+    const staticFile = `photos/milestone-${m.date}.jpg`;
+    if (fs.existsSync(path.join(SRC, 'static', staticFile)) && !pool.includes(`/static/${staticFile}`)) {
+      pool.push(`/static/${staticFile}`);
+    }
+    if (pool.length) {
+      const n = drawn.get(m.date) || 0;
+      drawn.set(m.date, n + 1);
+      thumb = `<img class="milestone-photo" src="${pool[n % pool.length]}" alt="" width="72" height="72" loading="lazy">`;
+    }
+  }
+  const star = m.star ? '<span class="milestone-star" aria-hidden="true">★</span> ' : '';
+  const cls = `milestone-item milestone-item--${kind} milestone-item--${landmark ? 'landmark' : 'compact'}`;
+  return `<li class="${cls}"><span class="milestone-mark">${milestoneMarkIcon(kind)}</span><div class="milestone-body"><span class="milestone-date">${formatDate(m.date)}</span><span class="milestone-label">${star}${label}</span></div>${thumb}</li>`;
+}
+
+// Chapters (owner request, Aug 2026): rows group under month headings,
+// oldest first within the page — that stays deliberate, it's a life
+// record read forward. The newest month is expanded; older months sit
+// in closed <details> blocks, so collapsing works with JS off.
 function buildMilestonesPage(milestones, manualMarkdown, entries) {
   const pools = milestonePhotoPools(entries);
   const drawn = new Map(); // date -> how many photos already handed out
   const prose = manualMarkdown ? marked.parse(manualMarkdown) : '';
-  const intro = milestones.length
-    ? '<p class="trail-intro">Every "first" worth remembering, plus a marker for each week home — oldest first.</p>'
-    : '';
-  const list = milestones.length
-    ? `<ul class="milestone-timeline">${milestones
-        .map((m) => {
-          const kind = milestoneKind(m);
-          const label = m.auto && m.slug
-            ? `<a href="/journal/${m.slug}/">${escapeHtml(m.label)}</a>`
-            : escapeHtml(m.label);
-          let photo = null;
-          const pool = [...(pools.get(m.date) || [])];
-          const staticFile = `photos/milestone-${m.date}.jpg`;
-          if (fs.existsSync(path.join(SRC, 'static', staticFile)) && !pool.includes(`/static/${staticFile}`)) {
-            pool.push(`/static/${staticFile}`);
-          }
-          if (pool.length) {
-            const n = drawn.get(m.date) || 0;
-            photo = pool[n % pool.length];
-            drawn.set(m.date, n + 1);
-          }
-          const thumb = photo ? `<img class="milestone-photo" src="${photo}" alt="" width="72" height="72" loading="lazy">` : '';
-          return `<li class="milestone-item milestone-item--${kind}"><span class="milestone-mark">${milestoneMarkIcon(kind)}</span><div class="milestone-body"><span class="milestone-date">${formatDate(m.date)}</span><span class="milestone-label">${label}</span></div>${thumb}</li>`;
-        })
-        .join('')}</ul>`
-    : '<p>No milestones yet — the first "first time she…" moments will be collected here as they happen. She\'s only just getting started.</p>';
+  let body;
+  if (!milestones.length) {
+    body = '<p>No milestones yet. The first "first time she…" moments will be collected here as they happen. She\'s only just getting started.</p>';
+  } else {
+    const chapters = new Map();
+    for (const m of milestones) {
+      const key = m.date.slice(0, 7);
+      if (!chapters.has(key)) chapters.set(key, []);
+      chapters.get(key).push(m);
+    }
+    const keys = [...chapters.keys()].sort();
+    const newest = keys[keys.length - 1];
+    body = '<p class="trail-intro">Her big moments, month by month. Oldest first, the way a life reads.</p>'
+      + keys.map((key) => `<details class="milestone-chapter"${key === newest ? ' open' : ''}>
+  <summary>${monthLabel(key)}</summary>
+  <ul class="milestone-timeline">${chapters.get(key).map((m) => milestoneRowHtml(m, pools, drawn)).join('')}</ul>
+</details>`).join('\n');
+  }
   const html = renderPage({
     title: 'Milestones',
-    content: prose + intro + list,
+    content: prose + body,
     activePath: '/milestones.html',
     bodyClass: 'page-quiet',
   });
@@ -527,7 +667,7 @@ function buildMilestonesPage(milestones, manualMarkdown, entries) {
 }
 
 // --- Journal: posts, the journey trail, the archive, entries.json ---
-function buildJournal(manual) {
+function buildJournal(manual, lessons) {
   const dir = path.join(SRC, 'journal');
   const entries = [];
   const autoMilestones = [];
@@ -550,11 +690,16 @@ function buildJournal(manual) {
       const { data, content } = matter(raw);
       const title = data.title || slug;
       const isoDate = toIsoDate(data.date || slug);
+      // A post a lesson points at (via related:) signposts that lesson.
+      const lessonNotes = (lessons || []).filter((l) => l.related.includes(slug) || l.related.includes(isoDate));
+      const lessonHtml = lessonNotes
+        .map((l) => `<p class="lesson-signpost">💡 A lesson came out of this day: <a href="/lessons.html#lesson-${escapeHtml(l.slug)}">${escapeHtml(l.title)}</a></p>`)
+        .join('');
       const html = renderPage({
         title,
         date: isoDate,
-        content: layOutPhotos(marked.parse(content), assetDir),
-        activePath: '/journal/',
+        content: layOutPhotos(marked.parse(content), assetDir) + lessonHtml,
+        activePath: '/', // the journal lives on the home page now
       });
       const outDir = path.join(DIST, 'journal', slug);
       fs.mkdirSync(outDir, { recursive: true });
@@ -589,7 +734,7 @@ function buildJournal(manual) {
   fs.mkdirSync(path.join(DIST, 'journal'), { recursive: true });
 
   const latestIso = entries.length ? entries[entries.length - 1].date : null;
-  const milestones = mergeMilestones(manual.items, autoMilestones, weekAnniversaryMilestones(latestIso));
+  const milestones = mergeMilestones(manual.items, autoMilestones, calendarMilestones(latestIso));
   buildMilestonesPage(milestones, manual.markdown, entries);
 
   // Manifest for the random-day button.
@@ -599,10 +744,32 @@ function buildJournal(manual) {
     JSON.stringify(entries.map(({ slug, title, date }) => ({ slug, title, date })))
   );
 
-  buildTrail(entries, milestones);
+  buildHome(buildTrail(entries, milestones));
+  buildJournalRedirect();
   buildArchive(entries);
 }
 
+// /journal/ used to be the trail's address; the trail moved to the front
+// page, so this leaves a redirect behind for old links and bookmarks.
+// Posts (/journal/<slug>/) and the archive keep their real URLs.
+function buildJournalRedirect() {
+  fs.mkdirSync(path.join(DIST, 'journal'), { recursive: true });
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="0; url=/">
+  <link rel="canonical" href="/">
+  <title>${escapeHtml(SITE_NAME)}</title>
+</head>
+<body><p>The journal lives on the <a href="/">front page</a> now.</p></body>
+</html>
+`;
+  fs.writeFileSync(path.join(DIST, 'journal', 'index.html'), html);
+  console.log('  page  -> journal/ (redirect to /)');
+}
+
+// Builds the trail markup and returns it (buildHome puts it on the page).
 function buildTrail(entries, milestones) {
   let content;
   if (!entries.length) {
@@ -612,7 +779,7 @@ function buildTrail(entries, milestones) {
       <span class="waypoint-badge">1</span>
       <div><h2 class="waypoint-title">Week 1<span class="waypoint-dates">${weekRangeLabel(1)}</span></h2></div>
     </div>
-    <p class="quiet-week">Nothing posted yet — check back soon. Annie is six days into a very long story.</p>
+    <p class="quiet-week">Nothing posted yet, check back soon. Annie is six days into a very long story.</p>
   </div>
 </div>`;
   } else {
@@ -645,7 +812,7 @@ function buildTrail(entries, milestones) {
       const signposts = weekMilestones.map((m) => `<span class="signpost">🪧 ${escapeHtml(m.label)}</span>`).join(' ');
       const body = weekEntries.length
         ? `<div class="week-entries">${weekEntries.map((e) => patchHtml(e, { fav: e.featured })).join('')}</div>`
-        : '<p class="quiet-week">A quiet week on the trail — no posts.</p>';
+        : '<p class="quiet-week">A quiet week on the trail. No posts.</p>';
       const connector = i === 0 ? '' : connectorSvg(side);
       sections.push(`${connector}<section class="week-stop side-${side}">
     <div class="waypoint">
@@ -666,7 +833,7 @@ function buildTrail(entries, milestones) {
       : '';
 
     content = `<div class="trail">
-  <p class="trail-intro">The journey so far, newest first — keep scrolling to wander back to day one.</p>
+  <p class="trail-intro">The journey so far, newest first. Keep scrolling to wander back to day one.</p>
   <div class="random-day" data-random hidden>
     <select aria-label="Filter by month" data-random-month><option value="">Any month</option></select>
     <button type="button" data-random-go>Take me to a random day 🎲</button>
@@ -677,14 +844,8 @@ function buildTrail(entries, milestones) {
 </div>`;
   }
 
-  const html = renderPage({
-    title: 'The Journey',
-    content,
-    activePath: '/journal/',
-    bodyClass: 'page-journey',
-  });
-  fs.writeFileSync(path.join(DIST, 'journal', 'index.html'), html);
-  console.log(`  trail -> journal/ (${entries.length} entries)`);
+  console.log(`  trail -> / (${entries.length} entries)`);
+  return content;
 }
 
 // The complete record, month by month: /journal/archive/ is the most
@@ -705,7 +866,7 @@ function buildArchive(entries) {
       .map((k) => `<a class="month-tab${k === key ? ' active' : ''}" href="${monthHref(k)}">${monthLabel(k)}</a>`)
       .join('\n    ');
     const stamps = months.get(key).map((e) => `<li>${patchHtml(e, { fav: e.featured })}</li>`).join('\n      ');
-    const content = `<p><a href="/journal/">← Back to the trail</a></p>
+    const content = `<p><a href="/">← Back to the trail</a></p>
   <nav class="month-tabs" aria-label="Archive months">
     ${tabs}
   </nav>
@@ -717,7 +878,7 @@ function buildArchive(entries) {
     const html = renderPage({
       title: 'Archive',
       content,
-      activePath: '/journal/',
+      activePath: '/',
       bodyClass: 'page-album',
     });
     const outPath = key === monthKeys[0]
@@ -742,7 +903,9 @@ function copyStatic() {
 console.log('Building annie-and-claude...');
 clean(DIST);
 const manualMilestones = readMilestones();
+const lessons = readLessons();
 buildPages();
-buildJournal(manualMilestones); // also builds milestones.html (needs entries first)
+buildJournal(manualMilestones, lessons); // also builds milestones.html (needs entries first)
+buildLessonsPage(lessons);
 copyStatic();
 console.log('Done -> /dist');
