@@ -334,5 +334,12 @@ originals routinely carry GPS.
   cross-links — see "Lessons" above). `src/lessons/` has no real
   lessons yet, only the README scaffold; the page shows its empty
   state until the owner dictates one.
+- **Flagged, not built** (owner, 29 Aug 2026, hedged as "not sure ...
+  at the moment"): each bar on How Claude Helps / Lessons might be
+  better as a teaser (icon + one line, no detail) that links out to its
+  own themed page — the way a journal patch links to `/journal/<slug>/`
+  — rather than expanding inline via `<details>`. Confirm the reading
+  and appetite before building; it's a real restructure (per-bar slugs,
+  routing, individual templates), not a tweak.
 - Not done yet: Sprint 2 (first real post, voice-defining), Sprint 3
   (`/publish` pipeline skill). See `PLANNING.md`.

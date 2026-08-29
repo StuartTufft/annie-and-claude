@@ -4,6 +4,8 @@ title: How Claude Helps
 
 Everything on this site that Claude has a hand in, collected in one place. Click any bar for the longer story. The list will grow as the experiment does.
 
+A bit of context on me: I work in IT, so this isn't a complete leap into the dark, but I'm not a developer by trade either. I know enough to get by and ask decent questions. Most of what's below is really just me following that curiosity to see how far it goes.
+
 <details class="claude-bar">
   <summary><span class="bar-icon" aria-hidden="true">🎙️</span><span class="bar-label"><strong>Journal entries</strong><small>A dictated recap becomes a post</small></span></summary>
   <div class="bar-body">
