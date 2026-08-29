@@ -389,21 +389,15 @@ article iframe {
 /* dark — it earns that by being the only photograph on the page.      */
 /* ------------------------------------------------------------------ */
 
-/* The cover card sits above the trail on the same page: build.js emits
-   its own <h1> inside .home-cover (the template's h1 slot renders empty
-   on home), so no flex-order trick is needed any more. */
-.home-cover {
+/* The hero: four beats (owner brief, 29 Aug 2026). Beat 1 is the wow —
+   no card any more, the hills are the stage. Annie's medallion, her
+   name on a pink ribbon, one line of intro, real snaps fanned around
+   her. build.js emits its own <h1> inside .hero-ribbon (the template's
+   h1 slot renders empty on home). */
+.home-hero {
   position: relative;
-  background: var(--cover-panel);
-  border: 1px solid var(--cover-panel-line);
-  color: var(--ink);
   text-align: center;
-  padding: 0 54px 50px;
-  border-radius: 34px;
-  box-shadow: 0 12px 44px rgba(90, 96, 74, 0.16);
-  max-width: 780px;
-  /* Room for the medallion to hang over the top edge. */
-  margin: 104px auto 54px;
+  padding: 44px 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -411,22 +405,136 @@ article iframe {
 
 main article > h1:empty { display: none; }
 
-.home-cover h1 {
-  font-size: clamp(2rem, 7vw, 2.55rem);
-  margin: 22px 0 4px;
+.home-hero .cover-hero {
+  width: clamp(210px, 46vw, 300px);
+  margin-top: 0;
 }
 
-/* min(…, 100%) matters here: the cover is a centred flex column, so any
-   child with an intrinsic width above the container overflows the page
-   rather than being clamped. Applies to the ch-measure and the subtitle. */
-.home-cover p {
-  max-width: min(52ch, 100%);
-  margin-left: auto;
-  margin-right: auto;
+/* The fan: real snaps from the newest entries, tilted like photos
+   spilling out of an album. Positions hug the medallion on narrow
+   screens (the max() keeps them on-page) and spread out on desktop. */
+.hero-snap {
+  position: absolute;
+  z-index: 1;
+  padding: 7px 7px 9px;
+  background: var(--stamp-face);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+  width: clamp(96px, 13vw, 150px);
+  transform: rotate(var(--tilt, 0deg));
+}
+.hero-snap img { display: block; width: 100%; height: auto; border-radius: 4px; margin: 0; }
+.hero-snap--1 { --tilt: -7deg; top: 4%; left: max(2%, calc(50% - 350px)); }
+.hero-snap--2 { --tilt: 5deg; top: 44%; left: max(0%, calc(50% - 395px)); }
+.hero-snap--3 { --tilt: 6deg; top: 6%; right: max(2%, calc(50% - 350px)); }
+.hero-snap--4 { --tilt: -5deg; top: 46%; right: max(0%, calc(50% - 395px)); }
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-snap { transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out); }
+  .hero-snap:hover {
+    transform: rotate(0deg) translateY(-3px);
+    box-shadow: 0 10px 26px rgba(90, 96, 74, 0.22);
+    z-index: 3;
+  }
+}
+
+/* Whimsy layer: thin curled ribbon streamers in the pastel accents.
+   Decoration only — pink stays reserved for the title ribbon. */
+.hero-streamer {
+  position: absolute;
+  width: 34px;
+  height: 130px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.hero-streamer path { fill: none; stroke-width: 5; stroke-linecap: round; }
+.hero-streamer--a { left: 13%; top: 2%; transform: rotate(14deg); }
+.hero-streamer--a path { stroke: var(--sky); }
+.hero-streamer--b { right: 12%; top: 34%; transform: rotate(-18deg); }
+.hero-streamer--b path { stroke: var(--gold); }
+.hero-streamer--c { left: 17%; top: 60%; transform: rotate(-8deg); width: 26px; height: 100px; opacity: 0.35; }
+.hero-streamer--c path { stroke: var(--moss); }
+
+/* Her name on the ribbon. The svg stretches to the text's box. */
+.hero-ribbon {
+  position: relative;
+  z-index: 2;
+  width: min(330px, 82vw);
+  margin: 22px auto 2px;
+  display: grid;
+  place-items: center;
+}
+.hero-ribbon .ribbon { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-ribbon h1 {
+  position: relative;
+  margin: 0;
+  padding: 8px 0 18px;
+  font-size: clamp(2.2rem, 9vw, 2.9rem);
+  letter-spacing: -0.02em;
+  color: var(--bow-ink);
+}
+
+.hero-intro {
+  font-size: 1.06rem;
+  max-width: min(46ch, 92vw);
+  margin: 12px auto 6px;
   text-wrap: pretty;
 }
 
-.home-cover a { color: var(--moss); }
+/* Beat 2: the launch. Full-bleed, so the path really does enter from
+   the page's left edge; the pup sits at its head, ready to set off. */
+.hero-launch {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: 130px;
+  margin-top: 10px;
+}
+.launch-path { display: block; width: 100%; height: 100%; }
+.launch-path .launch-line {
+  fill: none;
+  stroke: var(--moss);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 1 16;
+  opacity: 0.6;
+}
+.launch-path .paw { fill: var(--moss); opacity: 0.45; }
+.launch-pup {
+  position: absolute;
+  left: max(16px, 6vw);
+  top: -36px;
+  width: 84px;
+  height: auto;
+}
+.scroll-hint {
+  position: absolute;
+  left: max(100px, 13vw);
+  top: 44px;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 0.76rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* Entrance: one-time stagger, ease-out, everything under 300ms.
+   fill-mode backwards (not both) so the final state is the element's
+   own — hover transforms keep working once the entrance is done. */
+@keyframes hero-pop {
+  from { opacity: 0; transform: translateY(12px) rotate(var(--tilt, 0deg)); }
+  to { opacity: 1; transform: rotate(var(--tilt, 0deg)); }
+}
+.home-hero .cover-hero { animation: hero-pop 260ms var(--ease-out) backwards; }
+.hero-ribbon { animation: hero-pop 260ms var(--ease-out) 70ms backwards; }
+.hero-intro, .home-hero .cover-subtitle { animation: hero-pop 260ms var(--ease-out) 130ms backwards; }
+.hero-snap { animation: hero-pop 280ms var(--ease-out) backwards; }
+.hero-snap--1 { animation-delay: 160ms; }
+.hero-snap--2 { animation-delay: 210ms; }
+.hero-snap--3 { animation-delay: 260ms; }
+.hero-snap--4 { animation-delay: 310ms; }
 
 /* --- The medallion ------------------------------------------------- */
 
@@ -511,9 +619,9 @@ main article > h1:empty { display: none; }
 
 /* --- Cover typography ---------------------------------------------- */
 
-/* Scoped through .home-cover so it outranks the 44ch prose measure above —
+/* Scoped through .home-hero so it outranks the 44ch prose measure above —
    at this font-size `ch` is narrow enough to wrap the line mid-phrase. */
-.home-cover .cover-subtitle {
+.home-hero .cover-subtitle {
   font-family: var(--font-body);
   font-weight: 800;
   font-size: 0.7rem;
@@ -525,25 +633,42 @@ main article > h1:empty { display: none; }
   max-width: 100%;
 }
 
-.paw-trail {
-  display: block;
-  width: 108px;
-  height: 26px;
-  margin: 0 auto 20px;
+/* Beat 3: the newest week's "you are here" pin — gold, like the
+   waypoint badges, so it reads as part of the map language. */
+.you-are-here {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(232, 192, 125, 0.38);
+  color: var(--gold-ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 6px 14px;
 }
-.paw-trail .paw { fill: var(--moss); opacity: 0.45; }
 
-/* The pup, sitting in the corner. Static — the medallion's breath is the
-   only motion this page adds. */
-.cover-pup-peek {
+/* Beat 4: the sign-off. The pup that set off with you at the top is
+   asleep at the end of the trail, beside the site's name. */
+.trail-end { text-align: center; margin: 60px 0 8px; }
+.trail-end-pup { position: relative; width: 96px; margin: 0 auto; }
+.trail-end-pup svg { display: block; width: 100%; height: auto; opacity: 0.95; }
+.pup-zzz {
   position: absolute;
-  bottom: 12px;
-  right: 16px;
-  width: 74px;
-  height: auto;
-  pointer-events: none;
-  opacity: 0.9;
+  top: -14px;
+  right: -18px;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--ink-muted);
+  font-size: 0.95rem;
 }
+.trail-end-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  margin: 10px 0 2px;
+}
+.trail-end-links { font-size: 0.95rem; color: var(--ink-muted); margin: 4px 0 0; }
+.trail-end-links a { color: var(--moss); font-weight: 700; }
 
 /* (The blush CTA pill is gone: the journal starts right under the cover
    now, so there's nothing to link to. Pink stays rare — the badge bow,
@@ -1317,19 +1442,29 @@ main article > h1:empty { display: none; }
   /* The medallion stops breathing; the halo stays, just still. */
   .cover-glow { animation: none; opacity: 1; }
   .cover-medallion:hover { transform: none; }
+  /* Hero entrance: no travel, everything simply present. */
+  .home-hero .cover-hero, .hero-ribbon, .hero-intro,
+  .home-hero .cover-subtitle, .hero-snap { animation: none; }
+  .hero-snap:hover { transform: rotate(var(--tilt, 0deg)); }
 }
 
 @keyframes patch-fade { from { opacity: 0; } to { opacity: 1; } }
 
 @media (max-width: 640px) {
   .page-quiet main article { padding: 24px 20px 32px; }
-  .home-cover {
-    padding: 0 22px 38px;
-    margin-top: 88px;
-    margin-bottom: 40px;
-    border-radius: 28px;
-  }
-  .home-cover p { max-width: 100%; }
+  .home-hero { padding-top: 24px; }
+  /* All four snaps hug the medallion in two short rows — any lower and
+     they sit on the ribbon and intro text (that bug shipped once in a
+     screenshot; keep them out of the type). */
+  .hero-snap { width: 88px; padding: 5px 5px 7px; }
+  .hero-snap--1 { top: 2%; left: 1%; }
+  .hero-snap--2 { top: 30%; left: 0; }
+  .hero-snap--3 { top: 2%; right: 1%; }
+  .hero-snap--4 { top: 32%; right: 0; }
+  .hero-streamer { display: none; }
+  .hero-launch { height: 96px; }
+  .launch-pup { width: 62px; top: -26px; }
+  .scroll-hint { left: 92px; top: 28px; }
   .claude-bar .bar-body { padding-left: 20px; }
   .cover-hero { margin-top: -78px; }
   .patch-grid { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 20px 14px; }

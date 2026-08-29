@@ -143,17 +143,13 @@ function coverHeroHtml(src = '/static/photos/home-locket.jpg', alt = 'Annie') {
   </div>`;
 }
 
-// A small trail of paw prints used as a decorative divider (e.g. on the
-// home cover, between the subtitle and the prose).
-function pawTrailSvg() {
-  return `<svg class="paw-trail" viewBox="0 0 140 34" aria-hidden="true">${pawSvg(18, 22, -16)}${pawSvg(70, 8, 4)}${pawSvg(122, 20, 20)}</svg>`;
-}
-
 // The pup mascot, sitting (same shapes as the scroll-companion in
 // template.html, minus the legs — no legs visible reads as "sitting").
 // Static, on purpose: the motion budget in DESIGN.md is spoken for.
-function pupSittingSvg() {
-  return `<svg class="cover-pup-peek" viewBox="5 22 105 55" aria-hidden="true">
+// Appears twice on home: at the launch path's start (Beat 2) and dozing
+// in the sign-off (Beat 4) — same companion, start and end of the walk.
+function pupSittingSvg(cls = 'launch-pup') {
+  return `<svg class="${cls}" viewBox="5 22 105 55" aria-hidden="true">
     <path d="M26 60 Q10 50 13 36 Q22 44 30 52 Z" fill="#e2b97e"/>
     <ellipse cx="54" cy="62" rx="30" ry="20" fill="#f0dfc0"/>
     <ellipse cx="46" cy="55" rx="16" ry="10" fill="#e2b97e" opacity="0.75"/>
@@ -168,6 +164,20 @@ function pupSittingSvg() {
       <path d="M0 8 C 15 -6 22 11 3 14 C 9 5 4 3 0 8 Z" fill="#d98fa0"/>
       <circle cx="0" cy="9" r="4.5" fill="#c17a8e"/>
     </g>
+  </svg>`;
+}
+
+// The ribbon banner behind the hero title — the one place collar pink
+// runs at hero scale (it's her bow, writ large; see DESIGN.md's palette
+// rule before adding pink anywhere else). Tails and folds are drawn
+// first so the arched band paints over them.
+function ribbonSvg() {
+  return `<svg class="ribbon" viewBox="0 0 300 74" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M28 20 L4 27 L15 37 L4 47 L28 54 Z" fill="#c17a8e"/>
+    <path d="M272 20 L296 27 L285 37 L296 47 L272 54 Z" fill="#c17a8e"/>
+    <path d="M28 50 L28 62 L42 52 Z" fill="#b06e81"/>
+    <path d="M272 50 L272 62 L258 52 Z" fill="#b06e81"/>
+    <path d="M28 12 Q150 2 272 12 L272 52 Q150 62 28 52 Z" fill="var(--bow, #d98fa0)"/>
   </svg>`;
 }
 
@@ -357,30 +367,60 @@ function buildPages() {
   }
 }
 
-// --- Home: the cover (medallion, title, a few lines from home.md) with
-// the journey trail straight underneath. One page, no detour.
-function buildHome(trailContent) {
+// --- Home: four beats (owner brief, 29 Aug 2026 — "the visitor goes on
+// a trip"). Beat 1: the wow — Annie's medallion, her name on a ribbon,
+// one line of intro, real snaps from recent entries fanned around her.
+// Beat 2: the launch — a paw-print path enters from the page's left
+// edge with the pup sitting at its head, towing the eye into the trail.
+// Beats 3 and 4 (the you-are-here pin and the sign-off) live in
+// buildTrail. No card any more; the hills are the stage.
+function buildHome(trailContent, entries) {
   const file = path.join(SRC, 'pages', 'home.md');
   const { data, content } = fs.existsSync(file)
     ? matter(fs.readFileSync(file, 'utf8'))
     : { data: {}, content: '' };
-  const cover = `<div class="home-cover">
+  // The fan: newest 4 entries that have a photo — already-published
+  // images only, so the fan refreshes itself as the journal grows.
+  const snaps = entries
+    .filter((e) => e.thumb)
+    .slice(-4)
+    .reverse()
+    .map((e, i) => {
+      let imgFile = null;
+      if (e.thumb.startsWith('/static/')) imgFile = path.join(SRC, 'static', e.thumb.slice(8));
+      else if (e.thumb.startsWith('/journal/')) imgFile = path.join(SRC, 'journal', e.thumb.slice(9));
+      const size = imgFile && jpegSize(imgFile);
+      const dims = size ? ` width="${size.width}" height="${size.height}"` : '';
+      return `<a class="hero-snap hero-snap--${i + 1}" href="/journal/${e.slug}/" aria-label="${escapeHtml(e.title)}"><img src="${escapeHtml(e.thumb)}" alt=""${dims} decoding="async"></a>`;
+    })
+    .join('\n  ');
+  const hero = `<section class="home-hero">
+  <svg class="hero-streamer hero-streamer--a" viewBox="0 0 40 150" aria-hidden="true"><path d="M20 4 C 40 30 0 52 20 78 C 40 104 0 126 18 146"/></svg>
+  <svg class="hero-streamer hero-streamer--b" viewBox="0 0 40 150" aria-hidden="true"><path d="M20 4 C 40 30 0 52 20 78 C 40 104 0 126 18 146"/></svg>
+  <svg class="hero-streamer hero-streamer--c" viewBox="0 0 40 150" aria-hidden="true"><path d="M20 4 C 40 30 0 52 20 78 C 40 104 0 126 18 146"/></svg>
+  ${snaps}
   ${coverHeroHtml()}
-  <h1>${escapeHtml(data.title || SITE_NAME)}</h1>
+  <div class="hero-ribbon">${ribbonSvg()}<h1>Annie</h1></div>
+  ${marked.parse(content).replace('<p>', '<p class="hero-intro">')}
   <p class="cover-subtitle">Home since ${formatDate(isoOfUtc(HOME_DATE_UTC))} · The Malvern Hills</p>
-  ${pawTrailSvg()}
-  ${marked.parse(content)}
-  ${pupSittingSvg()}
+</section>
+<div class="hero-launch" aria-hidden="true">
+  ${pupSittingSvg('launch-pup')}
+  <svg class="launch-path" viewBox="0 0 1000 130" preserveAspectRatio="none">
+    <path class="launch-line" d="M-20 34 C 180 10 420 96 560 74 C 700 52 830 108 870 126"/>
+    ${pawSvg(180, 36, 12)}${pawSvg(330, 60, -6)}${pawSvg(480, 74, 10)}${pawSvg(640, 64, -14)}${pawSvg(780, 92, 8)}
+  </svg>
+  <span class="scroll-hint">Come along ↓</span>
 </div>`;
   const html = renderPage({
     title: data.title || SITE_NAME,
-    content: cover + trailContent,
+    content: hero + trailContent,
     activePath: '/',
     bodyClass: 'page-home',
     hideTitle: true,
   });
   fs.writeFileSync(path.join(DIST, 'index.html'), html);
-  console.log('  home  -> index.html (cover + trail)');
+  console.log('  home  -> index.html (hero + trail)');
 }
 
 // --- Lessons: tiny owner-written notes on what raising Annie is
@@ -749,7 +789,7 @@ function buildJournal(manual, lessons) {
     JSON.stringify(entries.map(({ slug, title, date }) => ({ slug, title, date })))
   );
 
-  buildHome(buildTrail(entries, milestones));
+  buildHome(buildTrail(entries, milestones), entries);
   buildJournalRedirect();
   buildArchive(entries);
 }
@@ -815,6 +855,8 @@ function buildTrail(entries, milestones) {
         .sort((a, b) => a.label.length - b.label.length)
         .slice(0, 2);
       const signposts = weekMilestones.map((m) => `<span class="signpost">🪧 ${escapeHtml(m.label)}</span>`).join(' ');
+      // Beat 3: the newest week answers "where are we?" at a glance.
+      const pin = i === 0 ? ' <span class="you-are-here">📍 You\'re all caught up</span>' : '';
       const body = weekEntries.length
         ? `<div class="week-entries">${weekEntries.map((e) => patchHtml(e, { fav: e.featured })).join('')}</div>`
         : '<p class="quiet-week">A quiet week on the trail. No posts.</p>';
@@ -822,7 +864,7 @@ function buildTrail(entries, milestones) {
       sections.push(`${connector}<section class="week-stop side-${side}">
     <div class="waypoint">
       <span class="waypoint-badge">${w}</span>
-      <div><h2 class="waypoint-title">Week ${w}<span class="waypoint-dates">${weekRangeLabel(w)}</span></h2>${signposts}</div>
+      <div><h2 class="waypoint-title">Week ${w}<span class="waypoint-dates">${weekRangeLabel(w)}</span></h2>${signposts}${pin}</div>
     </div>
     ${body}
   </section>`);
@@ -846,6 +888,11 @@ function buildTrail(entries, milestones) {
     <p class="random-day-hint">Feeling lucky? Pick a month to draw from, or leave it on any.</p>
     <select aria-label="Filter by month" data-random-month><option value="">Any month</option></select>
     <button type="button" data-random-go>Click here to see a random day from Annie's journey 🎲</button>
+  </div>
+  <div class="trail-end">
+    <div class="trail-end-pup">${pupSittingSvg('')}<span class="pup-zzz" aria-hidden="true">z z</span></div>
+    <p class="trail-end-brand">Annie &amp; Claude</p>
+    <p class="trail-end-links"><a href="/about-annie.html">Meet Annie →</a> · <a href="/about-this-project.html">How this site is made →</a></p>
   </div>
 </div>`;
   }

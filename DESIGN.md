@@ -94,15 +94,38 @@ the random-day button are JS-only, and both are decoration).
 
 ## Structure the design hangs off
 
-- Home = **the journal** (owner decision, 29 Aug 2026, "streamline"): the
-  cover card (`.home-cover` — medallion, title, subtitle, a few lines
-  from `home.md`) with the journey trail rendering directly beneath it on
-  the same page. `/journal/` is a meta-refresh redirect to `/`; posts and
-  the archive keep their `/journal/...` URLs; there is no Journal nav
-  item. The old blush CTA pill is gone (nothing to link to), which hands
-  its pink budget back. build.js emits the cover's own `<h1>` inside
-  `.home-cover` and blanks the template's slot (`hideTitle`), so no
-  flex-order trick is needed any more.
+- Home = **the journal**, staged as **four beats** (owner brief, 29 Aug
+  2026: "the visitor goes on a trip"; hero rebuilt same day from the
+  earlier cover card — there is no card any more, the hills are the
+  stage):
+  1. **The wow** (`.home-hero`): Annie's medallion large, her name on a
+     pink **ribbon banner** (`ribbonSvg` — the one sanctioned use of
+     collar pink at hero scale), ONE line of intro from `home.md`, the
+     small-caps subtitle, pastel **streamers** (sky/gold/moss only), and
+     a **fan of real snaps** (`.hero-snap`) — the newest 4 entries that
+     have a photo, chosen automatically, linking to their posts. On
+     mobile the snaps hug the medallion in two short rows; lower and
+     they cover the ribbon/intro (that bug happened; don't reintroduce).
+  2. **The launch** (`.hero-launch`): full-bleed (100vw) dashed paw path
+     entering from the page's LEFT edge, the sitting pup at its head,
+     "Come along ↓" hint. Same dash language as the trail connectors.
+  3. **You are here**: the newest week's waypoint carries a gold
+     `.you-are-here` pill ("You're all caught up").
+  4. **The sign-off** (`.trail-end`): the pup again, asleep ("z z"),
+     "Annie & Claude", links to About Annie / About This Project, with
+     the random-day widget just above. The journey has an ending.
+  `/journal/` is a meta-refresh redirect to `/`; posts and the archive
+  keep their `/journal/...` URLs; there is no Journal nav item. build.js
+  emits the hero's own `<h1>` ("Annie") inside `.hero-ribbon` and blanks
+  the template's slot (`hideTitle`). Hero entrance: a one-time stagger
+  (`hero-pop`, 260–280ms ease-out, delays to ~310ms, `backwards` fill so
+  hover transforms survive; stilled under reduced motion) — this
+  replaced the paw-trail divider and the card, and joins the delight
+  budget alongside the halo breathe.
+  **Screenshot gotcha:** headless Edge + `--virtual-time-budget` races
+  image decode (random hero snaps render as blank cards) and freezes
+  mid-entrance; verify layout with `--force-prefers-reduced-motion` and
+  judge motion by hand in a real browser.
 - The **scalloped medallion** (redesigned Aug 2026) replaced the
   original deep-moss "box lid" on the owner's call: it read too dark and
   too boxy. A photo of Annie in a 16-scallop medallion, floating over
