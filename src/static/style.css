@@ -482,16 +482,30 @@ main article > h1:empty { display: none; }
   text-wrap: pretty;
 }
 
-/* Beat 2: the launch. Full-bleed, so the path really does enter from
-   the page's left edge; the pup sits at its head, ready to set off. */
+/* Beat 2: the launch. The pup sets off from the left and the path hooks
+   back down into the first waypoint.
+
+   Sized to .trail's own 700px column, and drawn as ONE uniformly-scaled
+   SVG with the pup embedded in it. Both of those are load-bearing, and
+   both were learned the hard way (29 Aug 2026):
+   - The first version was full-bleed 100vw with preserveAspectRatio
+     "none". On a wide monitor that stretched a 1000-unit viewBox across
+     2500px, flattening the curve to a near-straight line and squashing
+     every paw print and dash into an oval. NEVER non-uniformly scale a
+     drawing that contains round shapes.
+   - The pup was separately positioned in px while the path scaled with
+     the viewport, so the two drifted apart and the pup floated off the
+     line. Anything that must stay glued to the path belongs INSIDE the
+     path's SVG, in its coordinate space.
+   - Sharing the trail's width means the path's descent lands on the
+     first waypoint badge at every screen size, so it hands the eye over
+     instead of trailing off into the right margin. */
 .hero-launch {
   position: relative;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  height: 130px;
-  margin-top: 10px;
+  max-width: 700px;
+  margin: 4px auto 0;
 }
-.launch-path { display: block; width: 100%; height: 100%; }
+.launch-path { display: block; width: 100%; height: auto; }
 .launch-path .launch-line {
   fill: none;
   stroke: var(--moss);
@@ -501,17 +515,13 @@ main article > h1:empty { display: none; }
   opacity: 0.6;
 }
 .launch-path .paw { fill: var(--moss); opacity: 0.45; }
-.launch-pup {
-  position: absolute;
-  left: max(16px, 6vw);
-  top: -36px;
-  width: 84px;
-  height: auto;
-}
+
+/* Parked in the empty right-hand region the path never reaches, as a
+   percentage so it stays clear of the line at every width. */
 .scroll-hint {
   position: absolute;
-  left: max(100px, 13vw);
-  top: 44px;
+  right: 3%;
+  top: 30%;
   font-family: var(--font-body);
   font-weight: 800;
   font-size: 0.76rem;
@@ -1462,9 +1472,8 @@ main article > h1:empty { display: none; }
   .hero-snap--3 { top: 2%; right: 1%; }
   .hero-snap--4 { top: 32%; right: 0; }
   .hero-streamer { display: none; }
-  .hero-launch { height: 96px; }
-  .launch-pup { width: 62px; top: -26px; }
-  .scroll-hint { left: 92px; top: 28px; }
+  /* The launch path needs no mobile overrides: it scales uniformly with
+     its column, pup and all. */
   .claude-bar .bar-body { padding-left: 20px; }
   .cover-hero { margin-top: -78px; }
   .patch-grid { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 20px 14px; }

@@ -149,7 +149,14 @@ function coverHeroHtml(src = '/static/photos/home-locket.jpg', alt = 'Annie') {
 // Appears twice on home: at the launch path's start (Beat 2) and dozing
 // in the sign-off (Beat 4) — same companion, start and end of the walk.
 function pupSittingSvg(cls = 'launch-pup') {
-  return `<svg class="${cls}" viewBox="5 22 105 55" aria-hidden="true">
+  return `<svg class="${cls}" viewBox="5 22 105 55" aria-hidden="true">${pupShapes()}</svg>`;
+}
+
+// Just the shapes, so the pup can also be dropped straight into another
+// drawing's coordinate space (the launch path embeds it in a <g>, which
+// is what keeps pup and path glued together at every screen width).
+function pupShapes() {
+  return `
     <path d="M26 60 Q10 50 13 36 Q22 44 30 52 Z" fill="#e2b97e"/>
     <ellipse cx="54" cy="62" rx="30" ry="20" fill="#f0dfc0"/>
     <ellipse cx="46" cy="55" rx="16" ry="10" fill="#e2b97e" opacity="0.75"/>
@@ -163,8 +170,7 @@ function pupSittingSvg(cls = 'launch-pup') {
       <path d="M0 8 C -15 -6 -22 11 -3 14 C -9 5 -4 3 0 8 Z" fill="#d98fa0"/>
       <path d="M0 8 C 15 -6 22 11 3 14 C 9 5 4 3 0 8 Z" fill="#d98fa0"/>
       <circle cx="0" cy="9" r="4.5" fill="#c17a8e"/>
-    </g>
-  </svg>`;
+    </g>`;
 }
 
 // The ribbon banner behind the hero title — the one place collar pink
@@ -405,10 +411,10 @@ function buildHome(trailContent, entries) {
   <p class="cover-subtitle">Home since ${formatDate(isoOfUtc(HOME_DATE_UTC))} · The Malvern Hills</p>
 </section>
 <div class="hero-launch" aria-hidden="true">
-  ${pupSittingSvg('launch-pup')}
-  <svg class="launch-path" viewBox="0 0 1000 130" preserveAspectRatio="none">
-    <path class="launch-line" d="M-20 34 C 180 10 420 96 560 74 C 700 52 830 108 870 126"/>
-    ${pawSvg(180, 36, 12)}${pawSvg(330, 60, -6)}${pawSvg(480, 74, 10)}${pawSvg(640, 64, -14)}${pawSvg(780, 92, 8)}
+  <svg class="launch-path" viewBox="0 0 700 172">
+    <path class="launch-line" d="M-10 68 C 120 48, 260 70, 380 92 C 470 108, 520 130, 440 146 C 360 161, 200 152, 70 168"/>
+    ${pawSvg(109, 60, -8)}${pawSvg(248, 71, 8)}${pawSvg(439, 105, 22)}${pawSvg(477, 133, 40)}${pawSvg(313, 156, -20)}${pawSvg(171, 161, -14)}
+    <g transform="translate(19.2,-7.3) scale(0.952)">${pupShapes()}</g>
   </svg>
   <span class="scroll-hint">Come along ↓</span>
 </div>`;

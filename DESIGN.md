@@ -106,9 +106,21 @@ the random-day button are JS-only, and both are decoration).
      have a photo, chosen automatically, linking to their posts. On
      mobile the snaps hug the medallion in two short rows; lower and
      they cover the ribbon/intro (that bug happened; don't reintroduce).
-  2. **The launch** (`.hero-launch`): full-bleed (100vw) dashed paw path
-     entering from the page's LEFT edge, the sitting pup at its head,
-     "Come along ↓" hint. Same dash language as the trail connectors.
+  2. **The launch** (`.hero-launch`): the pup sets off from the left on
+     a dashed paw path that sweeps right, hooks back and descends into
+     the first waypoint, with a "Come along ↓" hint parked in the empty
+     right-hand region. Same dash language as the trail connectors.
+     **Rebuilt 29 Aug 2026 after the first version shipped broken** —
+     three rules came out of it, all enforced in the CSS comment there:
+     (a) it is ONE uniformly-scaled SVG sized to `.trail`'s 700px
+     column, never full-bleed `100vw` with `preserveAspectRatio="none"`
+     — non-uniform scaling flattened the curve to a near-straight line
+     on wide monitors and squashed every paw and dash into an oval;
+     (b) the pup lives INSIDE that SVG as a `<g>`, because positioning
+     it separately in px let it drift off the line as the path scaled;
+     (c) sharing the trail's column is what makes the descent land on
+     the Week badge at every width instead of trailing off into the
+     right margin. Needs no mobile overrides as a result.
   3. **You are here**: the newest week's waypoint carries a gold
      `.you-are-here` pill ("You're all caught up").
   4. **The sign-off** (`.trail-end`): the pup again, asleep ("z z"),
