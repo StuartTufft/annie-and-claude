@@ -217,13 +217,17 @@ a label starting with ★ also renders a gold star); auto-detected firsts
 and calendar anniversaries are the **compact** tier, single-line
 texture under each chapter.
 
-Milestone photos: **landmarks only** (29 Aug 2026 — the pool used to
-serve every row; restricting it keeps the page light as it grows). Each
-date builds a pool — that day's journal photos first (already
-published, so nothing new can leak), then
+Milestone photos: **landmarks + the gold calendar tier** (revised
+later on 29 Aug 2026: the first cut was landmarks-only, but the owner
+wants the "major milestones" — the gold 1-week/1-month/1-year rows —
+to carry pictures too; only the pink "first" tier stays photo-free, so
+the page doesn't grow a thumbnail per detected "first"). Each date
+builds a pool — that day's journal photos first (already published, so
+nothing new can leak), then
 `src/static/photos/milestone-YYYY-MM-DD.jpg` if the owner dropped one
-in — and landmarks sharing a date draw from it round-robin. A date with
-no photos anywhere gets no thumb; never borrow from another day.
+in — and rows sharing a date draw from it round-robin. A date with no
+photos anywhere gets no thumb; never borrow from another day. Compact
+gold rows use a smaller 48px thumb.
 - Archive = monthly scrapbook pages with folder tabs.
 
 ### Patches — journal entries as scrapbook cuttings
@@ -340,6 +344,12 @@ originals routinely carry GPS.
   own themed page — the way a journal patch links to `/journal/<slug>/`
   — rather than expanding inline via `<details>`. Confirm the reading
   and appetite before building; it's a real restructure (per-bar slugs,
-  routing, individual templates), not a tweak.
+  routing, individual templates), not a tweak. Owner confirmed 29 Aug
+  they'll come back to this one later — don't build unprompted.
+- **Flagged, not built** (owner, 29 Aug 2026): a regular **"Annie
+  POV"** feature — photos/videos taken from behind her head, her view
+  of the world — as a recurring element on the site. Shape undecided
+  (a tag? a shelf like favourites? its own page?); ask when the owner
+  brings it back.
 - Not done yet: Sprint 2 (first real post, voice-defining), Sprint 3
   (`/publish` pipeline skill). See `PLANNING.md`.

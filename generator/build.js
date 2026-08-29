@@ -601,19 +601,24 @@ function milestonePhotoPools(entries) {
   return pools;
 }
 
-// One row on the milestones page. Two tiers (owner request, Aug 2026):
-// owner-written lines from milestones.md are large "landmark" rows and
-// the ONLY tier that draws from the photo pool (so the page stays light
-// as it grows); auto-detected firsts and calendar anniversaries render
-// as compact single-line texture.
+// One row on the milestones page. Two size tiers (owner request, Aug
+// 2026): owner-written lines from milestones.md render large, as
+// "landmark" rows; auto-detected firsts and calendar anniversaries stay
+// compact single-line texture. Photos are a separate, slightly wider
+// question (owner request, 29 Aug 2026): the gold calendar-anniversary
+// tier ("major milestones" in the owner's words — 1 week home, 1 month
+// home, and so on) also draws from the pool, alongside landmarks; only
+// the pink "first" tier stays photo-free, so the page doesn't fill up
+// with a thumbnail on every single detected "first".
 function milestoneRowHtml(m, pools, drawn) {
   const kind = milestoneKind(m);
   const landmark = kind === 'manual';
+  const photoEligible = kind === 'manual' || kind === 'week';
   const label = m.auto && m.slug
     ? `<a href="/journal/${m.slug}/">${escapeHtml(m.label)}</a>`
     : escapeHtml(m.label);
   let thumb = '';
-  if (landmark) {
+  if (photoEligible) {
     const pool = [...(pools.get(m.date) || [])];
     const staticFile = `photos/milestone-${m.date}.jpg`;
     if (fs.existsSync(path.join(SRC, 'static', staticFile)) && !pool.includes(`/static/${staticFile}`)) {
@@ -834,13 +839,14 @@ function buildTrail(entries, milestones) {
 
     content = `<div class="trail">
   <p class="trail-intro">The journey so far, newest first. Keep scrolling to wander back to day one.</p>
-  <div class="random-day" data-random hidden>
-    <select aria-label="Filter by month" data-random-month><option value="">Any month</option></select>
-    <button type="button" data-random-go>Take me to a random day 🎲</button>
-  </div>
   ${sections.join('\n  ')}
   <a class="archive-link" href="/journal/archive/">Wander further back →</a>
   ${shelf}
+  <div class="random-day" data-random hidden>
+    <p class="random-day-hint">Feeling lucky? Pick a month to draw from, or leave it on any.</p>
+    <select aria-label="Filter by month" data-random-month><option value="">Any month</option></select>
+    <button type="button" data-random-go>Click here to see a random day from Annie's journey 🎲</button>
+  </div>
 </div>`;
   }
 

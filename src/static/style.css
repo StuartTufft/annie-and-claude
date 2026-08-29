@@ -576,7 +576,16 @@ main article > h1:empty { display: none; }
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin: 14px 0 30px;
+  /* Lives at the bottom of the trail now (owner request, 29 Aug 2026),
+     as a little parting invitation rather than a toolbar up top. */
+  margin: 44px 0 10px;
+}
+
+.random-day-hint {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
 }
 
 .random-day select {
@@ -904,6 +913,10 @@ main article > h1:empty { display: none; }
   font-family: var(--font-display);
   font-size: 1.12rem;
 }
+
+/* Gold calendar rows keep their compact size but carry a photo; shrink
+   the thumb so it sits comfortably on a single-line row. */
+.milestone-item--compact .milestone-photo { width: 48px; height: 48px; }
 .milestone-star { color: var(--gold-ink); }
 
 .milestone-photo {

@@ -13,4 +13,6 @@ She's started sitting on her own during meals, easily and repeatedly, without us
 
 The plan from here: a short, gentle outing somewhere new, and, with a camera rolling so we can actually see how she copes, trying a minute or two of both of us out of the house together. Small, deliberate steps, not chasing a number.
 
+![Annie's face right up against the camera in the car, a hand resting on a leg beside her](close-up.jpg "Nose to the lens, one week in.")
+
 One week in, and it already feels like she's been here much longer than that.
