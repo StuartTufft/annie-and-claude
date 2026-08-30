@@ -120,6 +120,23 @@ Workflow, every time a journal entry needs photos:
 4. Once a photo's been used and committed, move its source file from the
    top-level folder into `z_Archive` so it isn't picked up again — that's
    the existing convention already in use there.
+5. **Look at every photo before writing its alt text.** Read the image,
+   don't infer it from the filename or from what the owner said the
+   caption should be. Getting this wrong once published a description of
+   a photo that wasn't there (Aug 2026). The caption is always the
+   owner's words; the alt text is a plain description of what is
+   actually in the frame.
+
+**Every entry that has a photo must show one on the home page.** This is
+already automatic and needs no per-post action: the generator takes the
+**first image in the post** as that entry's `thumb`, which is the patch
+on the home trail and the archive stamp. Two consequences worth knowing:
+order the photos so the strongest one comes first, because that is the
+preview the whole site leads with; and a post with no images at all
+falls back to a paw-print placeholder, so if photos exist for that day,
+add one rather than leaving the card blank. Verify after a build by
+grepping `dist/index.html` for the entry's slug, and remember the live
+site is a deploy behind until the Action finishes.
 
 The visual system (palette, type, motion rules, the pup sprite, what's
 deliberate and why — including that the site is **light theme only**, an

@@ -242,7 +242,14 @@ article img {
   margin: 20px 0;
 }
 
-article iframe {
+/* Deliberately scoped to the Drive video embed this was written for,
+   NOT every iframe. Social embeds (Instagram) size their own iframe from
+   their script, and a reel is vertical, not 16:9. Forcing this ratio on
+   one crops it, and "resetting" it with width/height auto is worse: an
+   iframe with no ratio and no dimensions falls back to the CSS default
+   replaced-element size of 300x150 and collapses to a sliver. Leave
+   social iframes alone entirely and let their own script size them. */
+article iframe[src*="drive.google.com"] {
   max-width: 100%;
   border-radius: 12px;
   aspect-ratio: 16 / 9;
@@ -251,21 +258,11 @@ article iframe {
   border: none;
 }
 
-/* Social embeds (Instagram etc.) size their own iframe dynamically, and
-   a reel is vertical, not 16:9 — forcing the video ratio above onto it
-   squashes and crops the frame. Reset it inside this wrapper so the
-   embed's own script controls its real dimensions. */
+/* Instagram centres its own embed via inline margin once embed.js swaps
+   the blockquote for an iframe; this wrapper only supplies the vertical
+   rhythm the surrounding prose expects. */
 .ig-embed {
   margin: 20px 0;
-  display: flex;
-  justify-content: center;
-}
-
-.ig-embed iframe {
-  aspect-ratio: auto;
-  width: auto;
-  height: auto;
-  max-width: 100%;
 }
 
 /* ------------------------------------------------------------------ */
