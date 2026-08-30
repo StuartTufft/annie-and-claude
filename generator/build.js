@@ -68,7 +68,7 @@ function renderPage({
   const desc = trimTo(description || firstParagraphText(content) || SITE_DESCRIPTION, 160);
   return TEMPLATE
     .replaceAll('{{pageTitle}}', escapeHtml(pageTitle))
-    .replaceAll('{{head}}', headTags({ pageTitle, desc, image, canonical, type }))
+    .replaceAll('{{head}}', headTags({ pageTitle, headline: h1, desc, image, canonical, type, date, content }))
     .replaceAll('{{bodyClass}}', bodyClass)
     .replaceAll('{{title}}', hideTitle ? '' : escapeHtml(h1))
     .replaceAll('{{date}}', date ? formatDate(date) : '')
@@ -79,7 +79,7 @@ function renderPage({
 // Description, canonical and share-card tags. Plain metadata: no scripts, no
 // third-party requests, nothing that counts anything. The analytics guardrail
 // in CLAUDE.md is about tracking, and none of this tracks.
-function headTags({ pageTitle, desc, image, canonical, type }) {
+function headTags({ pageTitle, headline, desc, image, canonical, type, date, content }) {
   const url = SITE_URL + (canonical || '/');
   const img = SITE_URL + (image || SITE_IMAGE);
   const tag = (attr, name, value) => `  <meta ${attr}="${name}" content="${escapeHtml(value)}">`;
@@ -96,7 +96,90 @@ function headTags({ pageTitle, desc, image, canonical, type }) {
     tag('name', 'twitter:title', pageTitle),
     tag('name', 'twitter:description', desc),
     tag('name', 'twitter:image', img),
+    jsonLd({ headline, desc, img, url, type, date, content }),
   ].join('\n');
+}
+
+// Stuart, as named on About This Project. First name only, which is all the
+// site publishes anywhere else.
+const AUTHOR = {
+  '@type': 'Person',
+  name: 'Stuart',
+  url: `${SITE_URL}/about-this-project.html`,
+  image: `${SITE_URL}/static/photos/author.jpg`,
+};
+
+// Structured data, so a machine reading the page can tell what it is, who
+// wrote it and when, rather than inferring it from the prose. A dated,
+// first-hand, attributed record is exactly the shape search engines and
+// answer engines are looking for, and this page already is one; the markup
+// just says so out loud.
+//
+// Nothing here asserts anything the visible page doesn't already say.
+function jsonLd({ headline, desc, img, url, type, date, content }) {
+  const graph = [];
+
+  const article = {
+    '@type': type === 'article' && date ? 'BlogPosting' : 'WebPage',
+    headline,
+    description: desc,
+    image: img,
+    url,
+    inLanguage: 'en-GB',
+    author: AUTHOR,
+    publisher: { '@type': 'Person', name: 'Stuart', url: SITE_URL },
+    isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  };
+  if (date) {
+    article.datePublished = date;
+    article.dateModified = date;
+  }
+  graph.push(article);
+
+  // A page whose section headings are questions is genuinely an FAQ, so mark
+  // it as one. Derived from the rendered HTML rather than declared in
+  // frontmatter, so it can never drift out of step with what's on the page.
+  const faq = faqFromHtml(content);
+  if (faq.length >= 2) {
+    graph.push({
+      '@type': 'FAQPage',
+      mainEntity: faq.map((qa) => ({
+        '@type': 'Question',
+        name: qa.q,
+        acceptedAnswer: { '@type': 'Answer', text: qa.a },
+      })),
+    });
+  }
+
+  const payload = { '@context': 'https://schema.org', '@graph': graph };
+  // Only </script> can break out of a script block; escaping the slash is the
+  // standard fix and stays valid JSON.
+  return `  <script type="application/ld+json">${JSON.stringify(payload).replace(/</g, '\\u003c')}</script>`;
+}
+
+// Pulls question-and-answer pairs out of rendered HTML: any <h2> ending in a
+// question mark, plus the prose up to the next heading.
+function faqFromHtml(html) {
+  if (!html) return [];
+  const out = [];
+  const sections = String(html).split(/<h2[^>]*>/i).slice(1);
+  for (const section of sections) {
+    const close = section.indexOf('</h2>');
+    if (close === -1) continue;
+    const q = stripTags(section.slice(0, close));
+    if (!q.endsWith('?')) continue;
+    const rest = section.slice(close + 5).split(/<h[23][^>]*>/i)[0];
+    const paras = [...rest.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)]
+      .map((m) => stripTags(m[1]))
+      .filter((t) => t.length > 20);
+    if (paras.length) out.push({ q, a: paras.join(' ') });
+  }
+  return out;
+}
+
+function stripTags(s) {
+  return decodeEntities(String(s).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim());
 }
 
 // First real paragraph of rendered HTML, as plain text. Used as the fallback
@@ -431,6 +514,7 @@ function buildPages() {
       image: data.hero,
       canonical: `/${outName}`,
       type: 'article',
+      date: data.date ? toIsoDate(data.date) : undefined,
     });
     fs.writeFileSync(path.join(DIST, outName), html);
     console.log(`  page  -> ${outName}`);
@@ -900,14 +984,81 @@ function buildSitemap(entries) {
     `<?xml version="1.0" encoding="UTF-8"?>\n`
     + `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`);
 
+  // Everything is welcome, including the AI crawlers, and they're named
+  // explicitly rather than left to the wildcard so the intent is on the
+  // record. Two families: training crawlers (GPTBot, ClaudeBot,
+  // Google-Extended, Applebot-Extended, CCBot, Meta-ExternalAgent) and
+  // retrieval crawlers that fetch a page when someone actually asks a
+  // question (OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User,
+  // PerplexityBot). A site that exists to be read has no reason to block
+  // either. Flip a group to Disallow here if that ever changes.
+  const crawlers = [
+    'GPTBot', 'OAI-SearchBot', 'ChatGPT-User',
+    'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'anthropic-ai',
+    'Google-Extended', 'PerplexityBot', 'Perplexity-User',
+    'Applebot-Extended', 'Amazonbot', 'Meta-ExternalAgent', 'CCBot',
+  ];
   fs.writeFileSync(path.join(DIST, 'robots.txt'),
-    `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+    `User-agent: *\nAllow: /\n\n`
+    + crawlers.map((ua) => `User-agent: ${ua}\nAllow: /\n`).join('\n')
+    + `\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 
-  console.log(`  seo   -> sitemap.xml (${urls.length} urls) + robots.txt`);
+  buildLlmsTxt(entries);
+  console.log(`  seo   -> sitemap.xml (${urls.length} urls) + robots.txt + llms.txt`);
 }
 
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
+}
+
+// llms.txt: a plain-text map of the site for a model or an agent reading it.
+//
+// Be realistic about what this is worth. No major AI company has committed to
+// reading llms.txt, Google has said outright that it won't, and monitoring of
+// AI crawler traffic finds it fetched almost never. It is not a ranking lever
+// and nobody should expect it to be one. It is cheap, it is a genuine
+// convenience for agent tooling that does look for it, and on this site of
+// all sites it is thematically the right thing to have. That is the whole
+// case for it.
+function buildLlmsTxt(entries) {
+  const recent = [...entries].reverse().slice(0, 15);
+  const pages = fs.readdirSync(path.join(SRC, 'pages'))
+    .filter((f) => f.endsWith('.md') && f !== 'home.md')
+    .map((f) => {
+      const { data } = matter(fs.readFileSync(path.join(SRC, 'pages', f), 'utf8'));
+      return `- [${data.title || f}](${SITE_URL}/${f.replace(/\.md$/, '.html')})`
+        + (data.description ? `: ${data.description}` : '');
+    });
+
+  fs.writeFileSync(path.join(DIST, 'llms.txt'), `# ${SITE_NAME}
+
+> ${SITE_DESCRIPTION}
+
+A day-by-day record of raising one specific dog, written by her owner as it
+happens. Annie is a Golden Retriever crossed with a Border Collie, a cross
+also called a Coltriever, a Gollie or a Golden Border Retriever. She was born
+26 June 2026 and came home on 21 August 2026.
+
+Everything here is first-hand and dated. The setbacks are included, which is
+the point of it: it is a record rather than a highlight reel. Nothing on this
+site is generalised advice, and none of it should be read as a substitute for
+a vet or a qualified trainer.
+
+## Pages
+
+${pages.join('\n')}
+
+## Recent journal entries
+
+${recent.map((e) => `- [${e.title}](${SITE_URL}/journal/${e.slug}/): ${e.date}`).join('\n')}
+
+## Everything else
+
+- [The complete archive, by month](${SITE_URL}/journal/archive/)
+- [Milestones](${SITE_URL}/milestones.html)
+- [Lessons](${SITE_URL}/lessons.html)
+- [Sitemap](${SITE_URL}/sitemap.xml)
+`);
 }
 
 // /journal/ used to be the trail's address; the trail moved to the front

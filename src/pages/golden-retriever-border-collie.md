@@ -1,5 +1,6 @@
 ---
 title: What a Golden Retriever × Border Collie is actually like
+date: 2026-08-30
 description: Whether she's more collie or retriever, how much energy the cross really needs, and what surprised us most. Written while raising one, not researched.
 ---
 
@@ -28,7 +29,7 @@ forth, back and forth, with nobody teaching her anything. I think that's the
 collie wanting a job to do and the retriever wanting to please you, arriving at
 the same place from two different directions.
 
-## "That's going to be a lot of dog"
+## Do they need as much energy as everyone says?
 
 Everyone says it. Lively breed, needs a lot of energy.
 
@@ -40,7 +41,7 @@ The job right now is small. In these early stages it's biting on the right
 things, and not my sofa or my shoes. That's genuinely the whole of it, and it's
 enough.
 
-## The thing that surprised me most
+## What surprised me most?
 
 How easygoing she is.
 
