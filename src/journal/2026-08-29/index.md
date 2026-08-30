@@ -13,6 +13,8 @@ We did a bit of sit training, which is going well. She's prone to sitting back o
 
 The big thing: we went out to a shopping centre, the kind of place with an M&S, a Card Factory and a McDonald's. While Alisha shopped, I had Annie in her sling and we went for a little walk around. Lots of traffic. Other dogs too, which she was really interested in, though I kept her at a safe distance; there's always caution around that until she's fully vaccinated. She got to watch them from afar, felt good and safe, and took food the whole time in what was a genuinely busy environment. In the car park she was brilliant: all those people, all those cars, a completely new place, and she took it in her stride. She saw some children as well. I was very aware it was a lot of information for one small dog.
 
+![Annie's owner taking a selfie with Annie looming close to the camera from her sling](sling-selfie.jpg "In the sling for the shopping centre trip, unimpressed by portrait mode.")
+
 Back home she was very hyper, a bit overtired from all the stimulation, so she went in the playpen and I sat beside it while she settled down. And then a really good night: she got up at about midnight making a bit of a fuss, went out for a quick wee, and slept through the rest of it. Good girl. Though she's definitely becoming more extreme, either really chilled or really, really bitey, with less and less in between.
 
 I've bought a book called Easy Peasy Puppy Squeezy, and Total Recall is on the way. Reading as I go, trying to pick up a few lessons of my own.

@@ -251,6 +251,23 @@ article iframe {
   border: none;
 }
 
+/* Social embeds (Instagram etc.) size their own iframe dynamically, and
+   a reel is vertical, not 16:9 — forcing the video ratio above onto it
+   squashes and crops the frame. Reset it inside this wrapper so the
+   embed's own script controls its real dimensions. */
+.ig-embed {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.ig-embed iframe {
+  aspect-ratio: auto;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}
+
 /* ------------------------------------------------------------------ */
 /* Photos: printed "snaps" taped into the page. Two or more together  */
 /* become a picture-book spread — tilted slightly, like a real album. */

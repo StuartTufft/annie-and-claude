@@ -25,11 +25,15 @@ this file doesn't answer.
   iframe (see `src/journal/README.md` for the pattern). A Drive file must
   be shared "Anyone with the link" (Viewer) for the embed to actually
   render for site visitors. Instagram posts/reels embed the same way, via
-  Instagram's own oEmbed markup (a `<blockquote>` plus their `embed.js`)
-  dropped straight into the post's Markdown — owner decision, Aug 2026,
-  made deliberately for reach even though it brings Instagram's own
-  script and tracking along with it, which is otherwise against the
-  spirit of the analytics rule below.
+  Instagram's own oEmbed markup (a `<blockquote>` plus their `embed.js`),
+  **wrapped in `<div class="ig-embed">...</div>`** and dropped straight
+  into the post's Markdown — the wrapper matters: `style.css`'s generic
+  `article iframe` rule forces a 16:9 video ratio, which crops a reel's
+  vertical frame if the embed isn't inside `.ig-embed` (see `style.css`
+  for the reset). This is an owner decision, Aug 2026, made deliberately
+  for reach even though it brings Instagram's own script and tracking
+  along with it, which is otherwise against the spirit of the analytics
+  rule below.
   Never commit an actual video file to the repo either way.
 - **Never commit an unoptimised photo.** Resize to roughly 1600–2000px on
   the long edge and strip EXIF/GPS metadata before it's committed. If a

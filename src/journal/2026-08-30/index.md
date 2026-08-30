@@ -19,5 +19,7 @@ It ended with an early night, taken upstairs into a safe space away from all the
 
 This is the bit I think is easy to forget. You can control a lot of variables, but that kind of exposure isn't fully controllable, and at some point something has to give. Either you let the dog go crazy, which isn't fair on your guests, or you take the responsibility and take yourself out of the situation. Which meant I didn't get to socialise as much as I'd have liked. Such is life. That's one of the things you accept when you've got a pupper.
 
+<div class="ig-embed">
 <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DcqTl8VMmit/" data-instgrm-version="14"><a href="https://www.instagram.com/reel/DcqTl8VMmit/"></a></blockquote>
+</div>
 <script async src="//www.instagram.com/embed.js"></script>
