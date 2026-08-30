@@ -17,13 +17,20 @@ this file doesn't answer.
 
 ## Hard rules — never do these
 
-- **Never commit a video file.** Video lives on Google Drive (owner
-  decision, Aug 2026, reversing the earlier YouTube-only rule — sharing
-  is configured for durable "anyone with the link" access) and gets
-  embedded via Drive's `/preview` iframe (see `src/journal/README.md`
-  for the pattern). If asked to add a video, embed it — don't download
-  and commit it. A file must be shared "Anyone with the link" (Viewer)
-  for the embed to actually render for site visitors.
+- **Video and social embeds are fully supported — use them freely.**
+  This isn't a blocker, just a mechanism: embed, don't commit the raw
+  file. Video lives on Google Drive (owner decision, Aug 2026, reversing
+  the earlier YouTube-only rule — sharing is configured for durable
+  "anyone with the link" access) and gets embedded via Drive's `/preview`
+  iframe (see `src/journal/README.md` for the pattern). A Drive file must
+  be shared "Anyone with the link" (Viewer) for the embed to actually
+  render for site visitors. Instagram posts/reels embed the same way, via
+  Instagram's own oEmbed markup (a `<blockquote>` plus their `embed.js`)
+  dropped straight into the post's Markdown — owner decision, Aug 2026,
+  made deliberately for reach even though it brings Instagram's own
+  script and tracking along with it, which is otherwise against the
+  spirit of the analytics rule below.
+  Never commit an actual video file to the repo either way.
 - **Never commit an unoptimised photo.** Resize to roughly 1600–2000px on
   the long edge and strip EXIF/GPS metadata before it's committed. If a
   photo arrives raw, optimise it first; don't commit it as-is "for now."
@@ -80,6 +87,35 @@ generator/
   template.html           the one shared page template ({{title}}, {{pageTitle}}, {{date}}, {{nav}}, {{content}}, {{bodyClass}})
 .github/workflows/deploy.yml   builds and deploys dist/ to GitHub Pages on every push to main
 ```
+
+### Where photos come from (owner decision, Aug 2026)
+
+New photos land in a Google Drive folder synced locally via Google Drive
+for Desktop — a real folder on disk, not something reachable through an
+MCP tool (checked directly: no callable Drive tool exists in this
+environment, whatever `claude mcp list` reports as "connected" at the
+account level). On the owner's machine that's
+`F:\My Drive\PUBLIC FACING FILES\ANNIE\PHOTOS`, but the drive letter is
+just whatever Google Drive for Desktop mounted this session, and may not
+be F: on a different machine or after a reboot — if that exact path is
+missing, search for a `My Drive` folder and the same subpath under it
+before asking the owner.
+
+Workflow, every time a journal entry needs photos:
+1. List that top-level PHOTOS folder (not `z_Archive` inside it, that's
+   already-used source files from past entries).
+2. Match files to the entry by the date encoded in the filename:
+   `PXL_YYYYMMDD_HHMMSS....jpg` (Pixel) or `IMG-YYYYMMDD-WA####.jpg`
+   (WhatsApp shares). A `.MP.jpg` file is a Google Pixel Motion Photo —
+   a still frame with a video track embedded in the same file. Use the
+   still as a normal photo; the motion part is a video and falls under
+   the video rule above (Drive-embed it separately if wanted, don't try
+   to extract and commit it).
+3. Resize, strip EXIF/GPS, and place into the right `src/journal/`
+   location per the rule above, with the caption the owner gave.
+4. Once a photo's been used and committed, move its source file from the
+   top-level folder into `z_Archive` so it isn't picked up again — that's
+   the existing convention already in use there.
 
 The visual system (palette, type, motion rules, the pup sprite, what's
 deliberate and why — including that the site is **light theme only**, an

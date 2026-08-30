@@ -18,7 +18,7 @@ The training approach behind it all is positive-reinforcement based, welfare-fir
 
 ## About the author
 
-![Annie's owner holding her up for a selfie, Annie facing the other way](/static/photos/author.jpg "The author, plus the subject, who declined to face the camera.")
+![Annie's owner holding her up for a selfie, Annie facing the other way](/static/photos/author.jpg "Our best baby shark impressions, featuring a special sock obtained without permission.")
 
 I'm Stuart. I've lived around dogs my whole life and love them endlessly; I think they're brilliant companions, full stop.
 

@@ -14,7 +14,7 @@ It's also a small, ongoing experiment in using Claude (Anthropic's AI) as a genu
 
 ## How a post gets made
 
-1. **Dictate** — a quick voice recap of the day (via [Wispr Flow](https://wisprflow.ai)), saved as a raw note in the private log.
+1. **Dictate** — a quick voice recap of the day (via [Wispr Flow](https://wisprflow.ai)), saved as a raw note in the private log. Photos land in a synced Google Drive folder around the same time and get matched to the right day by filename.
 2. **Draft** — Claude turns that raw note into a post in the established voice, and strips anything that shouldn't be public (exact locations, health specifics, routine details).
 3. **Review** — a human reads it and either approves it or sends it back. Nothing skips this step.
 4. **Publish** — once approved, the post lands here, in `src/journal/`.
