@@ -11,6 +11,11 @@ energy.
 So here's what it has actually been like, from someone in the middle of it
 rather than someone who has read about it.
 
+The cross has a few names, none of which anybody says out loud. Coltriever is
+the most common. Gollie and Golden Border Retriever turn up as well. We just
+say she's a Golden Retriever crossed with a Border Collie, because that's the
+version people actually understand.
+
 ## Is she more collie or retriever?
 
 Honestly, it's still being decided. It's a crazy one.

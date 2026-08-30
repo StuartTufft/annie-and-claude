@@ -135,13 +135,27 @@ Never pad to five with something vague.
 
 The fixed pair:
 
-- **#gollie** — the cross. Chosen over "coltriever" and "goldenborderretriever"
-  because it is the one accounts actually in this niche use, it is the shortest
-  so it works best as a tag, and "coltriever" splits across two spellings
-  ("coltreiver") which halves whatever reach it has. Confirm against the
-  research pull if one has been done.
-- **#puppydiaries** — the angle. Working default until the research says
-  otherwise.
+- **#coltriever** — the cross. Measured 30 Aug 2026: 34,419 posts against
+  #gollie's 25,684 and #goldenborderretriever's 6,133. It is also the *cleanest*
+  of the three: #gollie is diluted by accounts with nothing to do with the
+  cross, because "gollie" is a word and a name, while #coltriever returns this
+  cross and little else. And owners self-identify with it, which #gollie owners
+  mostly do not: @bruce_the_coltriever, @lunacoltriever,
+  @bonniedogthecoltriever, @freya.the.coltriever, @sylviethecoltriever,
+  @phoenix_coltriever.
+  (This corrects an earlier call for #gollie made before the data existed. The
+  worry that "coltreiver" would split the tag was wrong: that spelling has
+  1,174 posts against 34,419.)
+- **#puppydiaries** — the angle, with a caveat. 67,285 posts, but the tag is
+  polluted: its single highest-play post in the pull was unrelated Turkish
+  comedy. #puppydiary (36,738) is smaller and cleaner if that starts to matter.
+
+**Neither fixed tag is where reach comes from.** The whole breed niche tops out
+around 8,000 followers and nobody owns it. That is the opportunity, but it also
+means the identity tags are for being *found by the right people* and for
+finding accounts to trade shares with. Reach comes from the three variable
+slots, which should usually be drawn from the big tags: #newpuppy (1.5M),
+#puppytraining (2.9M), #goldenretrieverpuppy (7.3M), #bordercolliemix (1.2M).
 
 **The breed name is a mention, not the identity** (owner decision). Body copy,
 headings, page titles and site metadata all say "Golden Retriever × Border

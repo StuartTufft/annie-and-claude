@@ -34,10 +34,14 @@ The subject can live anywhere. Text cannot.
 
 ## Length
 
-**7 to 30 seconds** is the target for reach. Long enough to tell one thing,
-short enough to loop. Past about 3 minutes, Instagram stops recommending a reel
-to non-followers at all, which makes length an active choice rather than a
-by-product of how much footage exists.
+**Aim for 6 to 15 seconds.** The general advice is 7 to 30, but the top posts
+pulled from #newpuppy, #goldenretrieverpuppy and #puppydiaries in Aug 2026 sit
+at the bottom of that band: the six highest-play reels ran 5, 6, 9, 10, 13 and
+15 seconds. The 27 to 38 second ones were there too, but consistently below
+them.
+
+Past about 3 minutes Instagram stops recommending a reel to non-followers at
+all. Length is an active choice, not a by-product of how much footage exists.
 
 One reel says one thing. If a shot list has two ideas in it, it is two reels.
 
@@ -61,6 +65,41 @@ immediately, with the question it raises stated or obvious.
 A hook that works: something visibly odd or specific, in motion, that makes the
 next second necessary. A hook that does not: the dog, sitting, being nice. That
 is every other account's opening frame.
+
+### The two shapes that actually travel
+
+From the top posts on the big tags, Aug 2026. Both are first-line-of-caption
+and first-frame-of-text at once.
+
+**The transformation.** "From X... to Y." Highest performer in the whole pull
+after the outright spam:
+
+- "From being the calmest pup in his litter... to becoming a tiny menace"
+  (158k plays)
+- "From crying and jumping up at the sides... to happily sleeping through the
+  night" (80k)
+
+Worth knowing: the first of those is Chill Annie / Baby Shark Annie, made by
+somebody else. The format is proven and the series is already the right idea.
+
+**The contrarian correction.** A flat statement that argues with what the
+viewer assumes:
+
+- "A stolen sock is not a test of who is in charge" (74k)
+
+That is the exact shape of the 26 Aug sofa-biting rethink, where telling her
+off turned out to be teaching the opposite. Lead with the correction, not the
+story.
+
+One more that validates an angle already in the journal: "Having a safe space
+made all the difference... her pen right next to our bed" took 274k plays. The
+crate beside the bed on homecoming night is the same post.
+
+### Caption length is bimodal
+
+Short (70 to 180 characters, mostly tags) for pure-reach posts. Long (1,400 to
+1,800) for method posts, which take fewer plays but earn the saves. Pick which
+job the post is doing and commit to it. The middle performs worst.
 
 ## Endings that loop
 
