@@ -258,11 +258,20 @@ article iframe[src*="drive.google.com"] {
   border: none;
 }
 
-/* Instagram centres its own embed via inline margin once embed.js swaps
-   the blockquote for an iframe; this wrapper only supplies the vertical
-   rhythm the surrounding prose expects. */
+/* This wrapper supplies the vertical rhythm the surrounding prose
+   expects. embed.js swaps the blockquote for an iframe carrying an
+   inline "margin: 0 0 12px", which left-aligns it in the column, so the
+   horizontal margins are overridden to centre it. Only those two
+   properties: touching width, height or aspect-ratio is what collapsed
+   the embed to a 300x150 sliver before. */
 .ig-embed {
   margin: 20px 0;
+}
+
+.ig-embed iframe,
+.ig-embed .instagram-media {
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 /* ------------------------------------------------------------------ */
