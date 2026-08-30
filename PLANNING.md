@@ -205,6 +205,16 @@ to YouTube as unlisted, embed the standard `<iframe>`. Cloudflare Stream is
 the paid, no-branding upgrade path if the site ever outgrows YouTube —
 later problem, not a now problem.
 
+## Where to look for what
+
+- `TODO.md` — the operational list. What to pick up next session.
+- `social/ideas.md` — posts thought of but not yet made.
+- `social/ledger.md` — posts that have actually gone out.
+- `.claude/skills/` — how the work gets done: `publish` for journal entries,
+  `social` for Instagram.
+
+This file stays the strategy and the roadmap.
+
 ## Cool-use-of-AI backlog
 
 Ranked by payoff for the effort, not by how impressive it sounds. Pull
