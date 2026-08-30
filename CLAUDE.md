@@ -53,9 +53,18 @@ this file doesn't answer.
   other dependencies). Keep it short enough to read end to end. Don't reach
   for Astro, Next, Hugo, Jekyll, or similar without being explicitly asked
   to make that switch — it's a deliberate decision, not a default.
-- **No analytics, view counters, or growth tooling** unless explicitly
-  asked. This is a personal project first. Don't add anything that turns
-  "did anyone see this" into a thing to check.
+- **No analytics or view counters on the site.** Not ever, without being
+  asked again. This is a personal project first. Don't add anything that
+  turns "did anyone see this" into a thing to check while reading it.
+  Growth tooling *for Instagram* was explicitly asked for in Aug 2026 and
+  is allowed, but only there: it lives in the `social` skill, it reads
+  Instagram's own insights in the app, and it never puts a counter, a
+  tracker or a share widget into `dist/`.
+- **Never let an Instagram geotag point home.** Tag public landmarks
+  only, never anywhere within walking distance of the house, and never
+  the same spot on a repeating schedule. Site prose is vague about place
+  by rule; a geotag is a precise coordinate, so this is the same privacy
+  rule doing more work.
 
 ## How the site actually works
 
@@ -92,51 +101,22 @@ generator/
 .github/workflows/deploy.yml   builds and deploys dist/ to GitHub Pages on every push to main
 ```
 
-### Where photos come from (owner decision, Aug 2026)
+### Making a post, and where photos come from
 
-New photos land in a Google Drive folder synced locally via Google Drive
-for Desktop — a real folder on disk, not something reachable through an
-MCP tool (checked directly: no callable Drive tool exists in this
-environment, whatever `claude mcp list` reports as "connected" at the
-account level). On the owner's machine that's
-`F:\My Drive\PUBLIC FACING FILES\ANNIE\PHOTOS`, but the drive letter is
-just whatever Google Drive for Desktop mounted this session, and may not
-be F: on a different machine or after a reboot — if that exact path is
-missing, search for a `My Drive` folder and the same subpath under it
-before asking the owner.
+Both live in the `publish` skill (`.claude/skills/publish/SKILL.md`): the
+Google Drive photo intake (a locally synced folder, not an MCP tool), the
+resize/EXIF-strip step, the redaction checklist and the voice checklist.
+Invoke it whenever an entry is being written or photos need pulling in,
+rather than working from memory.
 
-Workflow, every time a journal entry needs photos:
-1. List that top-level PHOTOS folder (not `z_Archive` inside it, that's
-   already-used source files from past entries).
-2. Match files to the entry by the date encoded in the filename:
-   `PXL_YYYYMMDD_HHMMSS....jpg` (Pixel) or `IMG-YYYYMMDD-WA####.jpg`
-   (WhatsApp shares). A `.MP.jpg` file is a Google Pixel Motion Photo —
-   a still frame with a video track embedded in the same file. Use the
-   still as a normal photo; the motion part is a video and falls under
-   the video rule above (Drive-embed it separately if wanted, don't try
-   to extract and commit it).
-3. Resize, strip EXIF/GPS, and place into the right `src/journal/`
-   location per the rule above, with the caption the owner gave.
-4. Once a photo's been used and committed, move its source file from the
-   top-level folder into `z_Archive` so it isn't picked up again — that's
-   the existing convention already in use there.
-5. **Look at every photo before writing its alt text.** Read the image,
-   don't infer it from the filename or from what the owner said the
-   caption should be. Getting this wrong once published a description of
-   a photo that wasn't there (Aug 2026). The caption is always the
-   owner's words; the alt text is a plain description of what is
-   actually in the frame.
-
-**Every entry that has a photo must show one on the home page.** This is
-already automatic and needs no per-post action: the generator takes the
+One site-wide consequence worth knowing here: the generator takes the
 **first image in the post** as that entry's `thumb`, which is the patch
-on the home trail and the archive stamp. Two consequences worth knowing:
-order the photos so the strongest one comes first, because that is the
-preview the whole site leads with; and a post with no images at all
-falls back to a paw-print placeholder, so if photos exist for that day,
-add one rather than leaving the card blank. Verify after a build by
-grepping `dist/index.html` for the entry's slug, and remember the live
-site is a deploy behind until the Action finishes.
+on the home trail and the archive stamp. So order the photos with the
+strongest first, because that is the preview the whole site leads with. A
+post with no images falls back to a paw-print placeholder.
+
+Instagram posts drawn from these entries are the `social` skill
+(`.claude/skills/social/SKILL.md`). It never touches `src/`.
 
 The visual system (palette, type, motion rules, the pup sprite, what's
 deliberate and why — including that the site is **light theme only**, an

@@ -1,3 +1,8 @@
 node_modules/
 dist/
 .DS_Store
+
+# Instagram working folder. The media in here are crops of photos already
+# committed under src/journal/, so there is no reason to version them twice.
+# social/ledger.md is committed.
+social/queue/

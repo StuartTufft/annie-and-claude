@@ -4,7 +4,7 @@ hero: /static/photos/annie-hello.jpg
 heroAlt: Annie lying on her back on the wooden floor, paws in the air, wearing her pink bow collar
 ---
 
-Annie is a Golden Retriever × Border Collie, born 26 June 2026 and home since 21 August 2026. She's expected to land somewhere medium-large as an adult; the working guess is 20 to 28kg.
+Annie is a Golden Retriever × Border Collie (a cross some people call a Gollie), born 26 June 2026 and home since 21 August 2026. She's expected to land somewhere medium-large as an adult; the working guess is 20 to 28kg.
 
 ## Where she started
 

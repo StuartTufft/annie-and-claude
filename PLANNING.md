@@ -112,6 +112,9 @@ what's confirmed, and why. Flip anything that no longer holds.
 | Milestones | Built: `/milestones.html` from `src/milestones.md` + signpost markers on trail weeks | Was "build later"; pulled forward as part of the storybook redesign | confirmed |
 | Interactivity | One dependency-free script (`src/static/journey.js`): scroll reveal, pup sprite, parallax, random day. All reduced-motion safe, site fully works with JS off | "Fun and interactive" without breaking the no-framework rule | confirmed |
 | Domain live | `annie-and-claude.com` resolves over HTTPS to the Pages site (verified 28 Aug 2026) | Sprint 4's DNS work is done; `www`/TXT-verification per Sprint 4 notes still worth checking | confirmed |
+| Instagram growth work | Explicitly authorised, Aug 2026, and scoped to Instagram only. Lives in the `social` skill; the site itself gains no analytics, counters or trackers | The guardrail below says "unless explicitly asked". This is that ask. Scoping it keeps reading the site free of numbers | confirmed |
+| Instagram voice | Grid is 100% dog. No AI framing on Instagram at all, which is stricter than the site's "About This Project only" rule | The audience there is new puppy owners, who do not care and may trust it less for knowing. That trust is the asset any future training product would rest on | confirmed |
+| Instagram publishing | Draft and queue. Claude prepares the package, the owner taps post. No Graph API, no browser automation, no third-party scheduler | Meta App Review is 2 to 4 weeks and rejectable, to save about a minute a day on one account | confirmed |
 
 ## Build plan, in sprints
 
@@ -209,6 +212,8 @@ from the top.
 
 | When | Idea | What it actually buys |
 |---|---|---|
+| now | Journal entry → Instagram post package | The content is already written and the photos already picked. This is repackaging, not creating: `social` skill, `plan`/`draft`/`log` |
+| now | Branded cards from the site's own SVG | `card.js` renders day stamps, then-vs-now and lesson slides from `pupShapes()`/`ribbonSvg()` and the Hedgerow palette, so the grid is recognisable at thumbnail size |
 | now | Voice → in-voice draft + redaction pass | The whole point of the project — this is Sprint 3, not a stretch goal |
 | now | Weekly rollup → readable digest post | Already produced weekly via `/review`; free content |
 | next | Milestone detector | Claude scans entries for "first time she…" language, proposes a milestones entry to confirm |
@@ -223,5 +228,9 @@ from the top.
   asked. This stays a personal project first — the risk isn't the name or
   the domain, it's turning "I feel like posting" into "the numbers need
   feeding."
+  Instagram growth work was explicitly asked for in Aug 2026 and is the
+  one exception (see the decisions log). It stays inside the `social`
+  skill, insights get read weekly at most and never per post, and nothing
+  measuring anything goes near `dist/`.
 - No raw video or unoptimised photos committed, ever (see Media).
 - Never invent journal content — draft the prose, never the events.

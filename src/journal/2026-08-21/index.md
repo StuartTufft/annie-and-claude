@@ -1,6 +1,7 @@
 ---
 title: Homecoming
 date: 2026-08-21
+featured: true
 ---
 
 We picked her up today: eight weeks old, and about an hour and a half in the car to get her home. She had her first vaccination before we even left.

@@ -19,6 +19,7 @@ It's also a small, ongoing experiment in using Claude (Anthropic's AI) as a genu
 3. **Review** — a human reads it and either approves it or sends it back. Nothing skips this step.
 4. **Publish** — once approved, the post lands here, in `src/journal/`.
 5. **Build & deploy** — a GitHub Action rebuilds the site and pushes it live automatically. This part has no human gate, because by the time content reaches this repo, it's already been through one.
+6. **Share** — some days a photo or a short clip also goes to Instagram, written from the same entry rather than made from scratch. When it's a reel, it gets embedded back into the post it came from, so the loop closes where it started.
 
 ## Structure
 
@@ -28,6 +29,7 @@ src/
   pages/               About Annie, About this project, etc.
   milestones.md        first-time moments, as they happen
   static/              stylesheet, the one script, favicon
+social/                 ledger of what's been posted to Instagram, and why
 generator/              the script that turns src/*.md into the built site
 .github/workflows/      the GitHub Action that builds and deploys on every push
 CNAME                   custom domain configuration

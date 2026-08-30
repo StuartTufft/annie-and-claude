@@ -1,6 +1,7 @@
 ---
 title: One week home
 date: 2026-08-28
+featured: true
 ---
 
 One week today. Feels like a good moment to pause.

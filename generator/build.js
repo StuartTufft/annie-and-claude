@@ -38,6 +38,15 @@ const NAV = [
 
 const SITE_NAME = 'Annie & Claude';
 
+// Used to build absolute URLs for the canonical link and the Open Graph
+// tags — both need them, relative paths don't work in a share preview.
+// Matches the CNAME file at the repo root.
+const SITE_URL = 'https://annie-and-claude.com';
+const SITE_DESCRIPTION =
+  "A Golden Retriever × Border Collie growing up, written down as it happens. "
+  + "The honest version: what worked, what didn't, and what she taught us that week.";
+const SITE_IMAGE = '/static/photos/home-locket.jpg';
+
 function renderNav(activePath) {
   return NAV.map(([label, href]) => {
     const active = href === activePath ? ' class="active"' : '';
@@ -48,16 +57,67 @@ function renderNav(activePath) {
 // hideTitle: the page's <h1> lives inside {{content}} (the home cover
 // prints its own, under the medallion), so the template's slot renders
 // empty and CSS hides it.
-function renderPage({ title, date, content, activePath, bodyClass = 'page-quiet', hideTitle = false }) {
+function renderPage({
+  title, date, content, activePath, bodyClass = 'page-quiet', hideTitle = false,
+  description, image, canonical, type = 'website',
+}) {
   const h1 = title || SITE_NAME;
   const pageTitle = h1 === SITE_NAME ? SITE_NAME : `${h1} · ${SITE_NAME}`;
+  // No description given? Take the page's own first paragraph. That keeps
+  // every page described without needing frontmatter added to any of them.
+  const desc = trimTo(description || firstParagraphText(content) || SITE_DESCRIPTION, 160);
   return TEMPLATE
     .replaceAll('{{pageTitle}}', escapeHtml(pageTitle))
+    .replaceAll('{{head}}', headTags({ pageTitle, desc, image, canonical, type }))
     .replaceAll('{{bodyClass}}', bodyClass)
     .replaceAll('{{title}}', hideTitle ? '' : escapeHtml(h1))
     .replaceAll('{{date}}', date ? formatDate(date) : '')
     .replaceAll('{{nav}}', renderNav(activePath))
     .replace('{{content}}', content);
+}
+
+// Description, canonical and share-card tags. Plain metadata: no scripts, no
+// third-party requests, nothing that counts anything. The analytics guardrail
+// in CLAUDE.md is about tracking, and none of this tracks.
+function headTags({ pageTitle, desc, image, canonical, type }) {
+  const url = SITE_URL + (canonical || '/');
+  const img = SITE_URL + (image || SITE_IMAGE);
+  const tag = (attr, name, value) => `  <meta ${attr}="${name}" content="${escapeHtml(value)}">`;
+  return [
+    tag('name', 'description', desc),
+    `  <link rel="canonical" href="${escapeHtml(url)}">`,
+    tag('property', 'og:type', type),
+    tag('property', 'og:site_name', SITE_NAME),
+    tag('property', 'og:title', pageTitle),
+    tag('property', 'og:description', desc),
+    tag('property', 'og:url', url),
+    tag('property', 'og:image', img),
+    tag('name', 'twitter:card', 'summary_large_image'),
+    tag('name', 'twitter:title', pageTitle),
+    tag('name', 'twitter:description', desc),
+    tag('name', 'twitter:image', img),
+  ].join('\n');
+}
+
+// First real paragraph of rendered HTML, as plain text. Used as the fallback
+// page description, so it skips anything that isn't prose.
+function firstParagraphText(html) {
+  for (const m of String(html).matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)) {
+    const text = m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (text.length > 40) return decodeEntities(text);
+  }
+  return '';
+}
+
+function decodeEntities(s) {
+  return s.replace(/&(amp|lt|gt|quot|#39|nbsp);/g, (_, e) =>
+    ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'", nbsp: ' ' }[e]));
+}
+
+function trimTo(s, n) {
+  const t = String(s).trim();
+  if (t.length <= n) return t;
+  return `${t.slice(0, t.lastIndexOf(' ', n - 1) > 0 ? t.lastIndexOf(' ', n - 1) : n - 1)}…`;
 }
 
 function escapeHtml(s) {
@@ -367,6 +427,10 @@ function buildPages() {
       content: hero + layOutPhotos(marked.parse(content), null),
       activePath: `/${outName}`,
       bodyClass: 'page-quiet',
+      description: data.description,
+      image: data.hero,
+      canonical: `/${outName}`,
+      type: 'article',
     });
     fs.writeFileSync(path.join(DIST, outName), html);
     console.log(`  page  -> ${outName}`);
@@ -424,6 +488,8 @@ function buildHome(trailContent, entries) {
     activePath: '/',
     bodyClass: 'page-home',
     hideTitle: true,
+    description: data.description || SITE_DESCRIPTION,
+    canonical: '/',
   });
   fs.writeFileSync(path.join(DIST, 'index.html'), html);
   console.log('  home  -> index.html (hero + trail)');
@@ -479,6 +545,7 @@ function buildLessonsPage(lessons) {
     content: intro + body,
     activePath: '/lessons.html',
     bodyClass: 'page-quiet',
+    canonical: '/lessons.html',
   });
   fs.writeFileSync(path.join(DIST, 'lessons.html'), html);
   console.log(`  page  -> lessons.html (${lessons.length} lessons)`);
@@ -712,6 +779,7 @@ function buildMilestonesPage(milestones, manualMarkdown, entries) {
     content: prose + body,
     activePath: '/milestones.html',
     bodyClass: 'page-quiet',
+    canonical: '/milestones.html',
   });
   fs.writeFileSync(path.join(DIST, 'milestones.html'), html);
   console.log(`  page  -> milestones.html (${milestones.length} milestones)`);
@@ -746,11 +814,29 @@ function buildJournal(manual, lessons) {
       const lessonHtml = lessonNotes
         .map((l) => `<p class="lesson-signpost">💡 A lesson came out of this day: <a href="/lessons.html#lesson-${escapeHtml(l.slug)}">${escapeHtml(l.title)}</a></p>`)
         .join('');
+      // Every image in the post, resolved to a site URL. The first one is
+      // the patch thumbnail on the trail, the archive stamp and the share
+      // card; the full list feeds the milestones page so several milestones
+      // on one day each get a different photo. Posts may reference a photo
+      // as a sibling file (nap.jpg) or by absolute path (/static/photos/…)
+      // — only the former gets the post's directory prefixed, or the
+      // absolute one turns into /journal/x//static/… and 404s.
+      // Worked out before the render so the thumbnail can be the og:image.
+      const images = [];
+      for (const m of content.matchAll(/!\[[^\]]*\]\(\s*([^)\s"']+)/g)) {
+        const src = m[1];
+        if (/^(https?:)?\//.test(src)) images.push(src);
+        else if (assetDir) images.push(`/journal/${slug}/${src}`);
+      }
+
       const html = renderPage({
         title,
         date: isoDate,
         content: layOutPhotos(marked.parse(content), assetDir) + lessonHtml,
         activePath: '/', // the journal lives on the home page now
+        image: images[0] || undefined,
+        canonical: `/journal/${slug}/`,
+        type: 'article',
       });
       const outDir = path.join(DIST, 'journal', slug);
       fs.mkdirSync(outDir, { recursive: true });
@@ -761,19 +847,6 @@ function buildJournal(manual, lessons) {
           if (asset === 'index.md') continue;
           fs.copyFileSync(path.join(assetDir, asset), path.join(outDir, asset));
         }
-      }
-      // Every image in the post, resolved to a site URL. The first one is
-      // the patch thumbnail on the trail; the full list feeds the
-      // milestones page so several milestones on one day each get a
-      // different photo. Posts may reference a photo as a sibling file
-      // (nap.jpg) or by absolute path (/static/photos/…) — only the
-      // former gets the post's directory prefixed, or the absolute one
-      // turns into /journal/x//static/… and 404s.
-      const images = [];
-      for (const m of content.matchAll(/!\[[^\]]*\]\(\s*([^)\s"']+)/g)) {
-        const src = m[1];
-        if (/^(https?:)?\//.test(src)) images.push(src);
-        else if (assetDir) images.push(`/journal/${slug}/${src}`);
       }
       entries.push({ title, date: isoDate, slug, featured: data.featured === true, thumb: images[0] || null, images });
       autoMilestones.push(...detectFirstMentions(content, isoDate, slug));
@@ -798,6 +871,43 @@ function buildJournal(manual, lessons) {
   buildHome(buildTrail(entries, milestones), entries);
   buildJournalRedirect();
   buildArchive(entries);
+  return entries;
+}
+
+// A sitemap and a robots.txt, so the record is findable. Nothing here
+// measures anything; it's the same kind of metadata as a <title>.
+function buildSitemap(entries) {
+  const months = [...new Set(entries.map((e) => e.date.slice(0, 7)))].sort().reverse();
+  const latest = entries.length ? entries[entries.length - 1].date : todayIso();
+  const urls = [
+    { loc: '/', lastmod: latest },
+    { loc: '/milestones.html', lastmod: latest },
+    { loc: '/lessons.html', lastmod: latest },
+    { loc: '/journal/archive/', lastmod: latest },
+    ...fs.readdirSync(path.join(SRC, 'pages'))
+      .filter((f) => f.endsWith('.md') && f !== 'home.md')
+      .map((f) => ({ loc: `/${f.replace(/\.md$/, '.html')}`, lastmod: latest })),
+    ...months.slice(1).map((key) => ({ loc: `/journal/archive/${key}/`, lastmod: latest })),
+    ...entries.map((e) => ({ loc: `/journal/${e.slug}/`, lastmod: e.date })),
+  ];
+
+  const body = urls
+    .map(({ loc, lastmod }) =>
+      `  <url><loc>${escapeHtml(SITE_URL + loc)}</loc><lastmod>${lastmod}</lastmod></url>`)
+    .join('\n');
+
+  fs.writeFileSync(path.join(DIST, 'sitemap.xml'),
+    `<?xml version="1.0" encoding="UTF-8"?>\n`
+    + `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`);
+
+  fs.writeFileSync(path.join(DIST, 'robots.txt'),
+    `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+
+  console.log(`  seo   -> sitemap.xml (${urls.length} urls) + robots.txt`);
+}
+
+function todayIso() {
+  return new Date().toISOString().slice(0, 10);
 }
 
 // /journal/ used to be the trail's address; the trail moved to the front
@@ -939,6 +1049,8 @@ function buildArchive(entries) {
       content,
       activePath: '/',
       bodyClass: 'page-album',
+      description: `Every day of Annie's journal, month by month. ${monthLabel(key)} and the rest of the record.`,
+      canonical: key === monthKeys[0] ? '/journal/archive/' : `/journal/archive/${key}/`,
     });
     const outPath = key === monthKeys[0]
       ? path.join(DIST, 'journal', 'archive', 'index.html')
@@ -964,7 +1076,8 @@ clean(DIST);
 const manualMilestones = readMilestones();
 const lessons = readLessons();
 buildPages();
-buildJournal(manualMilestones, lessons); // also builds milestones.html (needs entries first)
+const entries = buildJournal(manualMilestones, lessons); // also builds milestones.html (needs entries first)
 buildLessonsPage(lessons);
+buildSitemap(entries);
 copyStatic();
 console.log('Done -> /dist');
