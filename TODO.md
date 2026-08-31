@@ -24,6 +24,25 @@ came back and the identity tag changed. `#coltriever` has 34,419 posts against
 nothing is indexed until Google is told it's there. Worth doing Bing Webmaster
 Tools at the same time, since Bing's index feeds some AI answers.
 
+**Write the privacy page, before the newsletter card goes live.** The
+sign-up is wired and the Beehiiv form is up ("Letters from Annie", with a
+consent checkbox). The consent text commits people to Beehiiv's policy and
+says nothing about what we do with the address, which is the gap.
+
+A short `src/pages/privacy.md` covers it: what is collected (an email
+address), who processes it (Beehiiv), what it is used for (the letter,
+nothing else), and how to leave. Then switch on **Link your Privacy
+Policy** in the Beehiiv form.
+
+This is the reason the newsletter work is sitting on a branch rather than
+on `main`. Merging it is what puts the card in front of visitors.
+
+**Then draft issue one.** `/newsletter draft` reads everything since the
+last ledger entry, which is currently everything. Fortnightly from a
+Sunday, so 13 September is the natural first slot, covering 31 Aug to 12
+Sep. Homecoming through the first fortnight is a strong opener, and the
+two-weeks-home photo on 4 Sep would card up well if it gets taken.
+
 ---
 
 ## The one that matters most

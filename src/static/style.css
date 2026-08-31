@@ -1187,6 +1187,116 @@ main article > h1:empty { display: none; }
 .fav-bow circle { fill: var(--bow-knot); }
 
 /* ------------------------------------------------------------------ */
+/* The postcard — the newsletter sign-up at the foot of the trail      */
+/*                                                                     */
+/* A card, a perforated stamp with the pup sitting in it, one line and  */
+/* one button. build.js only emits it once NEWSLETTER is wired to a     */
+/* publication, so until then it is absent from the page entirely.      */
+/* ------------------------------------------------------------------ */
+
+.postcard {
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+  padding: 22px 26px 24px;
+  margin-top: 44px;
+}
+
+/* The stamp edge is a dotted border sitting just outside the face, so it
+   reads as perforation without needing an image or a gradient trick. */
+.postcard-stamp {
+  position: relative;
+  flex: 0 0 96px;
+  width: 96px;
+  height: 96px;
+  background: var(--stamp-face);
+  border-radius: 6px;
+  transform: rotate(-3deg);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6px;
+}
+
+.postcard-perf {
+  position: absolute;
+  inset: -5px;
+  border: 2px dotted var(--line);
+  border-radius: 9px;
+}
+
+.postcard-pup { width: 78px; height: auto; }
+
+.postcard-body { flex: 1 1 auto; min-width: 0; }
+.postcard-body h2 { margin: 0 0 4px; font-size: 1.2rem; }
+
+.postcard-note {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  margin: 0 0 14px;
+  max-width: 46ch;
+}
+
+.postcard-go {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--moss);
+  border-radius: 999px;
+  padding: 10px 20px;
+  text-decoration: none;
+  box-shadow: var(--shadow-soft);
+  transition: transform 120ms var(--ease-out);
+}
+
+.postcard-go:active { transform: scale(0.96); }
+
+@media (hover: hover) and (pointer: fine) {
+  .postcard-go:hover { transform: translateY(-2px); }
+}
+
+/* Beehiiv's embed is an iframe with no intrinsic size, and an iframe
+   with no width, height or aspect-ratio falls back to the CSS default
+   replaced-element size of 300x150 and collapses — the same trap the
+   Instagram embed hit. Both dimensions are therefore set explicitly.
+   The height is generous on purpose: their form is one row on desktop
+   and wraps to two on narrow screens, and a short iframe clips the
+   button instead of scrolling to it. */
+.postcard-embed { max-width: 420px; }
+
+.postcard-embed iframe {
+  display: block;
+  width: 100%;
+  height: 82px;
+  border: 0;
+  margin: 0;
+  color-scheme: light;
+}
+
+.postcard-small {
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  margin: 12px 0 0;
+}
+
+@media (max-width: 560px) {
+  .postcard {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+  .postcard-note { max-width: none; }
+  .postcard-embed { max-width: none; width: 100%; }
+}
+
+/* ------------------------------------------------------------------ */
 /* Patches — journal entries as scrapbook cuttings                     */
 /* (trail, favourites shelf, archive)                                  */
 /*                                                                     */
@@ -1470,8 +1580,9 @@ main article > h1:empty { display: none; }
      moving on press and hover. */
   .patch:active, .patch:hover { transform: rotate(var(--rot, 0deg)); }
   .site-nav a:active, .random-day button:active,
-  .archive-link:active { transform: none; }
-  .random-day button:hover, .archive-link:hover { transform: none; }
+  .archive-link:active, .postcard-go:active { transform: none; }
+  .random-day button:hover, .archive-link:hover,
+  .postcard-go:hover { transform: none; }
   /* The medallion stops breathing; the halo stays, just still. */
   .cover-glow { animation: none; opacity: 1; }
   .cover-medallion:hover { transform: none; }

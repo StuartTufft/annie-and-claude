@@ -47,6 +47,35 @@ const SITE_DESCRIPTION =
   + "The honest version: what worked, what didn't, and what she taught us that week.";
 const SITE_IMAGE = '/static/photos/home-locket.jpg';
 
+// The newsletter sign-up: "a letter from Annie", fortnightly, run on
+// Beehiiv. Beehiiv counting its own opens and clicks is the single
+// exception to the no-analytics rule (owner decision, Aug 2026) and it
+// is scoped to Beehiiv's dashboard. Nothing on the site counts anything,
+// and no tracker belongs anywhere else in dist/.
+//
+// Two ways to wire it, deliberately:
+//   href  — links out to the Beehiiv form. Keeps dist/ free of
+//           third-party code entirely, and keeps the button ours.
+//   embed — the same form inline in the card, as an iframe.
+// embed wins if both are set. Both null means no card renders at all.
+//
+// href is the one in use (owner's call, Aug 2026: "do not lose the cute
+// style by embedding this button"). The pill on the card is the site's
+// own, in the site's own type and palette. Beehiiv only owns the page
+// it lands on.
+//
+// Beehiiv hands out a <script> loader (subscribe-forms.beehiiv.com/v3/
+// loader.js, with a data-beehiiv-form id) as its embed snippet. Don't
+// use it. All it does is read the form config from their API and inject
+// an iframe pointing at the URL below, so the script is a lookup step
+// that can be skipped: setting embed gets the same form with no
+// third-party JS running on the page at all.
+const NEWSLETTER = {
+  name: 'A letter from Annie',
+  href: 'https://subscribe-forms.beehiiv.com/v3/forms/e2effc80-83cf-4d79-a043-df4029ef564a',
+  embed: null, // 'https://subscribe-forms.beehiiv.com/v3/forms/e2effc80-83cf-4d79-a043-df4029ef564a'
+};
+
 function renderNav(activePath) {
   return NAV.map(([label, href]) => {
     const active = href === activePath ? ' class="active"' : '';
@@ -1082,6 +1111,33 @@ function buildJournalRedirect() {
 }
 
 // Builds the trail markup and returns it (buildHome puts it on the page).
+// A postcard at the foot of the trail, between the favourites shelf and
+// the sign-off: one card, one line, one button. Deliberately quiet — no
+// interstitial, no pop-up, no second ask anywhere else on the site.
+function newsletterCardHtml() {
+  if (!NEWSLETTER.embed && !NEWSLETTER.href) return '';
+  const action = NEWSLETTER.embed
+    ? `<div class="postcard-embed">
+        <iframe src="${escapeHtml(NEWSLETTER.embed)}" title="Sign up for ${escapeHtml(NEWSLETTER.name)}" scrolling="no"></iframe>
+      </div>`
+    // New tab: the ask comes at the foot of the trail, and someone who
+    // says yes should come back to where they were reading, not to a
+    // form with the whole site behind it.
+    : `<a class="postcard-go" href="${escapeHtml(NEWSLETTER.href)}" target="_blank" rel="noopener">Send me Annie's letters</a>`;
+  return `<aside class="postcard">
+    <div class="postcard-stamp" aria-hidden="true">
+      <span class="postcard-perf"></span>
+      ${pupSittingSvg('postcard-pup')}
+    </div>
+    <div class="postcard-body">
+      <h2>${escapeHtml(NEWSLETTER.name)}</h2>
+      <p class="postcard-note">Every other Sunday, in her own words: what she did, and what she did not like. She stops when she gets bored, so it is short.</p>
+      ${action}
+      <p class="postcard-small">One email a fortnight, and you can leave whenever you like. Woof.</p>
+    </div>
+  </aside>`;
+}
+
 function buildTrail(entries, milestones) {
   let content;
   if (!entries.length) {
@@ -1151,6 +1207,7 @@ function buildTrail(entries, milestones) {
   ${sections.join('\n  ')}
   <a class="archive-link" href="/journal/archive/">Wander further back →</a>
   ${shelf}
+  ${newsletterCardHtml()}
   <div class="random-day" data-random hidden>
     <p class="random-day-hint">Feeling lucky? Pick a month to draw from, or leave it on any.</p>
     <select aria-label="Filter by month" data-random-month><option value="">Any month</option></select>

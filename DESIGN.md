@@ -265,6 +265,38 @@ photos anywhere gets no thumb; never borrow from another day. Compact
 gold rows use a smaller 48px thumb.
 - Archive = monthly scrapbook pages with folder tabs.
 
+### The postcard — the newsletter sign-up
+
+At the foot of the trail, between the favourites shelf and the sign-off:
+a card with a perforated stamp on the left, the pup sitting inside it,
+one line of copy and one moss pill button. It reuses the shelf's card
+treatment exactly (`--card`, `--line`, `--radius-card`,
+`--shadow-soft`), so it reads as another shelf rather than an advert.
+
+It ships as a link-out (owner's call, Aug 2026: "do not lose the cute
+style by embedding this button"). The button is the site's own pill, in
+the site's own type and palette, and Beehiiv only owns the page it lands
+on. The inline iframe is built and one line away in `NEWSLETTER` if that
+trade ever looks worth making.
+
+Three things about it are deliberate:
+
+- **It renders only when wired.** `NEWSLETTER` in `generator/build.js`
+  holds the publication; with both `href` and `embed` null the card is
+  absent from the HTML entirely, not hidden with CSS.
+- **One ask, one place.** No pop-up, no interstitial, no sticky bar, no
+  repeat in the footer or the nav. Someone who scrolls the whole trail
+  gets asked once, at the end.
+- **The stamp's perforation is a dotted border** offset outside the
+  face, not an image or a mask. It tilts −3°, which is the same
+  scrapbook logic as the patches: nothing on this site sits perfectly
+  square.
+
+The iframe variant (Beehiiv's inline form) has both dimensions set
+explicitly. An iframe with no width, height or aspect-ratio falls back
+to the CSS replaced-element default of 300×150 and collapses, which is
+the same trap the Instagram embed hit.
+
 ### Patches — journal entries as scrapbook cuttings
 
 Replaced the uniform "stamps" (Aug 2026, owner's call: the trail read

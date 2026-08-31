@@ -115,6 +115,12 @@ what's confirmed, and why. Flip anything that no longer holds.
 | Instagram growth work | Explicitly authorised, Aug 2026, and scoped to Instagram only. Lives in the `social` skill; the site itself gains no analytics, counters or trackers | The guardrail below says "unless explicitly asked". This is that ask. Scoping it keeps reading the site free of numbers | confirmed |
 | Instagram voice | Grid is 100% dog. No AI framing on Instagram at all, which is stricter than the site's "About This Project only" rule | The audience there is new puppy owners, who do not care and may trust it less for knowing. That trust is the asset any future training product would rest on | confirmed |
 | Instagram publishing | Draft and queue. Claude prepares the package, the owner taps post. No Graph API, no browser automation, no third-party scheduler | Meta App Review is 2 to 4 weeks and rejectable, to save about a minute a day on one account | confirmed |
+| Newsletter | Fortnightly letter in Annie's own voice, run on Beehiiv. `newsletter` skill drafts it, owner reads and sends | The journal is already written and approved; this is repackaging, and a dog's-eye view is the one angle the site itself can't take | confirmed |
+| Newsletter analytics | Second scoped exception to the no-analytics rule: Beehiiv's own open and click tracking, inside Beehiiv. The site gains only the sign-up card | Same shape as the Instagram exception. The numbers live where they can't be checked mid-read | confirmed |
+| Annie's voice | Her opinions and reactions are invented; her days never are. Every event traces to a published journal entry | Without the carve-out the format is impossible; without the limit, every issue would need fact-checking and the journal stops being the record | confirmed |
+| Newsletter cadence | Fortnightly, not weekly, to start | A week of entries is thin, and a weekly slot starts pulling on the journal for material rather than the other way round. Revisit when a fortnight has to be cut down rather than stretched | confirmed |
+| Newsletter sign-up | Our own pill on the postcard, linking out to the Beehiiv form in a new tab. Not Beehiiv's <script> loader, and not the inline iframe (both wired and available in `NEWSLETTER`) | Owner's call: the card's style is the point of it. Their loader only looks the form up and iframes it, so it buys nothing the URL doesn't, and it would put third-party JS on every home page visit | confirmed |
+| Newsletter sending | Draft and paste. No Beehiiv API push, no scheduled send | Same reasoning as Instagram publishing: the automation saves a minute and removes the last human read before it becomes permanent and public | confirmed |
 
 ## Build plan, in sprints
 
@@ -226,6 +232,7 @@ from the top.
 | now | Branded cards from the site's own SVG | `card.js` renders day stamps, then-vs-now and lesson slides from `pupShapes()`/`ribbonSvg()` and the Hedgerow palette, so the grid is recognisable at thumbnail size |
 | now | Voice → in-voice draft + redaction pass | The whole point of the project — this is Sprint 3, not a stretch goal |
 | now | Weekly rollup → readable digest post | Already produced weekly via `/review`; free content |
+| now | Journal fortnight → newsletter in Annie's voice | Same repackaging trick as the `social` skill, from a voice the site itself can't use: `newsletter` skill, `draft`/`cards`/`log` |
 | next | Milestone detector | Claude scans entries for "first time she…" language, proposes a milestones entry to confirm |
 | next | Skill-progress chart | Small chart from `skills/levels.md`'s dated history — visual proof training is working |
 | later | Photo alt-text / captions via Claude vision | Accessibility win, mildly delightful — nice-to-have |

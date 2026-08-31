@@ -44,6 +44,12 @@ this file doesn't answer.
   gap with something plausible. This applies to placeholder/demo content
   too: don't fabricate a fake journal entry to "show what it'd look like" —
   build and test with throwaway fixtures, then remove them before committing.
+  **One narrow carve-out**, the newsletter (owner decision, Aug 2026): it
+  is written in Annie's voice, so her opinions and reactions are invented
+  by definition. Her *days* are not. Every event, person, place and
+  outcome in an issue must trace to a journal entry already published on
+  the site. Nothing else about this rule moves; see
+  `.claude/skills/newsletter/references/voice.md` for where the line sits.
 - **Never let identifying detail through**: exact address or postcode, the
   vet's name or location, or anything that maps out when the house is
   reliably empty. If a draft post contains any of this, flag it and hold
@@ -60,6 +66,12 @@ this file doesn't answer.
   is allowed, but only there: it lives in the `social` skill, it reads
   Instagram's own insights in the app, and it never puts a counter, a
   tracker or a share widget into `dist/`.
+  The newsletter is the second exception, on the same terms (owner
+  decision, Aug 2026): Beehiiv counts its own opens and clicks, and that
+  stays inside Beehiiv's dashboard. The only thing it is allowed to put
+  on the site is the sign-up card at the foot of the trail. No pixel, no
+  counter, no subscriber number, no "join 200 others", and no second ask
+  anywhere else on the site.
 - **Never let an Instagram geotag point home.** Tag public landmarks
   only, never anywhere within walking distance of the house, and never
   the same spot on a repeating schedule. Site prose is vague about place
@@ -98,6 +110,10 @@ generator/
                           /journal/archive/. Also emits /static/entries.json,
                           the manifest behind the random-day button.
   template.html           the one shared page template ({{title}}, {{pageTitle}}, {{date}}, {{nav}}, {{content}}, {{bodyClass}})
+newsletter/
+  cards.js                renders email-safe post cards for an issue (run by hand)
+  ledger.md               issues sent, and the cutoff the next one counts from
+  queue/YYYY-MM-DD.md     a drafted issue, waiting on the owner
 .github/workflows/deploy.yml   builds and deploys dist/ to GitHub Pages on every push to main
 ```
 
@@ -117,6 +133,14 @@ post with no images falls back to a paw-print placeholder.
 
 Instagram posts drawn from these entries are the `social` skill
 (`.claude/skills/social/SKILL.md`). It never touches `src/`.
+
+The fortnightly newsletter is the `newsletter` skill
+(`.claude/skills/newsletter/SKILL.md`): a short letter in Annie's own
+voice, built from entries already on the site, sent through Beehiiv. It
+never touches `src/` and it never sends anything; the owner reads every
+issue and presses send. The sign-up card on the home page is wired by
+the `NEWSLETTER` constant in `generator/build.js` and renders only once
+that points at a real publication.
 
 The visual system (palette, type, motion rules, the pup sprite, what's
 deliberate and why — including that the site is **light theme only**, an
@@ -155,6 +179,7 @@ push, or the Action will succeed but nothing will go live.
 | Journal posts | Arrive pre-drafted and pre-approved from the private repo's pipeline | As often as they're given |
 | Weekly rollups | Same — arrive pre-drafted | Weekly, once the private repo's review cadence produces them |
 | Lessons (`src/lessons/*.md`) | Owner-dictated insight, Claude tidies the prose only — the substance is never invented | As they're learned |
+| Newsletter (`newsletter/queue/`) | Assembled by the `newsletter` skill from already-published journal entries, in Annie's voice. Never touches `src/`; the owner pastes it into Beehiiv and presses send | Fortnightly, Sundays |
 | Milestones (`src/milestones.md`) | Auto-detected by rule from already-approved journal posts (homecoming/weekly anniversaries from the calendar; any sentence containing "first", quoted verbatim, linked to its post) — see `DESIGN.md`. Owner can also add hand-written entries to `src/milestones.md` for anything that never appeared in a post | Live; runs on every build, no per-post action needed |
 
 ## Writing
