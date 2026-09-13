@@ -261,6 +261,24 @@ paraphrasing, so there's nothing new to get wrong.
 If the text rule still gets noisy, adjust `FIRST_THING`'s word list
 rather than reintroducing a manual-confirm step — that was a deliberate
 reversal.
+Two more deterministic rules (13 Sep 2026, the day the first real
+landmarks went in):
+
+- **A landmark retires that date's auto-detected "first" quotes.** A
+  landmark is almost always the owner promoting a detected first to the
+  big tier, and keeping the verbatim quote underneath read as the same
+  milestone twice. Calendar rows are untouched. If a day genuinely has
+  two different firsts, write both as landmarks.
+- **A photo goes to one row per date.** Rows beyond the day's pool get
+  no thumb rather than a repeat; two landmarks on a one-photo day were
+  both being handed the same picture. Since the pool is the post's
+  images in order, the post's FIRST image is what the day's first
+  landmark wears, so lead the post with the photo that matches its
+  headline milestone.
+- The landmark lines in `src/milestones.md` are stripped before the
+  file's remaining markdown renders as prose; they used to leak onto the
+  page as a raw bullet list once they replaced the placeholder comment.
+
 
 **Two tiers + chapters** (owner request, 29 Aug 2026). The page groups
 rows under month headings — one `<details class="milestone-chapter">`

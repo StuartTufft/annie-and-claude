@@ -804,7 +804,14 @@ function mergeMilestones(...lists) {
       merged.push(item);
     }
   }
-  return merged.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+  // An owner landmark on a date retires that date's auto-detected "first"
+  // quotes (calendar rows stay). A landmark is almost always the owner
+  // promoting a detected first to the big tier, and keeping the verbatim
+  // quote underneath read as the same milestone twice (13 Sep 2026). If
+  // a day genuinely has two different firsts, write both as landmarks.
+  const landmarkDates = new Set(merged.filter((m) => !m.auto).map((m) => m.date));
+  const kept = merged.filter((m) => !(m.auto && m.slug && landmarkDates.has(m.date)));
+  return kept.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 }
 
 // Which badge a milestone gets on the timeline: a calendar/week entry
@@ -863,10 +870,13 @@ function milestoneRowHtml(m, pools, drawn) {
     if (fs.existsSync(path.join(SRC, 'static', staticFile)) && !pool.includes(`/static/${staticFile}`)) {
       pool.push(`/static/${staticFile}`);
     }
-    if (pool.length) {
-      const n = drawn.get(m.date) || 0;
+    // Each photo goes to one row per date; rows beyond the pool get none
+    // rather than a repeat (13 Sep 2026: two landmarks on a one-photo day
+    // were both handed the same thumbnail).
+    const n = drawn.get(m.date) || 0;
+    if (n < pool.length) {
       drawn.set(m.date, n + 1);
-      thumb = `<img class="milestone-photo" src="${pool[n % pool.length]}" alt="" width="72" height="72" loading="lazy">`;
+      thumb = `<img class="milestone-photo" src="${pool[n]}" alt="" width="72" height="72" loading="lazy">`;
     }
   }
   const star = m.star ? '<span class="milestone-star" aria-hidden="true">★</span> ' : '';
@@ -881,7 +891,13 @@ function milestoneRowHtml(m, pools, drawn) {
 function buildMilestonesPage(milestones, manualMarkdown, entries) {
   const pools = milestonePhotoPools(entries);
   const drawn = new Map(); // date -> how many photos already handed out
-  const prose = manualMarkdown ? marked.parse(manualMarkdown) : '';
+  // The landmark lines in src/milestones.md are data, already read into
+  // `milestones`; anything else in the file (a paragraph the owner wants
+  // above the timeline) is prose. Strip the list lines so they are not
+  // rendered twice (they showed up as a raw bullet list once the first
+  // real landmarks replaced the placeholder comment, 13 Sep 2026).
+  const proseOnly = (manualMarkdown || '').split(/\r?\n/).filter((l) => !/^-\s*\d{4}-\d{2}-\d{2}\s*[—–-]/.test(l)).join('\n').trim();
+  const prose = proseOnly ? marked.parse(proseOnly) : '';
   let body;
   if (!milestones.length) {
     body = '<p>No milestones yet. The first "first time she…" moments will be collected here as they happen. She\'s only just getting started.</p>';
