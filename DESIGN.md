@@ -106,10 +106,17 @@ the random-day button are JS-only, and both are decoration).
      have a photo, chosen automatically, linking to their posts. On
      mobile the snaps hug the medallion in two short rows; lower and
      they cover the ribbon/intro (that bug happened; don't reintroduce).
-  2. **The launch** (`.hero-launch`): the pup sets off from the left on
-     a dashed paw path that sweeps right, hooks back and descends into
-     the first waypoint, with a "Come along ↓" hint parked in the empty
-     right-hand region. Same dash language as the trail connectors.
+  2. **The invitation and the launch.** First, `.walk-invite`: "Come on
+     my walk", in Annie's voice (owner wording, 13 Sep 2026), on its own
+     line in the display face between the cover and the path, as words
+     on the ground rather than a boxed panel, with generous margins so
+     the cover settles before the walk starts. It replaced the small
+     "Come along ↓" hint that used to sit beside the path. Then
+     `.hero-launch`: the pup sets off from the left on a dashed paw path
+     that sweeps right, hooks back and descends into the first waypoint.
+     Made taller the same day (viewBox 700×262, was 700×172) so the
+     opening stretch is a proper run rather than a cramped hook. Same
+     dash language as the trail connectors.
      **Rebuilt 29 Aug 2026 after the first version shipped broken** —
      three rules came out of it, all enforced in the CSS comment there:
      (a) it is ONE uniformly-scaled SVG sized to `.trail`'s 700px

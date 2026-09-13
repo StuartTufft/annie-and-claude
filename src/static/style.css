@@ -526,7 +526,7 @@ main article > h1:empty { display: none; }
 .hero-launch {
   position: relative;
   max-width: 700px;
-  margin: 4px auto 0;
+  margin: 0 auto;
 }
 .launch-path { display: block; width: 100%; height: auto; }
 .launch-path .launch-line {
@@ -539,18 +539,22 @@ main article > h1:empty { display: none; }
 }
 .launch-path .paw { fill: var(--moss); opacity: 0.45; }
 
-/* Parked in the empty right-hand region the path never reaches, as a
-   percentage so it stays clear of the line at every width. */
-.scroll-hint {
-  position: absolute;
-  right: 3%;
-  top: 30%;
-  font-family: var(--font-body);
-  font-weight: 800;
-  font-size: 0.76rem;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
+/* The invitation, in Annie's voice (owner wording, Sep 2026). Sits on
+   its own between the cover and the launch path, in the display face,
+   as words on the ground rather than a boxed panel. The generous margins
+   are the point: they let the cover settle before the walk starts, and
+   give the path a proper opening stretch instead of starting cramped
+   against the subtitle. Replaced the small "Come along" hint that used
+   to be parked beside the path. */
+.walk-invite {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.45rem, 1.1rem + 1.4vw, 1.95rem);
+  letter-spacing: -0.01em;
+  color: var(--moss-deep);
+  text-align: center;
+  margin: 72px auto 36px;
+  text-wrap: balance;
 }
 
 /* Entrance: one-time stagger, ease-out, everything under 300ms.
@@ -563,6 +567,7 @@ main article > h1:empty { display: none; }
 .home-hero .cover-hero { animation: hero-pop 260ms var(--ease-out) backwards; }
 .hero-ribbon { animation: hero-pop 260ms var(--ease-out) 70ms backwards; }
 .hero-intro, .home-hero .cover-subtitle { animation: hero-pop 260ms var(--ease-out) 130ms backwards; }
+.walk-invite { animation: hero-pop 260ms var(--ease-out) 200ms backwards; }
 .hero-snap { animation: hero-pop 280ms var(--ease-out) backwards; }
 .hero-snap--1 { animation-delay: 160ms; }
 .hero-snap--2 { animation-delay: 210ms; }
@@ -1588,7 +1593,7 @@ main article > h1:empty { display: none; }
   .cover-medallion:hover { transform: none; }
   /* Hero entrance: no travel, everything simply present. */
   .home-hero .cover-hero, .hero-ribbon, .hero-intro,
-  .home-hero .cover-subtitle, .hero-snap { animation: none; }
+  .home-hero .cover-subtitle, .hero-snap, .walk-invite { animation: none; }
   .hero-snap:hover { transform: rotate(var(--tilt, 0deg)); }
 }
 

@@ -45,7 +45,7 @@ const SITE_URL = 'https://annie-and-claude.com';
 const SITE_DESCRIPTION =
   "A Golden Retriever × Border Collie growing up, written down as it happens. "
   + "The honest version: what worked, what didn't, and what she taught us that week.";
-const SITE_IMAGE = '/static/photos/home-locket.jpg';
+const SITE_IMAGE = "/static/photos/home-garden.jpg";
 
 // The newsletter sign-up: "a letter from Annie", fortnightly, run on
 // Beehiiv. Beehiiv counting its own opens and clicks is the single
@@ -299,7 +299,7 @@ function favBowSvg() {
 // halo, with a few pastel dots for company. Used on the home cover and
 // on any page with `hero:` frontmatter (e.g. About Annie). The scallop
 // shape itself is a CSS mask (--scallop-mask in style.css).
-function coverHeroHtml(src = '/static/photos/home-locket.jpg', alt = 'Annie') {
+function coverHeroHtml(src = '/static/photos/home-garden.jpg', alt = 'Annie on the grass in the garden on her red lead, tongue out') {
   const file = src.startsWith('/static/') ? path.join(SRC, 'static', src.slice(8)) : null;
   const size = file && jpegSize(file);
   const dims = size ? ` width="${size.width}" height="${size.height}"` : '';
@@ -587,13 +587,13 @@ function buildHome(trailContent, entries) {
   ${marked.parse(content).replace('<p>', '<p class="hero-intro">')}
   <p class="cover-subtitle">Home since ${formatDate(isoOfUtc(HOME_DATE_UTC))} · The Malvern Hills</p>
 </section>
+<p class="walk-invite">Come on my walk</p>
 <div class="hero-launch" aria-hidden="true">
-  <svg class="launch-path" viewBox="0 0 700 172">
-    <path class="launch-line" d="M-10 68 C 120 48, 260 70, 380 92 C 470 108, 520 130, 440 146 C 360 161, 200 152, 70 168"/>
-    ${pawSvg(109, 60, -8)}${pawSvg(248, 71, 8)}${pawSvg(439, 105, 22)}${pawSvg(477, 133, 40)}${pawSvg(313, 156, -20)}${pawSvg(171, 161, -14)}
+  <svg class="launch-path" viewBox="0 0 700 262">
+    <path class="launch-line" d="M-10 68 C 120 48, 260 70, 380 92 C 470 108, 520 130, 440 146 C 360 162, 230 150, 180 186 C 130 222, 110 238, 70 258"/>
+    ${pawSvg(109, 60, -8)}${pawSvg(248, 71, 8)}${pawSvg(439, 105, 22)}${pawSvg(477, 133, 40)}${pawSvg(313, 156, -20)}${pawSvg(190, 182, -24)}${pawSvg(122, 226, -32)}
     <g transform="translate(19.2,-7.3) scale(0.952)">${pupShapes()}</g>
   </svg>
-  <span class="scroll-hint">Come along ↓</span>
 </div>`;
   const html = renderPage({
     title: data.title || SITE_NAME,
