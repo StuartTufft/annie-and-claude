@@ -41,10 +41,11 @@ drift into it on your own.
 
 ## Privacy, which is tighter here than on the site
 
-- **Never geotag anywhere near home.** Public landmarks only. Never anywhere
-  within walking distance of the house, and never the same location on a
-  repeating schedule. Site prose is vague about place by rule. A geotag is a
-  coordinate, so it does more damage.
+- **Geotag the places, never the house.** The hills, the park, the town, the
+  coffee shop: tag them, they are the story. Never geotag the house or the
+  street, and never the same doorstep spot on a repeating schedule. The site
+  names places freely now (owner decision, Sep 2026); a geotag on the home
+  address is still an address.
 - No exact address, postcode or street name, in the caption or visible in the
   frame. Check the photo for door numbers, street signs and delivery labels.
 - No vet clinic name or location.

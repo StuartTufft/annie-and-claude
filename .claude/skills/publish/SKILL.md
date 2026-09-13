@@ -87,11 +87,13 @@ Run this on every draft before writing it into `src/`. If any of it is present,
 flag it and hold the post. Do not quietly publish around it.
 
 - [ ] No exact address, postcode or street name
-- [ ] No vet clinic name or location
+- [ ] No phone numbers, no surnames
 - [ ] Nothing that maps out when the house is reliably empty (work-from-home
       days, gym schedule, regular absences)
-- [ ] Location softened to "the Malvern Hills" or "the West Midlands", never
-      narrower
+- [ ] Place names are wanted, not stripped: the Malvern Hills, the town, the
+      park, the shop, the view. Location is part of the story (owner
+      decision, Sep 2026). Do not soften a real place into "the West
+      Midlands"
 - [ ] Photos carry zero EXIF (`checkmeta.js` says so, you did not assume it)
 
 Keep everything else. The emotional content, the training wins, the setbacks,

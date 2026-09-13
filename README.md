@@ -51,7 +51,7 @@ any static file server at the `dist/` folder.
 
 ## A note on what's not here
 
-Nothing that identifies where Annie lives, who her vet is, or when the house is normally empty. Posts are written to be honest about her life without being a map to it. If you spot something that shouldn't be public, an issue or a message would be genuinely appreciated.
+Where she lives is no secret: the Malvern Hills, and the walks up them are part of the story. What stays out is the personal stuff, an address, a phone number, a surname, or anything about when the house is empty. Posts are written to be honest about her life without being a map to the front door. If you spot something that shouldn't be public, an issue or a message would be genuinely appreciated.
 
 ## Reuse
 

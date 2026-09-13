@@ -50,10 +50,15 @@ this file doesn't answer.
   outcome in an issue must trace to a journal entry already published on
   the site. Nothing else about this rule moves; see
   `.claude/skills/newsletter/references/voice.md` for where the line sits.
-- **Never let identifying detail through**: exact address or postcode, the
-  vet's name or location, or anything that maps out when the house is
-  reliably empty. If a draft post contains any of this, flag it and hold
-  the post rather than publish around it.
+- **Location is part of the story, not a secret.** The Malvern Hills, the
+  town, the park, the shop, the pub, the view from the top: name them
+  freely and put them in captions (owner decision, Sep 2026, reversing
+  the earlier "never narrower than the Malverns" rule, which was holding
+  back exactly the photos that make the story feel like somewhere). What
+  stays out is personal identifying information: no exact address or
+  postcode, no phone numbers, no surnames, and nothing that maps out
+  when the house is reliably empty. If a draft contains any of that,
+  flag it and hold the post rather than publish around it.
 - **No framework.** The site is a small, hand-rolled Markdown → HTML
   generator in `generator/build.js` (Node, `marked` + `gray-matter`, no
   other dependencies). Keep it short enough to read end to end. Don't reach
@@ -72,11 +77,11 @@ this file doesn't answer.
   on the site is the sign-up card at the foot of the trail. No pixel, no
   counter, no subscriber number, no "join 200 others", and no second ask
   anywhere else on the site.
-- **Never let an Instagram geotag point home.** Tag public landmarks
-  only, never anywhere within walking distance of the house, and never
-  the same spot on a repeating schedule. Site prose is vague about place
-  by rule; a geotag is a precise coordinate, so this is the same privacy
-  rule doing more work.
+- **Geotag the places, never the house.** The hills, the park, the town,
+  the coffee shop: tag them freely, they are the story. Never geotag the
+  house itself or the street, and never the same doorstep spot on a
+  repeating schedule. Place names are welcome on the site now (see the
+  rule above); a geotag on the home address is still an address.
 
 ## How the site actually works
 

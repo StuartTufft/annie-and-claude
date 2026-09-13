@@ -20,3 +20,5 @@ One thing I'm really keen on throughout this is to set her up for success and te
 Lots to do in there, but she got lots of cute pictures.
 
 ![Annie curled up in her fluffy bed with her lead still on, looking at the camera](worn-out.jpg "Which meant she was very tired.")
+
+![Alisha holding Annie up on a hillside, with the Malvern Hills and a village spread out below them](malvern-hills.jpg "One of her first walks on the Malvern Hills.")
