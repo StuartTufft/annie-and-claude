@@ -125,7 +125,8 @@ newsletter/
 ### Making a post, and where photos come from
 
 Both live in the `publish` skill (`.claude/skills/publish/SKILL.md`): the
-Google Drive photo intake (a locally synced folder, not an MCP tool), the
+Google Drive photo intake (a locally synced folder; an MCP connector may exist
+too, but the folder is the workflow), the
 resize/EXIF-strip step, the redaction checklist and the voice checklist.
 Invoke it whenever an entry is being written or photos need pulling in,
 rather than working from memory.

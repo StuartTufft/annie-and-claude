@@ -153,16 +153,16 @@ Photos are cropped from files already committed under `src/journal/`, using the
 out-of-repo tool:
 
 ```
-node ~/.Codex/tools/photo-tool/social.js <input> <4x5|1x1|9x16> <out.jpg> [--centre]
-node ~/.Codex/tools/photo-tool/card.js day       '{"day":12,"date":"2026-09-01","photo":"a.jpg"}' <out.png>
-node ~/.Codex/tools/photo-tool/card.js thenvsnow '{"title":"...","left":{...},"right":{...}}'     <out.png>
-node ~/.Codex/tools/photo-tool/card.js lesson    '{"title":"...","body":"...","index":2,"total":5}' <out.png>
+node ~/.claude/tools/photo-tool/social.js <input> <4x5|1x1|9x16> <out.jpg> [--centre]
+node ~/.claude/tools/photo-tool/card.js day       '{"day":12,"date":"2026-09-01","photo":"a.jpg"}' <out.png>
+node ~/.claude/tools/photo-tool/card.js thenvsnow '{"title":"...","left":{...},"right":{...}}'     <out.png>
+node ~/.claude/tools/photo-tool/card.js lesson    '{"title":"...","body":"...","index":2,"total":5}' <out.png>
 ```
 
 `card.js` renders 1080x1350 in the site's own visual language: the pup, the
 bow, the hills, the Hedgerow palette, Bitter and Nunito. That is what makes
 the grid recognisable at thumbnail size, which is what turns a profile visit
-into a follow. See `~/.Codex/tools/photo-tool/README.md` for the spec shapes
+into a follow. See `~/.claude/tools/photo-tool/README.md` for the spec shapes
 and the two font traps that fail silently.
 
 **Look at every card after rendering it.** A wrong font or a bad crop does not
@@ -176,7 +176,7 @@ chain rather than two.
 transcribe it, do not generate a rough cut. Premiere 2025 has speech-to-text,
 auto-captions and text-based editing built in and does all of that better than
 anything this skill would produce, and the craft is the part the owner enjoys.
-Codex's contribution to a reel is the shot list before it (`shots`) and the
+Claude's contribution to a reel is the shot list before it (`shots`) and the
 caption, hashtags, alt text and any branded still frames after it.
 
 ## Mode: log

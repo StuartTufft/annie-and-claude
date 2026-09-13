@@ -31,9 +31,11 @@ title slot, one image per line, adjacent images become a spread.
 ## 2. Photo intake
 
 New photos land in a Google Drive folder synced locally by Google Drive for
-Desktop. It is a real folder on disk, not something reachable through an MCP
-tool. Checked directly: no callable Drive tool exists in this environment,
-whatever `claude mcp list` reports as connected at the account level.
+Desktop. Use that folder. It is a real path on disk, the photo tool reads from
+it directly, and the `z_Archive` convention lives there. A Google Drive MCP
+connector is sometimes also available in-session (it was absent in late Aug
+2026 and present by 13 Sep); it is not the workflow, and it cannot run
+`process.js` on a file anyway, so do not go looking for it.
 
 On the owner's machine the path is:
 

@@ -118,7 +118,7 @@ of two issues running.
   entry needs fixing, say so and stop. That edit goes through `publish`.
 - **Never adds a tracking pixel, a share widget or a counter to the
   site.** Beehiiv's own open and click tracking is inside Beehiiv, which
-  is the whole scope of the exception (see `AGENTS.md`). Nothing
+  is the whole scope of the exception (see `CLAUDE.md`). Nothing
   measuring anything goes into `dist/` beyond the sign-up card itself.
 - **Never invents a subscriber count, a milestone or a "you all"
   reference.** Do not write "lots of you asked" unless the owner says
