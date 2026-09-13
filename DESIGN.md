@@ -106,17 +106,28 @@ the random-day button are JS-only, and both are decoration).
      have a photo, chosen automatically, linking to their posts. On
      mobile the snaps hug the medallion in two short rows; lower and
      they cover the ribbon/intro (that bug happened; don't reintroduce).
-  2. **The invitation and the launch.** First, `.walk-invite`: "Come on
-     my walk", in Annie's voice (owner wording, 13 Sep 2026), on its own
-     line in the display face between the cover and the path, as words
-     on the ground rather than a boxed panel, with generous margins so
-     the cover settles before the walk starts. It replaced the small
-     "Come along ↓" hint that used to sit beside the path. Then
-     `.hero-launch`: the pup sets off from the left on a dashed paw path
-     that sweeps right, hooks back and descends into the first waypoint.
-     Made taller the same day (viewBox 700×262, was 700×172) so the
-     opening stretch is a proper run rather than a cramped hook. Same
-     dash language as the trail connectors.
+  2. **The trailhead and the launch.** First, `.trailhead`: a signpost
+     (cream board, gold edge, slight album tilt, gold post) carrying
+     "Come on my walk" in the display face and, beneath it, one line in
+     Annie's voice saying what the walk is ("Every day since I came
+     home, newest first. Keep scrolling and I'll walk you back to day
+     one."). Owner brief, 13 Sep 2026, after a bare "Come on my walk"
+     line read as a heading floating in whitespace: the diagnosis was
+     that an invitation needs who is asking, what they are offering and
+     where to step, and the page had only the first. The promise line
+     used to be the muted "journey so far" sentence at the FOOT of the
+     path; it is gone from there. Then `.hero-launch`: the pup sets off
+     from the left on a dashed paw path that sweeps right, hooks back and
+     descends into the first waypoint. Taller than the original
+     (viewBox 700×262, was 700×172) so the opening stretch is a run, not
+     a hook. Same dash language as the trail connectors.
+     **The path draws itself once**, the first time it is 40% in view
+     (IntersectionObserver in journey.js adds `.seen`): the dotted line
+     and paws sit under an SVG `<mask>` whose solid stroke runs
+     dashoffset 1000→0 over 1.3s ease-out, `pathLength` normalised. The
+     pup is outside the mask. No JS or reduced motion: fully drawn from
+     the start. This is a deliberate addition to the motion budget
+     (owner call, 13 Sep 2026).
      **Rebuilt 29 Aug 2026 after the first version shipped broken** —
      three rules came out of it, all enforced in the CSS comment there:
      (a) it is ONE uniformly-scaled SVG sized to `.trail`'s 700px
@@ -128,8 +139,10 @@ the random-day button are JS-only, and both are decoration).
      (c) sharing the trail's column is what makes the descent land on
      the Week badge at every width instead of trailing off into the
      right margin. Needs no mobile overrides as a result.
-  3. **You are here**: the newest week's waypoint carries a gold
-     `.you-are-here` pill ("You're all caught up").
+  3. **Start here**: the newest week's waypoint carries a gold
+     `.you-are-here` pill, first in its row, where the launch path lands.
+     Reworded from "You're all caught up" on 13 Sep 2026 so the arrival
+     answers the sign for a first-time visitor.
   4. **The sign-off** (`.trail-end`): the pup again, asleep ("z z"),
      "Annie & Claude", links to About Annie / About This Project, with
      the random-day widget just above. The journey has an ending.

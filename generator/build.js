@@ -587,11 +587,24 @@ function buildHome(trailContent, entries) {
   ${marked.parse(content).replace('<p>', '<p class="hero-intro">')}
   <p class="cover-subtitle">Home since ${formatDate(isoOfUtc(HOME_DATE_UTC))} · The Malvern Hills</p>
 </section>
-<p class="walk-invite">Come on my walk</p>
+<div class="trailhead">
+  <div class="trailhead-board">
+    <p class="trailhead-title">Come on my walk</p>
+    <p class="trailhead-note">Every day since I came home, newest first. Keep scrolling and I'll walk you back to day one.</p>
+  </div>
+  <span class="trailhead-post" aria-hidden="true"></span>
+</div>
 <div class="hero-launch" aria-hidden="true">
   <svg class="launch-path" viewBox="0 0 700 262">
-    <path class="launch-line" d="M-10 68 C 120 48, 260 70, 380 92 C 470 108, 520 130, 440 146 C 360 162, 230 150, 180 186 C 130 222, 110 238, 70 258"/>
-    ${pawSvg(109, 60, -8)}${pawSvg(248, 71, 8)}${pawSvg(439, 105, 22)}${pawSvg(477, 133, 40)}${pawSvg(313, 156, -20)}${pawSvg(190, 182, -24)}${pawSvg(122, 226, -32)}
+    <defs>
+      <mask id="launch-reveal" maskUnits="userSpaceOnUse" x="-40" y="-20" width="780" height="300">
+        <path class="launch-reveal-line" d="M-10 68 C 120 48, 260 70, 380 92 C 470 108, 520 130, 440 146 C 360 162, 230 150, 180 186 C 130 222, 110 238, 70 258" pathLength="1000"/>
+      </mask>
+    </defs>
+    <g mask="url(#launch-reveal)">
+      <path class="launch-line" d="M-10 68 C 120 48, 260 70, 380 92 C 470 108, 520 130, 440 146 C 360 162, 230 150, 180 186 C 130 222, 110 238, 70 258"/>
+      ${pawSvg(109, 60, -8)}${pawSvg(248, 71, 8)}${pawSvg(439, 105, 22)}${pawSvg(477, 133, 40)}${pawSvg(313, 156, -20)}${pawSvg(190, 182, -24)}${pawSvg(122, 226, -32)}
+    </g>
     <g transform="translate(19.2,-7.3) scale(0.952)">${pupShapes()}</g>
   </svg>
 </div>`;
@@ -1179,7 +1192,7 @@ function buildTrail(entries, milestones) {
         .slice(0, 2);
       const signposts = weekMilestones.map((m) => `<span class="signpost">🪧 ${escapeHtml(m.label)}</span>`).join(' ');
       // Beat 3: the newest week answers "where are we?" at a glance.
-      const pin = i === 0 ? ' <span class="you-are-here">📍 You\'re all caught up</span>' : '';
+      const pin = i === 0 ? '<span class="you-are-here">📍 Start here</span> ' : '';
       const body = weekEntries.length
         ? `<div class="week-entries">${weekEntries.map((e) => patchHtml(e, { fav: e.featured })).join('')}</div>`
         : '<p class="quiet-week">A quiet week on the trail. No posts.</p>';
@@ -1187,7 +1200,7 @@ function buildTrail(entries, milestones) {
       sections.push(`${connector}<section class="week-stop side-${side}">
     <div class="waypoint">
       <span class="waypoint-badge">${w}</span>
-      <div><h2 class="waypoint-title">Week ${w}<span class="waypoint-dates">${weekRangeLabel(w)}</span></h2>${signposts}${pin}</div>
+      <div><h2 class="waypoint-title">Week ${w}<span class="waypoint-dates">${weekRangeLabel(w)}</span></h2>${pin}${signposts}</div>
     </div>
     ${body}
   </section>`);
@@ -1203,7 +1216,6 @@ function buildTrail(entries, milestones) {
       : '';
 
     content = `<div class="trail">
-  <p class="trail-intro">The journey so far, newest first. Keep scrolling to wander back to day one.</p>
   ${sections.join('\n  ')}
   <a class="archive-link" href="/journal/archive/">Wander further back →</a>
   ${shelf}

@@ -23,6 +23,26 @@
     reveals.forEach(function (s) { s.classList.add('seen'); });
   }
 
+  // --- The launch path draws itself once, when it is properly in view.
+  // Its own observer, with a real threshold, so it starts when the reader
+  // has scrolled to it rather than the moment one pixel crosses the fold.
+  // The .js class on <html> is what arms the hidden state in CSS; with
+  // reduced motion the stylesheet keeps it fully drawn regardless.
+  var launch = document.querySelector('.hero-launch');
+  if (launch) {
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      launch.classList.add('seen');
+    } else {
+      var lio = new IntersectionObserver(function (records) {
+        if (records.some(function (r) { return r.isIntersecting; })) {
+          launch.classList.add('seen');
+          lio.disconnect();
+        }
+      }, { threshold: 0.4 });
+      lio.observe(launch);
+    }
+  }
+
   // --- Deep links into a <details> bar (e.g. /lessons.html#lesson-x):
   // the browser scrolls to it either way; this just opens it too.
   function openTargetDetails() {

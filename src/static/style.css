@@ -526,7 +526,7 @@ main article > h1:empty { display: none; }
 .hero-launch {
   position: relative;
   max-width: 700px;
-  margin: 0 auto;
+  margin: -8px auto 0;
 }
 .launch-path { display: block; width: 100%; height: auto; }
 .launch-path .launch-line {
@@ -539,22 +539,72 @@ main article > h1:empty { display: none; }
 }
 .launch-path .paw { fill: var(--moss); opacity: 0.45; }
 
-/* The invitation, in Annie's voice (owner wording, Sep 2026). Sits on
-   its own between the cover and the launch path, in the display face,
-   as words on the ground rather than a boxed panel. The generous margins
-   are the point: they let the cover settle before the walk starts, and
-   give the path a proper opening stretch instead of starting cramped
-   against the subtitle. Replaced the small "Come along" hint that used
-   to be parked beside the path. */
-.walk-invite {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(1.45rem, 1.1rem + 1.4vw, 1.95rem);
-  letter-spacing: -0.01em;
-  color: var(--moss-deep);
+/* The walk draws itself once, the first time the path comes into view.
+   The dotted line has its own dasharray for the dots, so it cannot be
+   drawn by animating its own dashoffset. Instead a fat solid stroke of
+   the same path lives in a <mask> over the line and the paws, with
+   pathLength normalised to 1000; its dashoffset runs 1000 to 0 and the
+   dots and paws appear along the route behind it. The pup is outside the
+   mask, already stood at the start. Without JS the html has no .js class
+   and the path is simply visible; under reduced motion the same. */
+.launch-reveal-line {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 48;
+  stroke-linecap: round;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1300ms var(--ease-out);
+}
+.js .hero-launch:not(.seen) .launch-reveal-line { stroke-dashoffset: 1000; }
+
+/* Beat 2a: the trailhead sign (owner brief, 13 Sep 2026). "Come on my
+   walk" alone read as a heading floating in whitespace: a voice with no
+   promise behind it and no threshold. An invitation needs who is asking,
+   what they are offering, and where to step. So: a signpost, in Annie's
+   voice, with one line under the title saying what the walk actually is
+   (the job the muted "journey so far" sentence used to do at the FOOT of
+   the path, i.e. after the reader had already been asked). Cream board,
+   gold edge, a slight album tilt, and a post planted beside the path.
+   Deliberately not a dark or boxy panel: same lineage as the medallion. */
+.trailhead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 64px auto 0;
+}
+.trailhead-board {
+  max-width: min(34rem, 92vw);
+  padding: 18px 30px 20px;
+  background: var(--stamp-face);
+  border: 2px solid var(--gold);
+  border-radius: 18px;
+  box-shadow: var(--shadow-soft);
   text-align: center;
-  margin: 72px auto 36px;
-  text-wrap: balance;
+  transform: rotate(-1.2deg);
+}
+.trailhead-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.05rem);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--moss-deep);
+  margin: 0 0 8px;
+}
+.trailhead-note {
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 0;
+  text-wrap: pretty;
+}
+.trailhead-post {
+  width: 8px;
+  height: 52px;
+  background: var(--gold);
+  border-radius: 0 0 4px 4px;
+  margin-top: -3px;
 }
 
 /* Entrance: one-time stagger, ease-out, everything under 300ms.
@@ -567,7 +617,7 @@ main article > h1:empty { display: none; }
 .home-hero .cover-hero { animation: hero-pop 260ms var(--ease-out) backwards; }
 .hero-ribbon { animation: hero-pop 260ms var(--ease-out) 70ms backwards; }
 .hero-intro, .home-hero .cover-subtitle { animation: hero-pop 260ms var(--ease-out) 130ms backwards; }
-.walk-invite { animation: hero-pop 260ms var(--ease-out) 200ms backwards; }
+.trailhead { animation: hero-pop 260ms var(--ease-out) 200ms backwards; }
 .hero-snap { animation: hero-pop 280ms var(--ease-out) backwards; }
 .hero-snap--1 { animation-delay: 160ms; }
 .hero-snap--2 { animation-delay: 210ms; }
@@ -1593,7 +1643,8 @@ main article > h1:empty { display: none; }
   .cover-medallion:hover { transform: none; }
   /* Hero entrance: no travel, everything simply present. */
   .home-hero .cover-hero, .hero-ribbon, .hero-intro,
-  .home-hero .cover-subtitle, .hero-snap, .walk-invite { animation: none; }
+  .home-hero .cover-subtitle, .hero-snap, .trailhead { animation: none; }
+  .js .hero-launch:not(.seen) .launch-reveal-line { stroke-dashoffset: 0; transition: none; }
   .hero-snap:hover { transform: rotate(var(--tilt, 0deg)); }
 }
 
