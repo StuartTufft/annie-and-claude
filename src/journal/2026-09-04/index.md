@@ -5,6 +5,10 @@ date: 2026-09-04
 
 A trickier day. Lots of energy again, and she's had a go at the wallpaper. I got a few minutes of peace and was then rudely brought back to reality by the sight of a strip of it torn off the wall.
 
+![Annie mid-chew on the corner of a white door frame, teeth showing and wood shavings on the floor](mid-chew.jpg "Caught in the act.")
+
+![Annie lying on the wooden floor with her nose pressed against the corner of a white door frame, its edge chewed](chewed-frame.jpg "She doesn't know any better.")
+
 She doesn't know any better, so I wasn't cross with her. I was annoyed at myself, for letting my guard down around an active pupper.
 
 I've been putting a lot of effort into getting her to settle before she tips over into shark mode from being overtired, and into making sure she's getting enough sleep. I think that's why she seems to be growing more and more.
